@@ -1,0 +1,282 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		EC69E6001DFB1ED500C2AF7E /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EC69E5FF1DFB1ED500C2AF7E /* main.cpp */; };
+		ECAA64231E02DB35009A1051 /* Window.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ECAA64211E02DB35009A1051 /* Window.cpp */; };
+		ECAD975D1E0038340051EF2B /* GLUT.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ECAD975C1E0038340051EF2B /* GLUT.framework */; };
+		ECAD975F1E0038480051EF2B /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ECAD975E1E0038480051EF2B /* OpenGL.framework */; };
+		ECEF18C71DFBE3940044974E /* Vector.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ECEF18C51DFBE3940044974E /* Vector.cpp */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		EC69E5FA1DFB1ED500C2AF7E /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = /usr/share/man/man1/;
+			dstSubfolderSpec = 0;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 1;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		EC69E5FC1DFB1ED500C2AF7E /* LifeGame */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = LifeGame; sourceTree = BUILT_PRODUCTS_DIR; };
+		EC69E5FF1DFB1ED500C2AF7E /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
+		ECAA64211E02DB35009A1051 /* Window.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Window.cpp; sourceTree = "<group>"; };
+		ECAA64221E02DB35009A1051 /* Window.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Window.hpp; sourceTree = "<group>"; };
+		ECAD975C1E0038340051EF2B /* GLUT.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GLUT.framework; path = System/Library/Frameworks/GLUT.framework; sourceTree = SDKROOT; };
+		ECAD975E1E0038480051EF2B /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
+		ECEF18C51DFBE3940044974E /* Vector.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Vector.cpp; sourceTree = "<group>"; };
+		ECEF18C61DFBE3940044974E /* Vector.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Vector.hpp; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		EC69E5F91DFB1ED500C2AF7E /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				ECAD975F1E0038480051EF2B /* OpenGL.framework in Frameworks */,
+				ECAD975D1E0038340051EF2B /* GLUT.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		EC69E5F31DFB1ED500C2AF7E = {
+			isa = PBXGroup;
+			children = (
+				EC69E5FE1DFB1ED500C2AF7E /* LifeGame */,
+				EC69E5FD1DFB1ED500C2AF7E /* Products */,
+				EC69E6061DFB1F5E00C2AF7E /* Frameworks */,
+			);
+			sourceTree = "<group>";
+		};
+		EC69E5FD1DFB1ED500C2AF7E /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				EC69E5FC1DFB1ED500C2AF7E /* LifeGame */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		EC69E5FE1DFB1ED500C2AF7E /* LifeGame */ = {
+			isa = PBXGroup;
+			children = (
+				EC69E5FF1DFB1ED500C2AF7E /* main.cpp */,
+				ECEF18C51DFBE3940044974E /* Vector.cpp */,
+				ECEF18C61DFBE3940044974E /* Vector.hpp */,
+				ECAA64211E02DB35009A1051 /* Window.cpp */,
+				ECAA64221E02DB35009A1051 /* Window.hpp */,
+			);
+			path = LifeGame;
+			sourceTree = "<group>";
+		};
+		EC69E6061DFB1F5E00C2AF7E /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				ECAD975E1E0038480051EF2B /* OpenGL.framework */,
+				ECAD975C1E0038340051EF2B /* GLUT.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		EC69E5FB1DFB1ED500C2AF7E /* LifeGame */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = EC69E6031DFB1ED500C2AF7E /* Build configuration list for PBXNativeTarget "LifeGame" */;
+			buildPhases = (
+				EC69E5F81DFB1ED500C2AF7E /* Sources */,
+				EC69E5F91DFB1ED500C2AF7E /* Frameworks */,
+				EC69E5FA1DFB1ED500C2AF7E /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = LifeGame;
+			productName = LifeGame;
+			productReference = EC69E5FC1DFB1ED500C2AF7E /* LifeGame */;
+			productType = "com.apple.product-type.tool";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		EC69E5F41DFB1ED500C2AF7E /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0810;
+				ORGANIZATIONNAME = "Arsonist (gmoximko@icloud.com)";
+				TargetAttributes = {
+					EC69E5FB1DFB1ED500C2AF7E = {
+						CreatedOnToolsVersion = 8.1;
+						ProvisioningStyle = Automatic;
+					};
+				};
+			};
+			buildConfigurationList = EC69E5F71DFB1ED500C2AF7E /* Build configuration list for PBXProject "LifeGame" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = EC69E5F31DFB1ED500C2AF7E;
+			productRefGroup = EC69E5FD1DFB1ED500C2AF7E /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				EC69E5FB1DFB1ED500C2AF7E /* LifeGame */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		EC69E5F81DFB1ED500C2AF7E /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				EC69E6001DFB1ED500C2AF7E /* main.cpp in Sources */,
+				ECAA64231E02DB35009A1051 /* Window.cpp in Sources */,
+				ECEF18C71DFBE3940044974E /* Vector.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		EC69E6011DFB1ED500C2AF7E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVES = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "-";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.12;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		EC69E6021DFB1ED500C2AF7E /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVES = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "-";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.12;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		EC69E6041DFB1ED500C2AF7E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		EC69E6051DFB1ED500C2AF7E /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		EC69E5F71DFB1ED500C2AF7E /* Build configuration list for PBXProject "LifeGame" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				EC69E6011DFB1ED500C2AF7E /* Debug */,
+				EC69E6021DFB1ED500C2AF7E /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		EC69E6031DFB1ED500C2AF7E /* Build configuration list for PBXNativeTarget "LifeGame" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				EC69E6041DFB1ED500C2AF7E /* Debug */,
+				EC69E6051DFB1ED500C2AF7E /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = EC69E5F41DFB1ED500C2AF7E /* Project object */;
+}
