@@ -16,6 +16,7 @@
 #include <GL/glu.h>
 #endif
 
+#include <cassert>
 #include <iostream>
 #include <string>
 #include <cmath>
@@ -78,7 +79,10 @@ void Window::MouseFunc(int button, int state, int x, int y) {
     const Vector cell(x / instance.cellSize, (instance.windowSize.y - y) / instance.cellSize);
     if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN) {
         for (const auto &handler : instance.mouseHandlers) {
-            handler(cell - instance.offset);
+            Vector fieldCell(cell - instance.cellOffset);
+            instance.ClampVector(fieldCell);
+            assert(fieldCell.x >= 0 && fieldCell.y >= 0);
+            handler(fieldCell);
         }
     }
     instance.MouseHandle(button, state, x, y);
@@ -113,7 +117,9 @@ void Window::DrawGrid() {
 void Window::DrawPoints() {
     if (units == nullptr) return;
     for (const auto &point : *units) {
-        DrawPoint(point + offset);
+        Vector pos(point + cellOffset);
+        ClampVector(pos);
+        DrawPoint(pos);
     }
 }
 
@@ -144,12 +150,12 @@ void Window::DrawNumbers() {
     const float halfSize = cellSize * 0.5f;
     for (int x = 0; x < windowSize.x / cellSize; x++) {
         glRasterPos2f(x * cellSize + halfSize, 0.f);
-        const int number = x - offset.x;
+        const int number = (x - cellOffset.x) % fieldSize.x;
         DrawNumber(number >= 0 ? number : fieldSize.x + number);
     }
     for (int y = 0; y < windowSize.y / cellSize; y++) {
         glRasterPos2f(0.f, y * cellSize + halfSize);
-        const int number = y - offset.y;
+        const int number = (y - cellOffset.y) % fieldSize.y;
         DrawNumber(number >= 0 ? number : fieldSize.y + number);
     }
 }
@@ -165,7 +171,7 @@ void Window::MouseHandle(int button, int state, int x, int y) {
     if (button == GLUT_LEFT_BUTTON) {
         if (!leftButtonPressed && state == GLUT_DOWN) {
             leftButtonPressed = true;
-            leftButtonPressedPos = Vector(x, windowSize.y - y) - offset * cellSize;
+            leftButtonPressedPos = Vector(x, windowSize.y - y) - cellOffset * cellSize;
         } else if (leftButtonPressed && state == GLUT_UP) {
             leftButtonPressed = false;
         }
@@ -178,7 +184,16 @@ void Window::CameraScroll(int x, int y) {
     Vector newOffset = Vector(x, windowSize.y - y) - leftButtonPressedPos;
     newOffset *= sensitivity;
     newOffset /= cellSize;
-    offset = newOffset;
+    newOffset.x %= fieldSize.x;
+    newOffset.y %= fieldSize.y;
+    cellOffset = newOffset;
+}
+
+void Window::ClampVector(Vector &vec) {
+    vec.x %= fieldSize.x;
+    vec.y %= fieldSize.y;
+    if (vec.x < 0) vec.x = fieldSize.x + vec.x;
+    if (vec.y < 0) vec.y = fieldSize.y + vec.y;
 }
 
 void Window::AddMouseHandler(MouseHandler handler) {

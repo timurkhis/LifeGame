@@ -18,7 +18,7 @@ typedef std::function<void(unsigned char)> KeyboardHandler;
 
 class Window {
     Vector leftButtonPressedPos;
-    Vector offset;
+    Vector cellOffset;
     Vector windowSize;
     Vector fieldSize;
     
@@ -58,6 +58,7 @@ private:
     
     void MouseHandle(int button, int state, int x, int y);
     void CameraScroll(int x, int y);
+    void ClampVector(Vector &vec);
     
     Window();
     ~Window();
