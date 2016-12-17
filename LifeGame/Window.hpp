@@ -17,17 +17,25 @@ typedef std::function<void(Vector)> MouseHandler;
 typedef std::function<void(unsigned char)> KeyboardHandler;
 
 class Window {
+    const static int KeyMinus;
+    const static int KeyPlus;
+    const static int KeyEscape;
+    
     Vector leftButtonPressedPos;
     Vector cellOffset;
     Vector windowSize;
     Vector fieldSize;
     
+    bool cameraScrolled;
     bool leftButtonPressed;
-    float cameraMoveSensititity;
     float cellSizeRatio;
     float cellSize;
-    float unitAngleStep;
-    float unitRadiusRatio;
+    const float cameraMoveSensititity;
+    const float unitAngleStep;
+    const float unitRadiusRatio;
+    const float cellSizeRatioMin;
+    const float cellSizeRatioMax;
+    const float cellSizeRatioStep;
     
     std::vector<MouseHandler> mouseHandlers;
     std::vector<KeyboardHandler> keyboardHandlers;
@@ -57,6 +65,7 @@ private:
     void DrawNumber(int number);
     
     void MouseHandle(int button, int state, int x, int y);
+    void KeyboardHandle(unsigned char key, int x, int y);
     void CameraScroll(int x, int y);
     void ClampVector(Vector &vec);
     

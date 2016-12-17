@@ -26,14 +26,22 @@
 const float DegToRad = M_PI / 180.0f;
 const float RadToDef = 180.0f / M_PI;
 
+const int Window::KeyMinus = 45;
+const int Window::KeyPlus = 61;
+const int Window::KeyEscape = 27;
+
 Window::Window() :
-    cellSizeRatio(0.05f),
-    cellSize(0.0f),
+    cameraMoveSensititity(1.f),
     unitAngleStep(10.0f),
     unitRadiusRatio(0.3f),
+    cellSizeRatioMin(0.02f),
+    cellSizeRatioMax(0.1f),
+    cellSizeRatioStep(0.01f),
+    cellSizeRatio(0.05f),
+    cellSize(0.0f),
     units(nullptr),
     leftButtonPressed(false),
-    cameraMoveSensititity(1.f) {}
+    cameraScrolled(false) {}
 
 Window::~Window() {}
 
@@ -75,29 +83,19 @@ void Window::Reshape(int w, int h) {
 }
 
 void Window::MouseFunc(int button, int state, int x, int y) {
-    Window &instance = Window::Instance();
-    const Vector cell(x / instance.cellSize, (instance.windowSize.y - y) / instance.cellSize);
-    if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN) {
-        for (const auto &handler : instance.mouseHandlers) {
-            Vector fieldCell(cell - instance.cellOffset);
-            instance.ClampVector(fieldCell);
-            assert(fieldCell.x >= 0 && fieldCell.y >= 0);
-            handler(fieldCell);
-        }
-    }
-    instance.MouseHandle(button, state, x, y);
+    Window::Instance().MouseHandle(button, state, x, y);
 }
 
 void Window::KeyboardFunc(unsigned char key, int x, int y) {
     for (const auto &handler : Instance().keyboardHandlers) {
         handler(key);
     }
-    if (key == 27) exit(0);
+    Instance().KeyboardHandle(key, x, y);
 }
 
 void Window::MotionFunc(int x, int y) {
     Instance().CameraScroll(x, y);
-    glutPostRedisplay();
+    Instance().Refresh();
 }
 
 void Window::DrawGrid() {
@@ -168,6 +166,19 @@ void Window::DrawNumber(int number) {
 }
 
 void Window::MouseHandle(int button, int state, int x, int y) {
+    if (button == GLUT_LEFT_BUTTON && state == GLUT_UP) {
+        if (cameraScrolled) {
+            cameraScrolled = false;
+        } else {
+            const Vector cell(x / cellSize, (windowSize.y - y) / cellSize);
+            for (const auto &handler : mouseHandlers) {
+                Vector fieldCell(cell - cellOffset);
+                ClampVector(fieldCell);
+                assert(fieldCell.x >= 0 && fieldCell.y >= 0);
+                handler(fieldCell);
+            }
+        }
+    }
     if (button == GLUT_LEFT_BUTTON) {
         if (!leftButtonPressed && state == GLUT_DOWN) {
             leftButtonPressed = true;
@@ -178,8 +189,23 @@ void Window::MouseHandle(int button, int state, int x, int y) {
     }
 }
 
+void Window::KeyboardHandle(unsigned char key, int x, int y) {
+    if (key == KeyEscape) {
+        exit(0);
+    } else if (key == KeyMinus) {
+        cellSizeRatio -= cellSizeRatioStep;
+        if (cellSizeRatio < cellSizeRatioMin) cellSizeRatio = cellSizeRatioMin;
+    } else if (key == KeyPlus) {
+        cellSizeRatio += cellSizeRatioStep;
+        if (cellSizeRatio > cellSizeRatioMax) cellSizeRatio = cellSizeRatioMax;
+    }
+    RecalculateSize();
+    Refresh();
+}
+
 void Window::CameraScroll(int x, int y) {
     if (!leftButtonPressed) return;
+    cameraScrolled = true;
     const float sensitivity = cameraMoveSensititity;
     Vector newOffset = Vector(x, windowSize.y - y) - leftButtonPressedPos;
     newOffset *= sensitivity;
