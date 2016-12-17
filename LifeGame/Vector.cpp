@@ -39,3 +39,15 @@ const Vector operator * (const Vector &lhs, int value) {
 const Vector operator / (const Vector &lhs, int value) {
     return Vector(lhs.x / value, lhs.y / value);
 }
+
+Vector &operator *= (Vector &lhs, int value) {
+    lhs.x *= value;
+    lhs.y *= value;
+    return lhs;
+}
+
+Vector &operator /= (Vector &lhs, int value) {
+    lhs.x /= value;
+    lhs.y /= value;
+    return lhs;
+}

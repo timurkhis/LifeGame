@@ -6,20 +6,18 @@
 //  Copyright © 2016 Arsonist (gmoximko@icloud.com). All rights reserved.
 //
 
-#if defined(__APPLE__)
-#include <GLUT/GLUT.h>
-#include <OpenGL/gl.h>
-#include <OpenGL/glu.h>
-#else
-#include <GL/glut.h>
-#include <GL/gl.h>
-#include <GL/glu.h>
-#endif
-
 #include "Window.hpp"
 
 int main(int argc, char **argv) {
-    Window::Instance().MainLoop(argc, argv, "LifeGame", 800, 600);
+    Window &instance = Window::Instance();
+    std::vector<Vector> units;
+    MouseHandler clickHandler = [&units, &instance](Vector cell) {
+        units.push_back(cell);
+        instance.Refresh();
+    };
+    instance.AddMouseHandler(clickHandler);
+    instance.InitField(&units, Vector(100, 100));
+    instance.MainLoop(argc, argv, "LifeGame", 800, 600);
     return 0;
 }
 
