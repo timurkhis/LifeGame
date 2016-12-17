@@ -11,20 +11,16 @@
 
 #include <vector>
 #include <functional>
+#include "GameField.hpp"
 #include "Vector.hpp"
 
 typedef std::function<void(Vector)> MouseHandler;
 typedef std::function<void(unsigned char)> KeyboardHandler;
 
 class Window {
-    const static int KeyMinus;
-    const static int KeyPlus;
-    const static int KeyEscape;
-    
     Vector leftButtonPressedPos;
     Vector cellOffset;
     Vector windowSize;
-    Vector fieldSize;
     
     bool cameraScrolled;
     bool leftButtonPressed;
@@ -39,16 +35,21 @@ class Window {
     
     std::vector<MouseHandler> mouseHandlers;
     std::vector<KeyboardHandler> keyboardHandlers;
-    const std::vector<Vector> *units;
+    const GameField *gameField;
     
 public:
+    const static int KeyMinus;
+    const static int KeyPlus;
+    const static int KeyEscape;
+    const static int KeySpace;
+    
     static Window &Instance();
     
-    void MainLoop(int &argc, char **argv, const char *label, int width, int heigth);
+    void MainLoop(int &argc, char **argv, const char *label, Vector size);
     void AddMouseHandler(MouseHandler handler);
     void AddKeyboardHandler(KeyboardHandler handler);
-    void InitField(const std::vector<Vector> *units, Vector fieldSize);
-    void Refresh();
+    void InitField(const GameField *gameField);
+    void Refresh() const;
     
 private:
     static void Reshape(int w, int h);
@@ -67,7 +68,6 @@ private:
     void MouseHandle(int button, int state, int x, int y);
     void KeyboardHandle(unsigned char key, int x, int y);
     void CameraScroll(int x, int y);
-    void ClampVector(Vector &vec);
     
     Window();
     ~Window();

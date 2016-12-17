@@ -29,6 +29,7 @@ const float RadToDef = 180.0f / M_PI;
 const int Window::KeyMinus = 45;
 const int Window::KeyPlus = 61;
 const int Window::KeyEscape = 27;
+const int Window::KeySpace = 32;
 
 Window::Window() :
     cameraMoveSensititity(1.f),
@@ -39,7 +40,7 @@ Window::Window() :
     cellSizeRatioStep(0.01f),
     cellSizeRatio(0.05f),
     cellSize(0.0f),
-    units(nullptr),
+    gameField(nullptr),
     leftButtonPressed(false),
     cameraScrolled(false) {}
 
@@ -50,10 +51,10 @@ Window &Window::Instance() {
     return window;
 }
 
-void Window::MainLoop(int &argc, char **argv, const char *label, int width, int heigth) {
+void Window::MainLoop(int &argc, char **argv, const char *label, Vector size) {
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA);
-    glutInitWindowSize(width, heigth);
+    glutInitWindowSize(size.x, size.y);
     glutCreateWindow(label);
     glutReshapeFunc(Window::Reshape);
     glutDisplayFunc(Window::Display);
@@ -83,13 +84,10 @@ void Window::Reshape(int w, int h) {
 }
 
 void Window::MouseFunc(int button, int state, int x, int y) {
-    Window::Instance().MouseHandle(button, state, x, y);
+    Instance().MouseHandle(button, state, x, y);
 }
 
 void Window::KeyboardFunc(unsigned char key, int x, int y) {
-    for (const auto &handler : Instance().keyboardHandlers) {
-        handler(key);
-    }
     Instance().KeyboardHandle(key, x, y);
 }
 
@@ -113,10 +111,10 @@ void Window::DrawGrid() {
 }
 
 void Window::DrawPoints() {
-    if (units == nullptr) return;
-    for (const auto &point : *units) {
-        Vector pos(point + cellOffset);
-        ClampVector(pos);
+    if (gameField == nullptr) return;
+    for (const auto &unit : *gameField->GetUnits()) {
+        Vector pos(unit + cellOffset);
+        gameField->ClampVector(pos);
         DrawPoint(pos);
     }
 }
@@ -146,6 +144,7 @@ void Window::RecalculateSize() {
 void Window::DrawNumbers() {
     glColor3f(1.0f, 1.0f, 1.0f);
     const float halfSize = cellSize * 0.5f;
+    const Vector &fieldSize = gameField->GetSize();
     for (int x = 0; x < windowSize.x / cellSize; x++) {
         glRasterPos2f(x * cellSize + halfSize, 0.f);
         const int number = (x - cellOffset.x) % fieldSize.x;
@@ -173,7 +172,7 @@ void Window::MouseHandle(int button, int state, int x, int y) {
             const Vector cell(x / cellSize, (windowSize.y - y) / cellSize);
             for (const auto &handler : mouseHandlers) {
                 Vector fieldCell(cell - cellOffset);
-                ClampVector(fieldCell);
+                gameField->ClampVector(fieldCell);
                 assert(fieldCell.x >= 0 && fieldCell.y >= 0);
                 handler(fieldCell);
             }
@@ -190,6 +189,9 @@ void Window::MouseHandle(int button, int state, int x, int y) {
 }
 
 void Window::KeyboardHandle(unsigned char key, int x, int y) {
+    for (const auto &handler : keyboardHandlers) {
+        handler(key);
+    }
     if (key == KeyEscape) {
         exit(0);
     } else if (key == KeyMinus) {
@@ -207,19 +209,13 @@ void Window::CameraScroll(int x, int y) {
     if (!leftButtonPressed) return;
     cameraScrolled = true;
     const float sensitivity = cameraMoveSensititity;
+    const Vector &fieldSize = gameField->GetSize();
     Vector newOffset = Vector(x, windowSize.y - y) - leftButtonPressedPos;
     newOffset *= sensitivity;
     newOffset /= cellSize;
     newOffset.x %= fieldSize.x;
     newOffset.y %= fieldSize.y;
     cellOffset = newOffset;
-}
-
-void Window::ClampVector(Vector &vec) {
-    vec.x %= fieldSize.x;
-    vec.y %= fieldSize.y;
-    if (vec.x < 0) vec.x = fieldSize.x + vec.x;
-    if (vec.y < 0) vec.y = fieldSize.y + vec.y;
 }
 
 void Window::AddMouseHandler(MouseHandler handler) {
@@ -230,11 +226,10 @@ void Window::AddKeyboardHandler(KeyboardHandler handler) {
     keyboardHandlers.push_back(handler);
 }
 
-void Window::InitField(const std::vector<Vector> *units, Vector fieldSize) {
-    this->units = units;
-    this->fieldSize = fieldSize;
+void Window::InitField(const GameField *gameField) {
+    this->gameField = gameField;
 }
 
-void Window::Refresh() {
+void Window::Refresh() const {
     glutPostRedisplay();
 }

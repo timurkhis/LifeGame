@@ -10,14 +10,8 @@
 
 int main(int argc, char **argv) {
     Window &instance = Window::Instance();
-    std::vector<Vector> units;
-    MouseHandler clickHandler = [&units, &instance](Vector cell) {
-        units.push_back(cell);
-        instance.Refresh();
-    };
-    instance.AddMouseHandler(clickHandler);
-    instance.InitField(&units, Vector(100, 100));
-    instance.MainLoop(argc, argv, "LifeGame", 800, 600);
+    GameField gameField(instance, Vector(100, 100));
+    instance.MainLoop(argc, argv, "LifeGame", Vector(800, 600));
     return 0;
 }
 

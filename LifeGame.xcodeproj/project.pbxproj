@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		EC0CB9461E059456009E443E /* GameField.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EC0CB9441E059456009E443E /* GameField.cpp */; };
 		EC69E6001DFB1ED500C2AF7E /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EC69E5FF1DFB1ED500C2AF7E /* main.cpp */; };
 		ECAA64231E02DB35009A1051 /* Window.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ECAA64211E02DB35009A1051 /* Window.cpp */; };
 		ECAD975D1E0038340051EF2B /* GLUT.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ECAD975C1E0038340051EF2B /* GLUT.framework */; };
@@ -27,6 +28,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		EC0CB9441E059456009E443E /* GameField.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GameField.cpp; sourceTree = "<group>"; };
+		EC0CB9451E059456009E443E /* GameField.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = GameField.hpp; sourceTree = "<group>"; };
 		EC69E5FC1DFB1ED500C2AF7E /* LifeGame */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = LifeGame; sourceTree = BUILT_PRODUCTS_DIR; };
 		EC69E5FF1DFB1ED500C2AF7E /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		ECAA64211E02DB35009A1051 /* Window.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Window.cpp; sourceTree = "<group>"; };
@@ -75,6 +78,8 @@
 				ECEF18C61DFBE3940044974E /* Vector.hpp */,
 				ECAA64211E02DB35009A1051 /* Window.cpp */,
 				ECAA64221E02DB35009A1051 /* Window.hpp */,
+				EC0CB9441E059456009E443E /* GameField.cpp */,
+				EC0CB9451E059456009E443E /* GameField.hpp */,
 			);
 			path = LifeGame;
 			sourceTree = "<group>";
@@ -145,6 +150,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				EC0CB9461E059456009E443E /* GameField.cpp in Sources */,
 				EC69E6001DFB1ED500C2AF7E /* main.cpp in Sources */,
 				ECAA64231E02DB35009A1051 /* Window.cpp in Sources */,
 				ECEF18C71DFBE3940044974E /* Vector.cpp in Sources */,

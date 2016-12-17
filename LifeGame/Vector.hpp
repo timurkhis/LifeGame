@@ -9,6 +9,8 @@
 #ifndef Vector_hpp
 #define Vector_hpp
 
+#include <functional>
+
 struct Vector {
     int x;
     int y;
@@ -29,6 +31,16 @@ public:
     friend const Vector operator / (const Vector &lhs, int value);
     friend Vector &operator *= (Vector &lhs, int value);
     friend Vector &operator /= (Vector &lhs, int value);
+};
+
+template <>
+struct std::hash<Vector> {
+    size_t operator () (const Vector &vec) const {
+        size_t hash = 17;
+        hash = ((hash + vec.x) << 5) - (hash + vec.x);
+        hash = ((hash + vec.y) << 5) - (hash + vec.y);
+        return hash;
+    }
 };
 
 #endif /* Vector_hpp */
