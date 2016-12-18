@@ -41,6 +41,7 @@ Window::Window() :
     cellSizeRatio(0.05f),
     cellSize(0.0f),
     gameField(nullptr),
+    rightButtonPressed(false),
     leftButtonPressed(false),
     cameraScrolled(false) {}
 
@@ -61,15 +62,18 @@ void Window::MainLoop(int &argc, char **argv, const char *label, Vector size) {
     glutMouseFunc(Window::MouseFunc);
     glutKeyboardFunc(Window::KeyboardFunc);
     glutMotionFunc(Window::MotionFunc);
+    glutPassiveMotionFunc(Window::PassiveMotionFunc);
     Instance().RecalculateSize();
     glutMainLoop();
 }
 
 void Window::Display() {
+    Window &instance = Instance();
     glClear(GL_COLOR_BUFFER_BIT);
-    Instance().DrawGrid();
-    Instance().DrawPoints();
-    Instance().DrawNumbers();
+    instance.DrawGrid();
+    instance.DrawPoints();
+    instance.DrawNumbers();
+    instance.DrawRect();
     glutSwapBuffers();
 }
 
@@ -92,8 +96,16 @@ void Window::KeyboardFunc(unsigned char key, int x, int y) {
 }
 
 void Window::MotionFunc(int x, int y) {
-    Instance().CameraScroll(x, y);
-    Instance().Refresh();
+    Window &instance = Instance();
+    instance.mousePosition = Vector(x, y);
+    if (instance.leftButtonPressed) {
+        instance.CameraScroll(x, y);
+    }
+    instance.Refresh();
+}
+
+void Window::PassiveMotionFunc(int x, int y) {
+    Instance().mousePosition = Vector(x, y);
 }
 
 void Window::DrawGrid() {
@@ -164,26 +176,43 @@ void Window::DrawNumber(int number) {
     }
 }
 
+void Window::DrawRect() {
+    if (!rightButtonPressed || rightButtonPressedPos == mousePosition) return;
+    const Vector &min = rightButtonPressedPos;
+    const Vector &max = mousePosition;
+    glColor3f(1.0f, 0.0f, 0.0f);
+    glBegin(GL_LINE_LOOP);
+    glVertex2f(min.x, min.y);
+    glVertex2f(min.x, windowSize.y - max.y);
+    glVertex2f(max.x, windowSize.y - max.y);
+    glVertex2f(max.x, min.y);
+    glEnd();
+}
+
 void Window::MouseHandle(int button, int state, int x, int y) {
-    if (button == GLUT_LEFT_BUTTON && state == GLUT_UP) {
-        if (cameraScrolled) {
-            cameraScrolled = false;
-        } else {
-            const Vector cell(x / cellSize, (windowSize.y - y) / cellSize);
-            for (const auto &handler : mouseHandlers) {
-                Vector fieldCell(cell - cellOffset);
-                gameField->ClampVector(fieldCell);
-                assert(fieldCell.x >= 0 && fieldCell.y >= 0);
-                handler(fieldCell);
+    if (button == GLUT_LEFT_BUTTON) {
+        if (state == GLUT_UP) {
+            if (cameraScrolled) {
+                cameraScrolled = false;
+            } else {
+                const Vector fieldCell = ScreenToCell(x, y);
+                for (const auto &handler : mouseHandlers) {
+                    handler(fieldCell);
+                }
             }
         }
-    }
-    if (button == GLUT_LEFT_BUTTON) {
         if (!leftButtonPressed && state == GLUT_DOWN) {
             leftButtonPressed = true;
             leftButtonPressedPos = Vector(x, windowSize.y - y) - cellOffset * cellSize;
         } else if (leftButtonPressed && state == GLUT_UP) {
             leftButtonPressed = false;
+        }
+    } else if (button == GLUT_RIGHT_BUTTON) {
+        if (!rightButtonPressed && state == GLUT_DOWN) {
+            rightButtonPressed = true;
+            rightButtonPressedPos = Vector(x, windowSize.y - y);
+        } else if (rightButtonPressed && state == GLUT_UP) {
+            rightButtonPressed = false;
         }
     }
 }
@@ -206,16 +235,22 @@ void Window::KeyboardHandle(unsigned char key, int x, int y) {
 }
 
 void Window::CameraScroll(int x, int y) {
-    if (!leftButtonPressed) return;
-    cameraScrolled = true;
     const float sensitivity = cameraMoveSensititity;
     const Vector &fieldSize = gameField->GetSize();
     Vector newOffset = Vector(x, windowSize.y - y) - leftButtonPressedPos;
+    cameraScrolled = Vector::Dot(newOffset, newOffset) >= cellSize;
     newOffset *= sensitivity;
     newOffset /= cellSize;
     newOffset.x %= fieldSize.x;
     newOffset.y %= fieldSize.y;
     cellOffset = newOffset;
+}
+
+Vector Window::ScreenToCell(int x, int y) const {
+    Vector result(x / cellSize, (windowSize.y - y) / cellSize);
+    result -= cellOffset;
+    gameField->ClampVector(result);
+    return result;
 }
 
 void Window::AddMouseHandler(MouseHandler handler) {
@@ -232,4 +267,8 @@ void Window::InitField(const GameField *gameField) {
 
 void Window::Refresh() const {
     glutPostRedisplay();
+}
+
+Vector Window::GetCellUnderMouse() const {
+    return ScreenToCell(mousePosition.x, mousePosition.y);
 }

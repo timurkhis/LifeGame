@@ -7,6 +7,11 @@
 //
 
 #include "Vector.hpp"
+#include <cmath>
+
+float Vector::Dot(const Vector &lhs, const Vector &rhs) {
+    return sqrtf(static_cast<float>(lhs.x * rhs.x + lhs.y * rhs.y));
+}
 
 const Vector operator - (const Vector &lhs, const Vector &rhs) {
     return Vector(lhs.x - rhs.x, lhs.y - rhs.y);

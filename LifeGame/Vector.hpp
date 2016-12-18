@@ -19,6 +19,7 @@ public:
     explicit Vector() : x(0), y(0) {}
     explicit Vector(int x, int y) : x(x), y(y) {}
     
+    static float Dot(const Vector &lhs, const Vector &rhs);
     static Vector Zero() { return Vector(); }
     
     friend const Vector operator - (const Vector &lhs, const Vector &rhs);

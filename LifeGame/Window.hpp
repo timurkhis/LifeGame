@@ -18,11 +18,14 @@ typedef std::function<void(Vector)> MouseHandler;
 typedef std::function<void(unsigned char)> KeyboardHandler;
 
 class Window {
+    Vector rightButtonPressedPos;
     Vector leftButtonPressedPos;
     Vector cellOffset;
     Vector windowSize;
+    Vector mousePosition;
     
     bool cameraScrolled;
+    bool rightButtonPressed;
     bool leftButtonPressed;
     float cellSizeRatio;
     float cellSize;
@@ -50,6 +53,7 @@ public:
     void AddKeyboardHandler(KeyboardHandler handler);
     void InitField(const GameField *gameField);
     void Refresh() const;
+    Vector GetCellUnderMouse() const;
     
 private:
     static void Reshape(int w, int h);
@@ -57,6 +61,7 @@ private:
     static void MouseFunc(int button, int state, int x, int y);
     static void KeyboardFunc(unsigned char key, int x, int y);
     static void MotionFunc(int x, int y);
+    static void PassiveMotionFunc(int x, int y);
     
     void DrawGrid();
     void DrawPoints();
@@ -64,10 +69,12 @@ private:
     void RecalculateSize();
     void DrawNumbers();
     void DrawNumber(int number);
+    void DrawRect();
     
     void MouseHandle(int button, int state, int x, int y);
     void KeyboardHandle(unsigned char key, int x, int y);
     void CameraScroll(int x, int y);
+    Vector ScreenToCell(int x, int y) const;
     
     Window();
     ~Window();
