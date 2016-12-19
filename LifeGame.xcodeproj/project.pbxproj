@@ -8,6 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		EC0CB9461E059456009E443E /* GameField.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EC0CB9441E059456009E443E /* GameField.cpp */; };
+		EC562E3B1E06E64F0002F643 /* Rect.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EC562E391E06E64F0002F643 /* Rect.cpp */; };
+		EC5936751E0828BA00075699 /* Presets.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EC5936731E0828BA00075699 /* Presets.cpp */; };
 		EC69E6001DFB1ED500C2AF7E /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EC69E5FF1DFB1ED500C2AF7E /* main.cpp */; };
 		ECAA64231E02DB35009A1051 /* Window.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ECAA64211E02DB35009A1051 /* Window.cpp */; };
 		ECAD975D1E0038340051EF2B /* GLUT.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ECAD975C1E0038340051EF2B /* GLUT.framework */; };
@@ -30,6 +32,10 @@
 /* Begin PBXFileReference section */
 		EC0CB9441E059456009E443E /* GameField.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GameField.cpp; sourceTree = "<group>"; };
 		EC0CB9451E059456009E443E /* GameField.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = GameField.hpp; sourceTree = "<group>"; };
+		EC562E391E06E64F0002F643 /* Rect.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Rect.cpp; sourceTree = "<group>"; };
+		EC562E3A1E06E64F0002F643 /* Rect.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Rect.hpp; sourceTree = "<group>"; };
+		EC5936731E0828BA00075699 /* Presets.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Presets.cpp; sourceTree = "<group>"; };
+		EC5936741E0828BA00075699 /* Presets.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Presets.hpp; sourceTree = "<group>"; };
 		EC69E5FC1DFB1ED500C2AF7E /* LifeGame */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = LifeGame; sourceTree = BUILT_PRODUCTS_DIR; };
 		EC69E5FF1DFB1ED500C2AF7E /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		ECAA64211E02DB35009A1051 /* Window.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Window.cpp; sourceTree = "<group>"; };
@@ -80,6 +86,10 @@
 				ECAA64221E02DB35009A1051 /* Window.hpp */,
 				EC0CB9441E059456009E443E /* GameField.cpp */,
 				EC0CB9451E059456009E443E /* GameField.hpp */,
+				EC562E391E06E64F0002F643 /* Rect.cpp */,
+				EC562E3A1E06E64F0002F643 /* Rect.hpp */,
+				EC5936731E0828BA00075699 /* Presets.cpp */,
+				EC5936741E0828BA00075699 /* Presets.hpp */,
 			);
 			path = LifeGame;
 			sourceTree = "<group>";
@@ -152,8 +162,10 @@
 			files = (
 				EC0CB9461E059456009E443E /* GameField.cpp in Sources */,
 				EC69E6001DFB1ED500C2AF7E /* main.cpp in Sources */,
+				EC5936751E0828BA00075699 /* Presets.cpp in Sources */,
 				ECAA64231E02DB35009A1051 /* Window.cpp in Sources */,
 				ECEF18C71DFBE3940044974E /* Vector.cpp in Sources */,
+				EC562E3B1E06E64F0002F643 /* Rect.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

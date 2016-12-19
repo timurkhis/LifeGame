@@ -13,11 +13,13 @@
 #include <functional>
 #include "GameField.hpp"
 #include "Vector.hpp"
+#include "Rect.hpp"
 
 typedef std::function<void(Vector)> MouseHandler;
 typedef std::function<void(unsigned char)> KeyboardHandler;
 
 class Window {
+    Rect selectedCells;
     Vector rightButtonPressedPos;
     Vector leftButtonPressedPos;
     Vector cellOffset;
@@ -54,6 +56,7 @@ public:
     void InitField(const GameField *gameField);
     void Refresh() const;
     Vector GetCellUnderMouse() const;
+    Rect GetSelectedCells() const;
     
 private:
     static void Reshape(int w, int h);
@@ -75,6 +78,8 @@ private:
     void KeyboardHandle(unsigned char key, int x, int y);
     void CameraScroll(int x, int y);
     Vector ScreenToCell(int x, int y) const;
+    Vector ScreenToCell(Vector vec) const;
+    Rect CalulateSelectedCells() const;
     
     Window();
     ~Window();

@@ -177,15 +177,18 @@ void Window::DrawNumber(int number) {
 }
 
 void Window::DrawRect() {
-    if (!rightButtonPressed || rightButtonPressedPos == mousePosition) return;
-    const Vector &min = rightButtonPressedPos;
-    const Vector &max = mousePosition;
+    if (!rightButtonPressed || rightButtonPressedPos == mousePosition) {
+        if (!selectedCells.IsZero()) selectedCells = Rect();
+        return;
+    }
+    const Vector min = rightButtonPressedPos;
+    const Vector max = mousePosition;
     glColor3f(1.0f, 0.0f, 0.0f);
     glBegin(GL_LINE_LOOP);
-    glVertex2f(min.x, min.y);
+    glVertex2f(min.x, windowSize.y - min.y);
     glVertex2f(min.x, windowSize.y - max.y);
     glVertex2f(max.x, windowSize.y - max.y);
-    glVertex2f(max.x, min.y);
+    glVertex2f(max.x, windowSize.y - min.y);
     glEnd();
 }
 
@@ -210,9 +213,10 @@ void Window::MouseHandle(int button, int state, int x, int y) {
     } else if (button == GLUT_RIGHT_BUTTON) {
         if (!rightButtonPressed && state == GLUT_DOWN) {
             rightButtonPressed = true;
-            rightButtonPressedPos = Vector(x, windowSize.y - y);
+            rightButtonPressedPos = Vector(x, y);
         } else if (rightButtonPressed && state == GLUT_UP) {
             rightButtonPressed = false;
+            selectedCells = CalulateSelectedCells();
         }
     }
 }
@@ -238,7 +242,7 @@ void Window::CameraScroll(int x, int y) {
     const float sensitivity = cameraMoveSensititity;
     const Vector &fieldSize = gameField->GetSize();
     Vector newOffset = Vector(x, windowSize.y - y) - leftButtonPressedPos;
-    cameraScrolled = Vector::Dot(newOffset, newOffset) >= cellSize;
+    cameraScrolled = Vector::Dot(newOffset, newOffset) >= cellSize * cellSize;
     newOffset *= sensitivity;
     newOffset /= cellSize;
     newOffset.x %= fieldSize.x;
@@ -251,6 +255,26 @@ Vector Window::ScreenToCell(int x, int y) const {
     result -= cellOffset;
     gameField->ClampVector(result);
     return result;
+}
+
+Vector Window::ScreenToCell(Vector vec) const {
+    return ScreenToCell(vec.x, vec.y);
+}
+
+Rect Window::CalulateSelectedCells() const {
+    Vector min = ScreenToCell(mousePosition);
+    Vector max = ScreenToCell(rightButtonPressedPos);
+    if (min.x > max.x) {
+        const int tempX = min.x;
+        min.x = max.x;
+        max.x = tempX;
+    }
+    if (min.y > max.y) {
+        const int tempY = min.y;
+        min.y = max.y;
+        max.y = tempY;
+    }
+    return Rect(min, max - min);
 }
 
 void Window::AddMouseHandler(MouseHandler handler) {
@@ -271,4 +295,12 @@ void Window::Refresh() const {
 
 Vector Window::GetCellUnderMouse() const {
     return ScreenToCell(mousePosition.x, mousePosition.y);
+}
+
+Rect Window::GetSelectedCells() const {
+    if (rightButtonPressed) {
+        return CalulateSelectedCells();
+    } else {
+        return selectedCells;
+    }
 }
