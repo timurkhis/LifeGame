@@ -11,10 +11,7 @@
 
 int main(int argc, char **argv) {
     Window &instance = Window::Instance();
-    GameField gameField(instance, Vector(100, 100));
-    Presets presets("presets.txt");
-    std::vector<Vector> newPreset { Vector(100, 100), Vector(59, 50), Vector(0, 0) };
-    presets.Save('1', &newPreset);
+    GameField gameField(instance, Vector(100, 100), "presets.txt");
     instance.MainLoop(argc, argv, "LifeGame", Vector(800, 600));
     return 0;
 }

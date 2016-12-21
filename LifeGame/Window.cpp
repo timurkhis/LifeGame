@@ -261,6 +261,16 @@ Vector Window::ScreenToCell(Vector vec) const {
     return ScreenToCell(vec.x, vec.y);
 }
 
+Vector Window::CellToScreen(int x, int y) const {
+    x += cellOffset.x;
+    y += cellOffset.y;
+    return Vector(x * cellSize * 1.5f, (y - windowSize.y) * cellSize * 1.5f);
+}
+
+Vector Window::CellToScreen(Vector vec) const {
+    return CellToScreen(vec.x, vec.y);
+}
+
 Rect Window::CalulateSelectedCells() const {
     Vector min = ScreenToCell(mousePosition);
     Vector max = ScreenToCell(rightButtonPressedPos);

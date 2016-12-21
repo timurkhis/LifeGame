@@ -16,8 +16,8 @@ class Rect {
     Vector max;
     
 public:
-    Rect();
-    Rect(Vector position, Vector size);
+    explicit Rect();
+    explicit Rect(Vector position, Vector size);
     
     Vector Center() const { return (max - min) / 2; }
     Vector Min() const { return min; }

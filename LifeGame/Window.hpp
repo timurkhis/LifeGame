@@ -79,6 +79,8 @@ private:
     void CameraScroll(int x, int y);
     Vector ScreenToCell(int x, int y) const;
     Vector ScreenToCell(Vector vec) const;
+    Vector CellToScreen(int x, int y) const;
+    Vector CellToScreen(Vector vec) const;
     Rect CalulateSelectedCells() const;
     
     Window();

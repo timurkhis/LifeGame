@@ -17,9 +17,10 @@ class GameField {
     std::unordered_set<Vector> units;
     const Vector size;
     const class Window *window;
+    std::shared_ptr<class Presets> presets;
     
 public:
-    GameField(class Window &window, Vector size);
+    GameField(class Window &window, Vector size, const char *presetsFile);
     void ClampVector(Vector &vec) const;
     Vector GetSize() const { return size; }
     const std::unordered_set<Vector> *GetUnits() const { return &units; }

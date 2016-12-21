@@ -14,14 +14,14 @@
 #include "Vector.hpp"
 
 class Presets {
-    std::unordered_map<char, std::vector<Vector>> presets;
+    std::unordered_map<unsigned char, std::vector<Vector>> presets;
     const char *const path;
     
 public:
     Presets(const char *path);
-    ~Presets();
-    void Save(char preset, const std::vector<Vector> *units);
-    const std::vector<Vector> *Load(char preset) const;
+    void SaveOnDisk();
+    void Save(unsigned char preset, const std::vector<Vector> *units);
+    const std::vector<Vector> *Load(unsigned char preset) const;
 };
 
 #endif /* Presets_hpp */

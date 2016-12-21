@@ -6,16 +6,18 @@
 //  Copyright © 2016 Arsonist (gmoximko@icloud.com). All rights reserved.
 //
 
+#include "Presets.hpp"
 #include "GameField.hpp"
 #include "Window.hpp"
 
-GameField::GameField(Window &window, Vector size) : size(size) {
+GameField::GameField(Window &window, Vector size, const char *presetsFile) : size(size) {
     this->window = &window;
     window.InitField(this);
     MouseHandler mouseHandler = std::bind(&GameField::MouseHandle, this, std::placeholders::_1);
     window.AddMouseHandler(mouseHandler);
     KeyboardHandler keyboardHandler = std::bind(&GameField::KeyboardHandle, this, std::placeholders::_1);
     window.AddKeyboardHandler(keyboardHandler);
+    presets = std::make_shared<Presets>(presetsFile);
 }
 
 void GameField::MouseHandle(Vector cell) {
@@ -25,8 +27,21 @@ void GameField::MouseHandle(Vector cell) {
 }
 
 void GameField::KeyboardHandle(unsigned char key) {
-    if (key != Window::KeySpace) return;
-    ProcessUnits();
+    if (key == Window::KeySpace) {
+        ProcessUnits();
+    } else if (key == Window::KeyEscape) {
+        presets->SaveOnDisk();
+    } else if (key >= '0' && key <= '9') {
+        const Rect rect = window->GetSelectedCells();
+        if (rect.IsZero()) return;
+        std::vector<Vector> preset;
+        for (const auto &unit : units) {
+            if (rect.Contains(unit)) {
+                preset.push_back(unit);
+            }
+        }
+        presets->Save(key, &preset);
+    }
 }
 
 void GameField::ClampVector(Vector &vec) const {
