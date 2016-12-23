@@ -10,22 +10,18 @@
 #define Window_hpp
 
 #include <vector>
-#include <functional>
-#include "GameField.hpp"
 #include "Vector.hpp"
 #include "Rect.hpp"
 
-typedef std::function<void(Vector)> MouseHandler;
-typedef std::function<void(unsigned char)> KeyboardHandler;
-
 class Window {
-    Rect selectedCells;
+    mutable std::vector<Vector> selectedCells;
     Vector rightButtonPressedPos;
     Vector leftButtonPressedPos;
     Vector cellOffset;
     Vector windowSize;
     Vector mousePosition;
     
+    bool cellSelected;
     bool cameraScrolled;
     bool rightButtonPressed;
     bool leftButtonPressed;
@@ -38,9 +34,8 @@ class Window {
     const float cellSizeRatioMax;
     const float cellSizeRatioStep;
     
-    std::vector<MouseHandler> mouseHandlers;
-    std::vector<KeyboardHandler> keyboardHandlers;
-    const GameField *gameField;
+    class GameField *gameField;
+    class Presets *presets;
     
 public:
     const static int KeyMinus;
@@ -51,12 +46,10 @@ public:
     static Window &Instance();
     
     void MainLoop(int &argc, char **argv, const char *label, Vector size);
-    void AddMouseHandler(MouseHandler handler);
-    void AddKeyboardHandler(KeyboardHandler handler);
-    void InitField(const GameField *gameField);
+    void Init(GameField *gameField, Presets *presets);
     void Refresh() const;
     Vector GetCellUnderMouse() const;
-    Rect GetSelectedCells() const;
+    bool CellSelected() const { return cellSelected; }
     
 private:
     static void Reshape(int w, int h);
@@ -73,20 +66,23 @@ private:
     void DrawNumbers();
     void DrawNumber(int number);
     void DrawRect();
+    void DrawCell();
     
-    void MouseHandle(int button, int state, int x, int y);
+    void LeftMouseHandle(Vector mousePos, bool pressed);
+    void RightMouseHandle(Vector mousePos, bool pressed);
     void KeyboardHandle(unsigned char key, int x, int y);
     void CameraScroll(int x, int y);
     Vector ScreenToCell(int x, int y) const;
     Vector ScreenToCell(Vector vec) const;
     Vector CellToScreen(int x, int y) const;
     Vector CellToScreen(Vector vec) const;
-    Rect CalulateSelectedCells() const;
+    void CalulateSelectedCells() const;
+    const std::vector<Vector> *GetSelectedCells() const;
     
     Window();
     ~Window();
-    Window(const Window &other);
-    Window &operator = (const Window &other);
+    Window(const Window &other) = delete;
+    Window &operator = (const Window &other) = delete;
 };
 
 #endif /* Window_hpp */

@@ -18,7 +18,7 @@ class Presets {
     const char *const path;
     
 public:
-    Presets(const char *path);
+    explicit Presets(const char *path);
     void SaveOnDisk();
     void Save(unsigned char preset, const std::vector<Vector> *units);
     const std::vector<Vector> *Load(unsigned char preset) const;

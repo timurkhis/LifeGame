@@ -55,3 +55,11 @@ Vector &operator /= (Vector &lhs, int value) {
     lhs.y /= value;
     return lhs;
 }
+
+const Vector operator + (const Vector &self) {
+    return Vector(+self.x, +self.y);
+}
+
+const Vector operator - (const Vector &self) {
+    return Vector(-self.x, -self.y);
+}

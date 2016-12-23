@@ -35,6 +35,9 @@ public:
     friend const Vector operator / (const Vector &lhs, int value);
     friend Vector &operator *= (Vector &lhs, int value);
     friend Vector &operator /= (Vector &lhs, int value);
+    
+    friend const Vector operator + (const Vector &self);
+    friend const Vector operator - (const Vector &self);
 };
 
 template <>

@@ -22,6 +22,8 @@
 #include <cmath>
 #include <stdlib.h>
 #include "Window.hpp"
+#include "GameField.hpp"
+#include "Presets.hpp"
 
 const float DegToRad = M_PI / 180.0f;
 const float RadToDef = 180.0f / M_PI;
@@ -43,6 +45,7 @@ Window::Window() :
     gameField(nullptr),
     rightButtonPressed(false),
     leftButtonPressed(false),
+    cellSelected(false),
     cameraScrolled(false) {}
 
 Window::~Window() {}
@@ -71,6 +74,7 @@ void Window::Display() {
     Window &instance = Instance();
     glClear(GL_COLOR_BUFFER_BIT);
     instance.DrawGrid();
+    instance.DrawCell();
     instance.DrawPoints();
     instance.DrawNumbers();
     instance.DrawRect();
@@ -88,7 +92,11 @@ void Window::Reshape(int w, int h) {
 }
 
 void Window::MouseFunc(int button, int state, int x, int y) {
-    Instance().MouseHandle(button, state, x, y);
+    if (button == GLUT_LEFT_BUTTON) {
+        Instance().LeftMouseHandle(Vector(x, y), state == GLUT_DOWN);
+    } else if (button == GLUT_RIGHT_BUTTON) {
+        Instance().RightMouseHandle(Vector(x, y), state == GLUT_DOWN);
+    }
 }
 
 void Window::KeyboardFunc(unsigned char key, int x, int y) {
@@ -178,7 +186,7 @@ void Window::DrawNumber(int number) {
 
 void Window::DrawRect() {
     if (!rightButtonPressed || rightButtonPressedPos == mousePosition) {
-        if (!selectedCells.IsZero()) selectedCells = Rect();
+        if (!selectedCells.empty()) selectedCells.clear();
         return;
     }
     const Vector min = rightButtonPressedPos;
@@ -192,49 +200,73 @@ void Window::DrawRect() {
     glEnd();
 }
 
-void Window::MouseHandle(int button, int state, int x, int y) {
-    if (button == GLUT_LEFT_BUTTON) {
-        if (state == GLUT_UP) {
-            if (cameraScrolled) {
-                cameraScrolled = false;
-            } else {
-                const Vector fieldCell = ScreenToCell(x, y);
-                for (const auto &handler : mouseHandlers) {
-                    handler(fieldCell);
-                }
-            }
+void Window::DrawCell() {
+    if (!cellSelected) return;
+    const Vector cell = rightButtonPressedPos / cellSize * cellSize;
+    glColor3f(1.f, 1.f, 0.5f);
+    glBegin(GL_POLYGON);
+    glVertex2f(cell.x, windowSize.y - cell.y - cellSize);
+    glVertex2f(cell.x, windowSize.y - cell.y);
+    glVertex2f(cell.x + cellSize, windowSize.y - cell.y);
+    glVertex2f(cell.x + cellSize, windowSize.y - cell.y - cellSize);
+    glEnd();
+}
+
+void Window::LeftMouseHandle(Vector mousePos, bool pressed) {
+    cellSelected = false;
+    if (!pressed) {
+        if (cameraScrolled) {
+            cameraScrolled = false;
+        } else {
+            const Vector cell = ScreenToCell(mousePos);
+            gameField->AddUnit(cell);
+            Refresh();
         }
-        if (!leftButtonPressed && state == GLUT_DOWN) {
-            leftButtonPressed = true;
-            leftButtonPressedPos = Vector(x, windowSize.y - y) - cellOffset * cellSize;
-        } else if (leftButtonPressed && state == GLUT_UP) {
-            leftButtonPressed = false;
+    }
+    if (!leftButtonPressed && pressed) {
+        leftButtonPressed = true;
+        leftButtonPressedPos = Vector(mousePos.x, windowSize.y - mousePos.y) - cellOffset * cellSize;
+    } else if (leftButtonPressed && !pressed) {
+        leftButtonPressed = false;
+    }
+}
+
+void Window::RightMouseHandle(Vector mousePos, bool pressed) {
+    cellSelected = false;
+    if (!pressed) {
+        if (rightButtonPressedPos == mousePosition) {
+            cellSelected = true;
+            Refresh();
         }
-    } else if (button == GLUT_RIGHT_BUTTON) {
-        if (!rightButtonPressed && state == GLUT_DOWN) {
-            rightButtonPressed = true;
-            rightButtonPressedPos = Vector(x, y);
-        } else if (rightButtonPressed && state == GLUT_UP) {
-            rightButtonPressed = false;
-            selectedCells = CalulateSelectedCells();
-        }
+    }
+    if (!rightButtonPressed && pressed) {
+        rightButtonPressed = true;
+        rightButtonPressedPos = mousePos;
+    } else if (rightButtonPressed && !pressed) {
+        rightButtonPressed = false;
+        CalulateSelectedCells();
     }
 }
 
 void Window::KeyboardHandle(unsigned char key, int x, int y) {
-    for (const auto &handler : keyboardHandlers) {
-        handler(key);
-    }
     if (key == KeyEscape) {
+        presets->SaveOnDisk();
         exit(0);
     } else if (key == KeyMinus) {
         cellSizeRatio -= cellSizeRatioStep;
         if (cellSizeRatio < cellSizeRatioMin) cellSizeRatio = cellSizeRatioMin;
+        RecalculateSize();
     } else if (key == KeyPlus) {
         cellSizeRatio += cellSizeRatioStep;
         if (cellSizeRatio > cellSizeRatioMax) cellSizeRatio = cellSizeRatioMax;
+        RecalculateSize();
+    } else if (key == KeySpace) {
+        gameField->ProcessUnits();
+    } else if (key >= '0' && key <= '9') {
+        presets->Save(key, GetSelectedCells());
+    } else {
+        cellSelected = false;
     }
-    RecalculateSize();
     Refresh();
 }
 
@@ -262,18 +294,23 @@ Vector Window::ScreenToCell(Vector vec) const {
 }
 
 Vector Window::CellToScreen(int x, int y) const {
-    x += cellOffset.x;
-    y += cellOffset.y;
-    return Vector(x * cellSize * 1.5f, (y - windowSize.y) * cellSize * 1.5f);
+    Vector result(x, y);
+    result += cellOffset;
+    gameField->ClampVector(result);
+    result *= cellSize;
+    result += Vector(cellSize, cellSize) / 2;
+    result.y = windowSize.y - result.y;
+    return result;
 }
 
 Vector Window::CellToScreen(Vector vec) const {
     return CellToScreen(vec.x, vec.y);
 }
 
-Rect Window::CalulateSelectedCells() const {
-    Vector min = ScreenToCell(mousePosition);
-    Vector max = ScreenToCell(rightButtonPressedPos);
+void Window::CalulateSelectedCells() const {
+    selectedCells.clear();
+    Vector min = mousePosition;
+    Vector max = rightButtonPressedPos;
     if (min.x > max.x) {
         const int tempX = min.x;
         min.x = max.x;
@@ -284,19 +321,36 @@ Rect Window::CalulateSelectedCells() const {
         min.y = max.y;
         max.y = tempY;
     }
-    return Rect(min, max - min);
+    const Rect screentRect(min, max - min);
+    Vector cellMin = Vector::One() * std::numeric_limits<int>::max();
+    Vector cellMax = Vector::One() * std::numeric_limits<int>::min();
+    for (const auto &unit : *gameField->GetUnits()) {
+        Vector screenUnit = CellToScreen(unit);
+        if (screentRect.Contains(screenUnit)) {
+            cellMin.x = screenUnit.x < cellMin.x ? screenUnit.x : cellMin.x;
+            cellMin.y = screenUnit.y < cellMin.y ? screenUnit.y : cellMin.y;
+            cellMax.x = screenUnit.x > cellMax.x ? screenUnit.x : cellMax.x;
+            cellMax.y = screenUnit.y > cellMax.y ? screenUnit.y : cellMax.y;
+            selectedCells.push_back(screenUnit);
+        }
+    }
+    const Rect rect(cellMin, cellMax - cellMin);
+    const Vector center = rect.Center();
+    for (int i = 0; i < selectedCells.size(); i++) {
+        selectedCells[i] = (selectedCells[i] - center) / cellSize;
+    }
 }
 
-void Window::AddMouseHandler(MouseHandler handler) {
-    mouseHandlers.push_back(handler);
+const std::vector<Vector> *Window::GetSelectedCells() const {
+    if (rightButtonPressed) {
+        CalulateSelectedCells();
+    }
+    return &selectedCells;
 }
 
-void Window::AddKeyboardHandler(KeyboardHandler handler) {
-    keyboardHandlers.push_back(handler);
-}
-
-void Window::InitField(const GameField *gameField) {
+void Window::Init(GameField *gameField, Presets *presets) {
     this->gameField = gameField;
+    this->presets = presets;
 }
 
 void Window::Refresh() const {
@@ -305,12 +359,4 @@ void Window::Refresh() const {
 
 Vector Window::GetCellUnderMouse() const {
     return ScreenToCell(mousePosition.x, mousePosition.y);
-}
-
-Rect Window::GetSelectedCells() const {
-    if (rightButtonPressed) {
-        return CalulateSelectedCells();
-    } else {
-        return selectedCells;
-    }
 }

@@ -19,7 +19,7 @@ public:
     explicit Rect();
     explicit Rect(Vector position, Vector size);
     
-    Vector Center() const { return (max - min) / 2; }
+    Vector Center() const { return min + (max - min) / 2; }
     Vector Min() const { return min; }
     Vector Max() const { return max; }
     int MinX() const { return min.x; }

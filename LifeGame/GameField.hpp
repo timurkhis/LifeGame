@@ -16,19 +16,16 @@
 class GameField {
     std::unordered_set<Vector> units;
     const Vector size;
-    const class Window *window;
-    std::shared_ptr<class Presets> presets;
     
 public:
-    GameField(class Window &window, Vector size, const char *presetsFile);
+    GameField(Vector size);
     void ClampVector(Vector &vec) const;
     Vector GetSize() const { return size; }
     const std::unordered_set<Vector> *GetUnits() const { return &units; }
+    void AddUnit(Vector unit);
+    void ProcessUnits();
     
 private:
-    void MouseHandle(Vector cell);
-    void KeyboardHandle(unsigned char key);
-    void ProcessUnits();
     void ProcessUnit(Vector unit, std::unordered_map<Vector, int> &processCells);
 };
 

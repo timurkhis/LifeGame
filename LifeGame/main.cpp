@@ -8,10 +8,13 @@
 
 #include "Window.hpp"
 #include "Presets.hpp"
+#include "GameField.hpp"
 
 int main(int argc, char **argv) {
     Window &instance = Window::Instance();
-    GameField gameField(instance, Vector(100, 100), "presets.txt");
+    GameField gameField(Vector(100, 100));
+    Presets presets("presets.txt");
+    instance.Init(&gameField, &presets);
     instance.MainLoop(argc, argv, "LifeGame", Vector(800, 600));
     return 0;
 }
