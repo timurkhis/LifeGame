@@ -14,6 +14,11 @@
 #include "Rect.hpp"
 
 class Window {
+    const static int KeyMinus;
+    const static int KeyPlus;
+    const static int KeyEscape;
+    const static int KeySpace;
+    
     mutable std::vector<Vector> selectedCells;
     Vector rightButtonPressedPos;
     Vector leftButtonPressedPos;
@@ -36,13 +41,9 @@ class Window {
     
     class GameField *gameField;
     class Presets *presets;
+    const std::vector<Vector> *loadedUnits;
     
 public:
-    const static int KeyMinus;
-    const static int KeyPlus;
-    const static int KeyEscape;
-    const static int KeySpace;
-    
     static Window &Instance();
     
     void MainLoop(int &argc, char **argv, const char *label, Vector size);

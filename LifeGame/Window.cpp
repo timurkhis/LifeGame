@@ -43,6 +43,8 @@ Window::Window() :
     cellSizeRatio(0.05f),
     cellSize(0.0f),
     gameField(nullptr),
+    presets(nullptr),
+    loadedUnits(nullptr),
     rightButtonPressed(false),
     leftButtonPressed(false),
     cellSelected(false),
@@ -56,6 +58,7 @@ Window &Window::Instance() {
 }
 
 void Window::MainLoop(int &argc, char **argv, const char *label, Vector size) {
+    if (gameField == nullptr || presets == nullptr) throw std::invalid_argument("GameField or Presets does not exist!");
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA);
     glutInitWindowSize(size.x, size.y);
@@ -92,10 +95,13 @@ void Window::Reshape(int w, int h) {
 }
 
 void Window::MouseFunc(int button, int state, int x, int y) {
+    Window &instance = Instance();
+    instance.cellSelected = false;
+    instance.loadedUnits = nullptr;
     if (button == GLUT_LEFT_BUTTON) {
-        Instance().LeftMouseHandle(Vector(x, y), state == GLUT_DOWN);
+        instance.LeftMouseHandle(Vector(x, y), state == GLUT_DOWN);
     } else if (button == GLUT_RIGHT_BUTTON) {
-        Instance().RightMouseHandle(Vector(x, y), state == GLUT_DOWN);
+        instance.RightMouseHandle(Vector(x, y), state == GLUT_DOWN);
     }
 }
 
@@ -131,9 +137,17 @@ void Window::DrawGrid() {
 }
 
 void Window::DrawPoints() {
-    if (gameField == nullptr) return;
+    glColor3f(0.0f, 1.0f, 0.0f);
     for (const auto &unit : *gameField->GetUnits()) {
         Vector pos(unit + cellOffset);
+        gameField->ClampVector(pos);
+        DrawPoint(pos);
+    }
+    if (loadedUnits == nullptr) return;
+    glColor3f(1.0f, 1.0f, 0.5f);
+    const Vector offset = cellOffset + ScreenToCell(rightButtonPressedPos);
+    for (const auto &unit : *loadedUnits) {
+        Vector pos(unit + offset);
         gameField->ClampVector(pos);
         DrawPoint(pos);
     }
@@ -145,7 +159,6 @@ void Window::DrawPoint(Vector pos) {
     const float x = pos.x * cellSize + radius;
     const float y = pos.y * cellSize + radius;
     glBegin(GL_POLYGON);
-    glColor3f(0.0f, 1.0f, 0.0f);
     for (float i = 0.f; i < 360.f; i += unitAngleStep) {
         const float radians = i * DegToRad;
         const float pointX = x + cosf(radians) * unitRadius;
@@ -201,19 +214,21 @@ void Window::DrawRect() {
 }
 
 void Window::DrawCell() {
-    if (!cellSelected) return;
-    const Vector cell = rightButtonPressedPos / cellSize * cellSize;
+    if (!cellSelected || loadedUnits != nullptr) return;
+    Vector cell = ScreenToCell(rightButtonPressedPos) + cellOffset;
+    gameField->ClampVector(cell);
+    const float cellX = cell.x * cellSize;
+    const float cellY = cell.y * cellSize;
     glColor3f(1.f, 1.f, 0.5f);
     glBegin(GL_POLYGON);
-    glVertex2f(cell.x, windowSize.y - cell.y - cellSize);
-    glVertex2f(cell.x, windowSize.y - cell.y);
-    glVertex2f(cell.x + cellSize, windowSize.y - cell.y);
-    glVertex2f(cell.x + cellSize, windowSize.y - cell.y - cellSize);
+    glVertex2f(cellX, cellY);
+    glVertex2f(cellX, cellY + cellSize);
+    glVertex2f(cellX + cellSize, cellY + cellSize);
+    glVertex2f(cellX + cellSize, cellY);
     glEnd();
 }
 
 void Window::LeftMouseHandle(Vector mousePos, bool pressed) {
-    cellSelected = false;
     if (!pressed) {
         if (cameraScrolled) {
             cameraScrolled = false;
@@ -232,7 +247,6 @@ void Window::LeftMouseHandle(Vector mousePos, bool pressed) {
 }
 
 void Window::RightMouseHandle(Vector mousePos, bool pressed) {
-    cellSelected = false;
     if (!pressed) {
         if (rightButtonPressedPos == mousePosition) {
             cellSelected = true;
@@ -263,9 +277,27 @@ void Window::KeyboardHandle(unsigned char key, int x, int y) {
     } else if (key == KeySpace) {
         gameField->ProcessUnits();
     } else if (key >= '0' && key <= '9') {
-        presets->Save(key, GetSelectedCells());
+        const std::vector<Vector> *cells = GetSelectedCells();
+        if (cells->empty()) {
+            const std::vector<Vector> *newLoadedUnits = presets->Load(key);
+            if (loadedUnits == newLoadedUnits && loadedUnits != nullptr) {
+                const Vector offset = ScreenToCell(rightButtonPressedPos);
+                for (int i = 0; i < loadedUnits->size(); i++) {
+                    Vector pos(loadedUnits->at(i) + offset);
+                    gameField->ClampVector(pos);
+                    gameField->AddUnit(pos);
+                }
+                loadedUnits = nullptr;
+                cellSelected = false;
+            } else if (cellSelected) {
+                loadedUnits = newLoadedUnits;
+            }
+        } else {
+            presets->Save(key, cells);
+        }
     } else {
         cellSelected = false;
+        loadedUnits = nullptr;
     }
     Refresh();
 }
