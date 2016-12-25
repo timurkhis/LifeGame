@@ -11,38 +11,42 @@
 
 #include <functional>
 
-struct Vector {
-    int x;
-    int y;
+namespace MathInt {
     
-public:
-    explicit Vector() : x(0), y(0) {}
-    explicit Vector(int x, int y) : x(x), y(y) {}
+    struct Vector {
+        int x;
+        int y;
     
-    static int Dot(const Vector &lhs, const Vector &rhs);
-    static Vector Zero() { return Vector(); }
-    static Vector One() { return Vector(1, 1); }
-    static Vector Right() { return Vector(1, 0); }
-    static Vector Up() { return Vector(0, 1); }
+    public:
+        explicit Vector() : x(0), y(0) {}
+        explicit Vector(int x, int y) : x(x), y(y) {}
     
-    friend const Vector operator - (const Vector &lhs, const Vector &rhs);
-    friend const Vector operator + (const Vector &lhs, const Vector &rhs);
-    friend Vector &operator -= (Vector &lhs, const Vector &rhs);
-    friend Vector &operator += (Vector &lhs, const Vector &rhs);
-    friend bool operator == (const Vector &lhs, const Vector &rhs);
+        static int Dot(const Vector &lhs, const Vector &rhs);
+        static Vector Zero() { return Vector(); }
+        static Vector One() { return Vector(1, 1); }
+        static Vector Right() { return Vector(1, 0); }
+        static Vector Up() { return Vector(0, 1); }
     
-    friend const Vector operator * (const Vector &lhs, int value);
-    friend const Vector operator / (const Vector &lhs, int value);
-    friend Vector &operator *= (Vector &lhs, int value);
-    friend Vector &operator /= (Vector &lhs, int value);
+        friend const Vector operator - (const Vector &lhs, const Vector &rhs);
+        friend const Vector operator + (const Vector &lhs, const Vector &rhs);
+        friend Vector &operator -= (Vector &lhs, const Vector &rhs);
+        friend Vector &operator += (Vector &lhs, const Vector &rhs);
+        friend bool operator == (const Vector &lhs, const Vector &rhs);
     
-    friend const Vector operator + (const Vector &self);
-    friend const Vector operator - (const Vector &self);
-};
+        friend const Vector operator * (const Vector &lhs, int value);
+        friend const Vector operator / (const Vector &lhs, int value);
+        friend Vector &operator *= (Vector &lhs, int value);
+        friend Vector &operator /= (Vector &lhs, int value);
+    
+        friend const Vector operator + (const Vector &self);
+        friend const Vector operator - (const Vector &self);
+    };
+    
+}
 
 template <>
-struct std::hash<Vector> {
-    size_t operator () (const Vector &vec) const {
+struct std::hash<MathInt::Vector> {
+    size_t operator () (const MathInt::Vector &vec) const {
         size_t hash = 17;
         hash = ((hash + vec.x) << 5) - (hash + vec.x);
         hash = ((hash + vec.y) << 5) - (hash + vec.y);

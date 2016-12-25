@@ -369,7 +369,10 @@ void Window::CalulateSelectedCells() const {
     const Rect rect(cellMin, cellMax - cellMin);
     const Vector center = rect.Center();
     for (int i = 0; i < selectedCells.size(); i++) {
-        selectedCells[i] = (selectedCells[i] - center) / cellSize;
+        selectedCells[i] = selectedCells[i] - center;
+        float cellX = selectedCells[i].x / cellSize;
+        float cellY = selectedCells[i].y / cellSize;
+        selectedCells[i] = Vector(ceilf(cellX + 0.5f), -ceilf(cellY + 0.5f));
     }
 }
 

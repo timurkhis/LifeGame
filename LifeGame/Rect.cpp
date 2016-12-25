@@ -8,21 +8,25 @@
 
 #include "Rect.hpp"
 
-Rect::Rect() {}
+namespace MathInt {
+    
+    Rect::Rect() {}
 
-Rect::Rect(Vector position, Vector size) {
-    min = position;
-    max = position + size;
-}
+    Rect::Rect(Vector position, Vector size) {
+        min = position;
+        max = position + size;
+    }
 
-bool Rect::IsZero() const {
-    return min == max;
-}
+    bool Rect::IsZero() const {
+        return min == max;
+    }
 
-bool Rect::Contains(Vector vec) const {
-    if (vec.x < min.x) return false;
-    if (vec.x > max.x) return false;
-    if (vec.y < min.y) return false;
-    if (vec.y > max.y) return false;
-    return true;
+    bool Rect::Contains(Vector vec) const {
+        if (vec.x < min.x) return false;
+        if (vec.x > max.x) return false;
+        if (vec.y < min.y) return false;
+        if (vec.y > max.y) return false;
+        return true;
+    }
+    
 }

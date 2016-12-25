@@ -11,24 +11,27 @@
 
 #include "Vector.hpp"
 
-class Rect {
-    Vector min;
-    Vector max;
+namespace MathInt {
     
-public:
-    explicit Rect();
-    explicit Rect(Vector position, Vector size);
+    class Rect {
+        Vector min;
+        Vector max;
+        
+    public:
+        explicit Rect();
+        explicit Rect(Vector position, Vector size);
+        
+        Vector Center() const { return min + (max - min) / 2; }
+        Vector Min() const { return min; }
+        Vector Max() const { return max; }
+        int MinX() const { return min.x; }
+        int MinY() const { return min.y; }
+        int MaxX() const { return max.x; }
+        int MaxY() const { return max.y; }
+        
+        bool IsZero() const;
+        bool Contains(Vector vec) const;
+    };
     
-    Vector Center() const { return min + (max - min) / 2; }
-    Vector Min() const { return min; }
-    Vector Max() const { return max; }
-    int MinX() const { return min.x; }
-    int MinY() const { return min.y; }
-    int MaxX() const { return max.x; }
-    int MaxY() const { return max.y; }
-    
-    bool IsZero() const;
-    bool Contains(Vector vec) const;
-};
-
+}
 #endif /* Rect_hpp */

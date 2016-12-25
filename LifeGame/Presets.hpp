@@ -13,6 +13,8 @@
 #include <vector>
 #include "Vector.hpp"
 
+using namespace MathInt;
+
 class Presets {
     std::unordered_map<unsigned char, std::vector<Vector>> presets;
     const char *const path;

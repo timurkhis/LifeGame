@@ -13,6 +13,8 @@
 #include <unordered_set>
 #include "Vector.hpp"
 
+using namespace MathInt;
+
 class GameField {
     std::unordered_set<Vector> units;
     const Vector size;

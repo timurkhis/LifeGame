@@ -13,6 +13,8 @@
 #include "Vector.hpp"
 #include "Rect.hpp"
 
+using namespace MathInt;
+
 class Window {
     const static int KeyMinus;
     const static int KeyPlus;
