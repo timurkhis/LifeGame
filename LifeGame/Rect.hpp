@@ -11,7 +11,7 @@
 
 #include "Vector.hpp"
 
-namespace MathInt {
+namespace Geometry {
     
     class Rect {
         Vector min;

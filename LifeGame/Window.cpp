@@ -19,14 +19,10 @@
 #include <cassert>
 #include <iostream>
 #include <string>
-#include <cmath>
 #include <stdlib.h>
 #include "Window.hpp"
 #include "GameField.hpp"
 #include "Presets.hpp"
-
-const float DegToRad = M_PI / 180.0f;
-const float RadToDef = 180.0f / M_PI;
 
 const int Window::KeyMinus = 45;
 const int Window::KeyPlus = 61;
@@ -106,7 +102,7 @@ void Window::MouseFunc(int button, int state, int x, int y) {
 }
 
 void Window::KeyboardFunc(unsigned char key, int x, int y) {
-    Instance().KeyboardHandle(key, x, y);
+    Instance().KeyboardHandle(key, Vector(x, y));
 }
 
 void Window::MotionFunc(int x, int y) {
@@ -145,9 +141,8 @@ void Window::DrawPoints() {
     }
     if (loadedUnits == nullptr) return;
     glColor3f(1.0f, 1.0f, 0.5f);
-    const Vector offset = cellOffset + ScreenToCell(rightButtonPressedPos);
     for (const auto &unit : *loadedUnits) {
-        Vector pos(unit + offset);
+        Vector pos = Matrix3x3::Translation(cellOffset) * loadedUnitsTRS * unit;
         gameField->ClampVector(pos);
         DrawPoint(pos);
     }
@@ -256,13 +251,14 @@ void Window::RightMouseHandle(Vector mousePos, bool pressed) {
     if (!rightButtonPressed && pressed) {
         rightButtonPressed = true;
         rightButtonPressedPos = mousePos;
+        loadedUnitsTRS = Matrix3x3::Translation(ScreenToCell(rightButtonPressedPos));
     } else if (rightButtonPressed && !pressed) {
         rightButtonPressed = false;
         CalulateSelectedCells();
     }
 }
 
-void Window::KeyboardHandle(unsigned char key, int x, int y) {
+void Window::KeyboardHandle(unsigned char key, Vector mousePos) {
     if (key == KeyEscape) {
         presets->SaveOnDisk();
         exit(0);
@@ -277,29 +273,47 @@ void Window::KeyboardHandle(unsigned char key, int x, int y) {
     } else if (key == KeySpace) {
         gameField->ProcessUnits();
     } else if (key >= '0' && key <= '9') {
-        const std::vector<Vector> *cells = GetSelectedCells();
-        if (cells->empty()) {
-            const std::vector<Vector> *newLoadedUnits = presets->Load(key);
-            if (loadedUnits == newLoadedUnits && loadedUnits != nullptr) {
-                const Vector offset = ScreenToCell(rightButtonPressedPos);
-                for (int i = 0; i < loadedUnits->size(); i++) {
-                    Vector pos(loadedUnits->at(i) + offset);
-                    gameField->ClampVector(pos);
-                    gameField->AddUnit(pos);
-                }
-                loadedUnits = nullptr;
-                cellSelected = false;
-            } else if (cellSelected) {
-                loadedUnits = newLoadedUnits;
-            }
-        } else {
-            presets->Save(key, cells);
+        NumbersHandle(key, mousePos);
+    } else if (loadedUnits != nullptr && (key == 'a' || key == 'd' || key == 'w' || key == 's')) {
+        switch (key) {
+            case 'a':
+                loadedUnitsTRS = loadedUnitsTRS * Matrix3x3::Rotation(-90.f);
+                break;
+            case 'd':
+                loadedUnitsTRS = loadedUnitsTRS * Matrix3x3::Rotation(90.f);
+                break;
+            case 'w':
+                loadedUnitsTRS = loadedUnitsTRS * Matrix3x3::Scale(Vector(1, -1));
+                break;
+            case 's':
+                loadedUnitsTRS = loadedUnitsTRS * Matrix3x3::Scale(Vector(-1, 1));
+                break;
         }
     } else {
         cellSelected = false;
         loadedUnits = nullptr;
     }
     Refresh();
+}
+
+void Window::NumbersHandle(unsigned char key, Vector mousePos) {
+    const std::vector<Vector> *cells = GetSelectedCells();
+    if (!cells->empty()) {
+        presets->Save(key, cells);
+        return;
+    }
+    const std::vector<Vector> *newLoadedUnits = presets->Load(key);
+    if (loadedUnits == newLoadedUnits && loadedUnits != nullptr) {
+        for (int i = 0; i < loadedUnits->size(); i++) {
+            Vector pos = loadedUnitsTRS * loadedUnits->at(i);
+            gameField->ClampVector(pos);
+            gameField->AddUnit(pos);
+        }
+        loadedUnits = nullptr;
+        cellSelected = false;
+    } else if (cellSelected) {
+        loadedUnits = newLoadedUnits;
+    }
 }
 
 void Window::CameraScroll(int x, int y) {

@@ -11,7 +11,7 @@
 		EC562E3B1E06E64F0002F643 /* Rect.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EC562E391E06E64F0002F643 /* Rect.cpp */; };
 		EC5936751E0828BA00075699 /* Presets.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EC5936731E0828BA00075699 /* Presets.cpp */; };
 		EC69E6001DFB1ED500C2AF7E /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EC69E5FF1DFB1ED500C2AF7E /* main.cpp */; };
-		EC81246C1E0F891B002A339E /* Matrix3x3.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EC81246A1E0F891B002A339E /* Matrix3x3.cpp */; };
+		EC8124701E0FB862002A339E /* Matrix.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EC81246E1E0FB862002A339E /* Matrix.cpp */; };
 		ECAA64231E02DB35009A1051 /* Window.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ECAA64211E02DB35009A1051 /* Window.cpp */; };
 		ECAD975D1E0038340051EF2B /* GLUT.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ECAD975C1E0038340051EF2B /* GLUT.framework */; };
 		ECAD975F1E0038480051EF2B /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ECAD975E1E0038480051EF2B /* OpenGL.framework */; };
@@ -39,8 +39,9 @@
 		EC5936741E0828BA00075699 /* Presets.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Presets.hpp; sourceTree = "<group>"; };
 		EC69E5FC1DFB1ED500C2AF7E /* LifeGame */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = LifeGame; sourceTree = BUILT_PRODUCTS_DIR; };
 		EC69E5FF1DFB1ED500C2AF7E /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
-		EC81246A1E0F891B002A339E /* Matrix3x3.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Matrix3x3.cpp; sourceTree = "<group>"; };
-		EC81246B1E0F891B002A339E /* Matrix3x3.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Matrix3x3.hpp; sourceTree = "<group>"; };
+		EC81246E1E0FB862002A339E /* Matrix.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Matrix.cpp; sourceTree = "<group>"; };
+		EC81246F1E0FB862002A339E /* Matrix.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Matrix.hpp; sourceTree = "<group>"; };
+		EC8124711E0FBE57002A339E /* Geometry.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Geometry.h; sourceTree = "<group>"; };
 		ECAA64211E02DB35009A1051 /* Window.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Window.cpp; sourceTree = "<group>"; };
 		ECAA64221E02DB35009A1051 /* Window.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Window.hpp; sourceTree = "<group>"; };
 		ECAD975C1E0038340051EF2B /* GLUT.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GLUT.framework; path = System/Library/Frameworks/GLUT.framework; sourceTree = SDKROOT; };
@@ -89,7 +90,7 @@
 				EC0CB9451E059456009E443E /* GameField.hpp */,
 				EC5936731E0828BA00075699 /* Presets.cpp */,
 				EC5936741E0828BA00075699 /* Presets.hpp */,
-				EC81246D1E0F8933002A339E /* MathInt */,
+				EC81246D1E0F8933002A339E /* Geometry */,
 			);
 			path = LifeGame;
 			sourceTree = "<group>";
@@ -103,17 +104,18 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		EC81246D1E0F8933002A339E /* MathInt */ = {
+		EC81246D1E0F8933002A339E /* Geometry */ = {
 			isa = PBXGroup;
 			children = (
 				ECEF18C51DFBE3940044974E /* Vector.cpp */,
 				ECEF18C61DFBE3940044974E /* Vector.hpp */,
 				EC562E391E06E64F0002F643 /* Rect.cpp */,
 				EC562E3A1E06E64F0002F643 /* Rect.hpp */,
-				EC81246A1E0F891B002A339E /* Matrix3x3.cpp */,
-				EC81246B1E0F891B002A339E /* Matrix3x3.hpp */,
+				EC81246E1E0FB862002A339E /* Matrix.cpp */,
+				EC81246F1E0FB862002A339E /* Matrix.hpp */,
+				EC8124711E0FBE57002A339E /* Geometry.h */,
 			);
-			name = MathInt;
+			name = Geometry;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -173,7 +175,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				EC81246C1E0F891B002A339E /* Matrix3x3.cpp in Sources */,
+				EC8124701E0FB862002A339E /* Matrix.cpp in Sources */,
 				EC0CB9461E059456009E443E /* GameField.cpp in Sources */,
 				EC69E6001DFB1ED500C2AF7E /* main.cpp in Sources */,
 				EC5936751E0828BA00075699 /* Presets.cpp in Sources */,

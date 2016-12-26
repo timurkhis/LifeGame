@@ -5,10 +5,11 @@
 //  Created by Максим Бакиров on 10.12.16.
 //  Copyright © 2016 Arsonist (gmoximko@icloud.com). All rights reserved.
 //
-
+#include <iostream>
 #include "Window.hpp"
 #include "Presets.hpp"
 #include "GameField.hpp"
+#include "Geometry.h"
 
 int main(int argc, char **argv) {
     Window &instance = Window::Instance();

@@ -11,9 +11,9 @@
 
 #include <unordered_map>
 #include <unordered_set>
-#include "Vector.hpp"
+#include "Geometry.h"
 
-using namespace MathInt;
+using namespace Geometry;
 
 class GameField {
     std::unordered_set<Vector> units;

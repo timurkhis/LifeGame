@@ -11,7 +11,7 @@
 
 #include <functional>
 
-namespace MathInt {
+namespace Geometry {
     
     struct Vector {
         int x;
@@ -26,7 +26,7 @@ namespace MathInt {
         static Vector One() { return Vector(1, 1); }
         static Vector Right() { return Vector(1, 0); }
         static Vector Up() { return Vector(0, 1); }
-    
+        
         friend const Vector operator - (const Vector &lhs, const Vector &rhs);
         friend const Vector operator + (const Vector &lhs, const Vector &rhs);
         friend Vector &operator -= (Vector &lhs, const Vector &rhs);
@@ -40,13 +40,15 @@ namespace MathInt {
     
         friend const Vector operator + (const Vector &self);
         friend const Vector operator - (const Vector &self);
+        
+        friend std::ostream &operator << (std::ostream &lhs, const Vector &rhs);
     };
     
 }
 
 template <>
-struct std::hash<MathInt::Vector> {
-    size_t operator () (const MathInt::Vector &vec) const {
+struct std::hash<Geometry::Vector> {
+    size_t operator () (const Geometry::Vector &vec) const {
         size_t hash = 17;
         hash = ((hash + vec.x) << 5) - (hash + vec.x);
         hash = ((hash + vec.y) << 5) - (hash + vec.y);

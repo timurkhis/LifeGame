@@ -10,10 +10,9 @@
 #define Window_hpp
 
 #include <vector>
-#include "Vector.hpp"
-#include "Rect.hpp"
+#include "Geometry.h"
 
-using namespace MathInt;
+using namespace Geometry;
 
 class Window {
     const static int KeyMinus;
@@ -27,6 +26,7 @@ class Window {
     Vector cellOffset;
     Vector windowSize;
     Vector mousePosition;
+    Matrix3x3 loadedUnitsTRS;
     
     bool cellSelected;
     bool cameraScrolled;
@@ -73,7 +73,8 @@ private:
     
     void LeftMouseHandle(Vector mousePos, bool pressed);
     void RightMouseHandle(Vector mousePos, bool pressed);
-    void KeyboardHandle(unsigned char key, int x, int y);
+    void KeyboardHandle(unsigned char key, Vector mousePos);
+    void NumbersHandle(unsigned char key, Vector mousePos);
     void CameraScroll(int x, int y);
     Vector ScreenToCell(int x, int y) const;
     Vector ScreenToCell(Vector vec) const;

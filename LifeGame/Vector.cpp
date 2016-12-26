@@ -6,9 +6,10 @@
 //  Copyright © 2016 Arsonist (gmoximko@icloud.com). All rights reserved.
 //
 
+#include <iostream>
 #include "Vector.hpp"
 
-namespace MathInt {
+namespace Geometry {
     
     int Vector::Dot(const Vector &lhs, const Vector &rhs) {
         return lhs.x * rhs.x + lhs.y * rhs.y;
@@ -66,4 +67,8 @@ namespace MathInt {
         return Vector(-self.x, -self.y);
     }
     
+    std::ostream &operator << (std::ostream &lhs, const Vector &rhs) {
+        lhs << rhs.x << ' ' << rhs.y;
+        return lhs;
+    }
 }

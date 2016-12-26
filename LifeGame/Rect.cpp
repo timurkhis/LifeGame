@@ -8,7 +8,7 @@
 
 #include "Rect.hpp"
 
-namespace MathInt {
+namespace Geometry {
     
     Rect::Rect() {}
 

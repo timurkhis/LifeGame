@@ -11,9 +11,9 @@
 
 #include <unordered_map>
 #include <vector>
-#include "Vector.hpp"
+#include "Geometry.h"
 
-using namespace MathInt;
+using namespace Geometry;
 
 class Presets {
     std::unordered_map<unsigned char, std::vector<Vector>> presets;
