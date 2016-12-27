@@ -39,6 +39,10 @@ namespace Geometry {
         return lhs.x == rhs.x && lhs.y == rhs.y;
     }
 
+    bool operator != (const Vector &lhs, const Vector &rhs) {
+        return lhs.x != rhs.x || lhs.y != rhs.y;
+    }
+    
     const Vector operator * (const Vector &lhs, int value) {
         return Vector(lhs.x * value, lhs.y * value);
     }

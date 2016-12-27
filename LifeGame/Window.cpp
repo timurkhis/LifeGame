@@ -92,8 +92,6 @@ void Window::Reshape(int w, int h) {
 
 void Window::MouseFunc(int button, int state, int x, int y) {
     Window &instance = Instance();
-    instance.cellSelected = false;
-    instance.loadedUnits = nullptr;
     if (button == GLUT_LEFT_BUTTON) {
         instance.LeftMouseHandle(Vector(x, y), state == GLUT_DOWN);
     } else if (button == GLUT_RIGHT_BUTTON) {
@@ -107,6 +105,8 @@ void Window::KeyboardFunc(unsigned char key, int x, int y) {
 
 void Window::MotionFunc(int x, int y) {
     Window &instance = Instance();
+    instance.cellSelected = false;
+    instance.loadedUnits = nullptr;
     instance.mousePosition = Vector(x, y);
     if (instance.leftButtonPressed) {
         instance.CameraScroll(x, y);
@@ -251,7 +251,7 @@ void Window::RightMouseHandle(Vector mousePos, bool pressed) {
     if (!rightButtonPressed && pressed) {
         rightButtonPressed = true;
         rightButtonPressedPos = mousePos;
-        loadedUnitsTRS = Matrix3x3::Translation(ScreenToCell(rightButtonPressedPos));
+        loadedUnitsTRS = Matrix3x3::Translation(ScreenToCell(mousePos));
     } else if (rightButtonPressed && !pressed) {
         rightButtonPressed = false;
         CalulateSelectedCells();
@@ -277,10 +277,10 @@ void Window::KeyboardHandle(unsigned char key, Vector mousePos) {
     } else if (loadedUnits != nullptr && (key == 'a' || key == 'd' || key == 'w' || key == 's')) {
         switch (key) {
             case 'a':
-                loadedUnitsTRS = loadedUnitsTRS * Matrix3x3::Rotation(-90.f);
+                loadedUnitsTRS = loadedUnitsTRS * Matrix3x3::Rotation(90.f);
                 break;
             case 'd':
-                loadedUnitsTRS = loadedUnitsTRS * Matrix3x3::Rotation(90.f);
+                loadedUnitsTRS = loadedUnitsTRS * Matrix3x3::Rotation(-90.f);
                 break;
             case 'w':
                 loadedUnitsTRS = loadedUnitsTRS * Matrix3x3::Scale(Vector(1, -1));

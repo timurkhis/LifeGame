@@ -32,7 +32,8 @@ namespace Geometry {
         friend Vector &operator -= (Vector &lhs, const Vector &rhs);
         friend Vector &operator += (Vector &lhs, const Vector &rhs);
         friend bool operator == (const Vector &lhs, const Vector &rhs);
-    
+        friend bool operator != (const Vector &lhs, const Vector &rhs);
+        
         friend const Vector operator * (const Vector &lhs, int value);
         friend const Vector operator / (const Vector &lhs, int value);
         friend Vector &operator *= (Vector &lhs, int value);

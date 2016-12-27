@@ -52,8 +52,8 @@ namespace Geometry {
     const Matrix3x3 operator * (const Matrix3x3 &lhs, const Matrix3x3 &rhs) {
         Matrix3x3 result;
         for (int i = 0; i < Matrix3x3::size; i++) {
-            for (int j = 0; j < Matrix3x3::size; j++) {
-                for (int k = 0; k < Matrix3x3::size; k++) {
+            for (int k = 0; k < Matrix3x3::size; k++) {
+                for (int j = 0; j < Matrix3x3::size; j++) {
                     result.table[i][j] += lhs.table[i][k] * rhs.table[k][j];
                 }
             }
