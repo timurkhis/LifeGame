@@ -41,6 +41,7 @@ Window::Window() :
     gameField(nullptr),
     presets(nullptr),
     loadedUnits(nullptr),
+    loadedUnitsTRS(Matrix3x3::Identity()),
     rightButtonPressed(false),
     leftButtonPressed(false),
     cellSelected(false),
@@ -250,8 +251,12 @@ void Window::RightMouseHandle(Vector mousePos, bool pressed) {
     }
     if (!rightButtonPressed && pressed) {
         rightButtonPressed = true;
+        if (loadedUnits == nullptr) {
+            loadedUnitsTRS = Matrix3x3::Translation(ScreenToCell(mousePos));
+        } else {
+            loadedUnitsTRS = Matrix3x3::Translation(ScreenToCell(mousePos) - ScreenToCell(rightButtonPressedPos)) * loadedUnitsTRS;
+        }
         rightButtonPressedPos = mousePos;
-        loadedUnitsTRS = Matrix3x3::Translation(ScreenToCell(mousePos));
     } else if (rightButtonPressed && !pressed) {
         rightButtonPressed = false;
         CalulateSelectedCells();

@@ -62,10 +62,9 @@ namespace Geometry {
     }
     
     const Vector operator * (const Matrix3x3 &lhs, const Vector &rhs) {
-        Vector result;
-        result.x = ceilf(lhs.m00 * rhs.x + lhs.m01 * rhs.y + lhs.m02 * 1.f + 0.5f);
-        result.y = ceilf(lhs.m10 * rhs.x + lhs.m11 * rhs.y + lhs.m12 * 1.f + 0.5f);
-        return result;
+        const float x = lhs.m00 * rhs.x + lhs.m01 * rhs.y + lhs.m02 * 1.f;
+        const float y = lhs.m10 * rhs.x + lhs.m11 * rhs.y + lhs.m12 * 1.f;
+        return Vector(ceilf(x + 0.5f), ceilf(y + 0.5f));
     }
     
     std::ostream &operator << (std::ostream &lhs, const Matrix3x3 &rhs) {
