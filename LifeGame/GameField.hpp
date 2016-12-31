@@ -20,7 +20,7 @@ class GameField {
     const Vector size;
     
 public:
-    GameField(Vector size);
+    explicit GameField(Vector size);
     void ClampVector(Vector &vec) const;
     Vector GetSize() const { return size; }
     const std::unordered_set<Vector> *GetUnits() const { return &units; }

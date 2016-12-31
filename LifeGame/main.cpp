@@ -13,7 +13,7 @@
 
 int main(int argc, char **argv) {
     Window &instance = Window::Instance();
-    GameField gameField(Vector(100, 100));
+    GameField gameField(Vector(1000, 1000));
     Presets presets("presets.txt");
     instance.Init(&gameField, &presets);
     instance.MainLoop(argc, argv, "LifeGame", Vector(800, 600));

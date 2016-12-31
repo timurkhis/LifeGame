@@ -71,11 +71,12 @@ private:
     void DrawRect();
     void DrawCell();
     
+    void Zoom(float zoom);
     void LeftMouseHandle(Vector mousePos, bool pressed);
     void RightMouseHandle(Vector mousePos, bool pressed);
     void KeyboardHandle(unsigned char key, Vector mousePos);
     void NumbersHandle(unsigned char key, Vector mousePos);
-    void CameraScroll(int x, int y);
+    void CameraScroll(Vector pos);
     Vector ScreenToCell(int x, int y) const;
     Vector ScreenToCell(Vector vec) const;
     Vector CellToScreen(int x, int y) const;
@@ -83,7 +84,7 @@ private:
     void CalulateSelectedCells() const;
     const std::vector<Vector> *GetSelectedCells() const;
     
-    Window();
+    explicit Window();
     ~Window();
     Window(const Window &other) = delete;
     Window &operator = (const Window &other) = delete;

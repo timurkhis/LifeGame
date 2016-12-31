@@ -38,7 +38,7 @@ namespace Geometry {
         static Matrix3x3 Scale(Vector scale);
         static Matrix3x3 Rotation(float angle);
         
-        Matrix3x3();
+        explicit Matrix3x3();
         
         friend const Matrix3x3 operator * (const Matrix3x3 &lhs, const Matrix3x3 &rhs);
         friend const Vector operator * (const Matrix3x3 &lhs, const Vector &rhs);
@@ -69,7 +69,7 @@ namespace Geometry {
             return result;
         }
 
-        Matrix() {
+        explicit Matrix() {
             for (int i = 0; i < rows; i++) {
                 for (int j = 0; j < columns; j++) {
                     matrix[i][j] = 0.f;

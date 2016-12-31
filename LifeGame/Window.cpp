@@ -33,7 +33,7 @@ Window::Window() :
     cameraMoveSensititity(1.f),
     unitAngleStep(10.0f),
     unitRadiusRatio(0.3f),
-    cellSizeRatioMin(0.02f),
+    cellSizeRatioMin(0.005f),
     cellSizeRatioMax(0.1f),
     cellSizeRatioStep(0.01f),
     cellSizeRatio(0.05f),
@@ -110,7 +110,7 @@ void Window::MotionFunc(int x, int y) {
     instance.loadedUnits = nullptr;
     instance.mousePosition = Vector(x, y);
     if (instance.leftButtonPressed) {
-        instance.CameraScroll(x, y);
+        instance.CameraScroll(Vector(x, y));
     }
     instance.Refresh();
 }
@@ -120,6 +120,7 @@ void Window::PassiveMotionFunc(int x, int y) {
 }
 
 void Window::DrawGrid() {
+    if (cellSizeRatio <= cellSizeRatioMin) return;
     glColor3f(1.0f, 1.0f, 1.0f);
     glBegin(GL_LINES);
     for (float x = cellSize; x < windowSize.x; x += cellSize) {
@@ -171,6 +172,7 @@ void Window::RecalculateSize() {
 }
 
 void Window::DrawNumbers() {
+    if (cellSizeRatio <= cellSizeRatioMin) return;
     glColor3f(1.0f, 1.0f, 1.0f);
     const float halfSize = cellSize * 0.5f;
     const Vector &fieldSize = gameField->GetSize();
@@ -224,6 +226,16 @@ void Window::DrawCell() {
     glEnd();
 }
 
+void Window::Zoom(float zoom) {
+    const Vector oldCell = GetCellUnderMouse();
+    cellSizeRatio += zoom;
+    if (cellSizeRatio < cellSizeRatioMin) cellSizeRatio = cellSizeRatioMin;
+    if (cellSizeRatio > cellSizeRatioMax) cellSizeRatio = cellSizeRatioMax;
+    RecalculateSize();
+    const Vector newCell = GetCellUnderMouse();
+    cellOffset += newCell - oldCell;
+}
+
 void Window::LeftMouseHandle(Vector mousePos, bool pressed) {
     if (!pressed) {
         if (cameraScrolled) {
@@ -268,13 +280,9 @@ void Window::KeyboardHandle(unsigned char key, Vector mousePos) {
         presets->SaveOnDisk();
         exit(0);
     } else if (key == KeyMinus) {
-        cellSizeRatio -= cellSizeRatioStep;
-        if (cellSizeRatio < cellSizeRatioMin) cellSizeRatio = cellSizeRatioMin;
-        RecalculateSize();
+        Zoom(-cellSizeRatioStep);
     } else if (key == KeyPlus) {
-        cellSizeRatio += cellSizeRatioStep;
-        if (cellSizeRatio > cellSizeRatioMax) cellSizeRatio = cellSizeRatioMax;
-        RecalculateSize();
+        Zoom(+cellSizeRatioStep);
     } else if (key == KeySpace) {
         gameField->ProcessUnits();
     } else if (key >= '0' && key <= '9') {
@@ -321,10 +329,10 @@ void Window::NumbersHandle(unsigned char key, Vector mousePos) {
     }
 }
 
-void Window::CameraScroll(int x, int y) {
+void Window::CameraScroll(Vector pos) {
     const float sensitivity = cameraMoveSensititity;
     const Vector &fieldSize = gameField->GetSize();
-    Vector newOffset = Vector(x, windowSize.y - y) - leftButtonPressedPos;
+    Vector newOffset = Vector(pos.x, windowSize.y - pos.y) - leftButtonPressedPos;
     cameraScrolled = Vector::Dot(newOffset, newOffset) >= cellSize * cellSize;
     newOffset *= sensitivity;
     newOffset /= cellSize;
