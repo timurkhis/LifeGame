@@ -77,14 +77,14 @@ namespace Geometry {
         return lhs;
     }
     
-    void MultiplyMatrices(float *result, const float *lMatrix, const float *rMatrix, size_t lRows, size_t lColumns, size_t rColumns) {
-        for (int i = 0; i < lRows; i++) {
-            for (int j = 0; j < rColumns; j++) {
-                for (int inner = 0; inner < lColumns; inner++) {
-                    result[i * rColumns + j] += lMatrix[i * rColumns + inner] * rMatrix[inner * rColumns + j];
-                }
-            }
-        }
-    }
+//    void MultiplyMatrices(float *result, const float *lMatrix, const float *rMatrix, size_t lRows, size_t lColumns, size_t rColumns) {
+//        for (int i = 0; i < lRows; i++) {
+//            for (int j = 0; j < rColumns; j++) {
+//                for (int inner = 0; inner < lColumns; inner++) {
+//                    result[i * rColumns + j] += lMatrix[i * rColumns + inner] * rMatrix[inner * rColumns + j];
+//                }
+//            }
+//        }
+//    }
     
 }

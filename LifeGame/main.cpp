@@ -11,10 +11,12 @@
 #include "GameField.hpp"
 #include "Geometry.h"
 
+using namespace Geometry;
+
 int main(int argc, char **argv) {
-    Window &instance = Window::Instance();
     GameField gameField(Vector(1000, 1000));
     Presets presets("presets.txt");
+    Window &instance = Window::Instance();
     instance.Init(&gameField, &presets);
     instance.MainLoop(argc, argv, "LifeGame", Vector(800, 600));
     return 0;

@@ -13,22 +13,20 @@
 #include <unordered_set>
 #include "Geometry.h"
 
-using namespace Geometry;
-
 class GameField {
-    std::unordered_set<Vector> units;
-    const Vector size;
+    std::unordered_set<Geometry::Vector> units;
+    const Geometry::Vector size;
     
 public:
-    explicit GameField(Vector size);
-    void ClampVector(Vector &vec) const;
-    Vector GetSize() const { return size; }
-    const std::unordered_set<Vector> *GetUnits() const { return &units; }
-    void AddUnit(Vector unit);
+    explicit GameField(Geometry::Vector size);
+    void ClampVector(Geometry::Vector &vec) const;
+    Geometry::Vector GetSize() const { return size; }
+    const std::unordered_set<Geometry::Vector> *GetUnits() const { return &units; }
+    void AddUnit(Geometry::Vector unit);
     void ProcessUnits();
     
 private:
-    void ProcessUnit(Vector unit, std::unordered_map<Vector, int> &processCells);
+    void ProcessUnit(Geometry::Vector unit, std::unordered_map<Geometry::Vector, int> &processCells);
 };
 
 #endif /* GameField_hpp */

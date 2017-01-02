@@ -12,10 +12,12 @@
 		EC5936751E0828BA00075699 /* Presets.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EC5936731E0828BA00075699 /* Presets.cpp */; };
 		EC69E6001DFB1ED500C2AF7E /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EC69E5FF1DFB1ED500C2AF7E /* main.cpp */; };
 		EC8124701E0FB862002A339E /* Matrix.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EC81246E1E0FB862002A339E /* Matrix.cpp */; };
+		ECA3CD301E1A25940034815A /* TCPSocket.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ECA3CD2E1E1A25940034815A /* TCPSocket.cpp */; };
 		ECAA64231E02DB35009A1051 /* Window.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ECAA64211E02DB35009A1051 /* Window.cpp */; };
 		ECAD975D1E0038340051EF2B /* GLUT.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ECAD975C1E0038340051EF2B /* GLUT.framework */; };
 		ECAD975F1E0038480051EF2B /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ECAD975E1E0038480051EF2B /* OpenGL.framework */; };
 		ECEF18C71DFBE3940044974E /* Vector.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ECEF18C51DFBE3940044974E /* Vector.cpp */; };
+		ECFAFB821E194F73009C4962 /* SocketAddress.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ECFAFB801E194F73009C4962 /* SocketAddress.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -42,12 +44,17 @@
 		EC81246E1E0FB862002A339E /* Matrix.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Matrix.cpp; sourceTree = "<group>"; };
 		EC81246F1E0FB862002A339E /* Matrix.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Matrix.hpp; sourceTree = "<group>"; };
 		EC8124711E0FBE57002A339E /* Geometry.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Geometry.h; sourceTree = "<group>"; };
+		ECA3CD2E1E1A25940034815A /* TCPSocket.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TCPSocket.cpp; sourceTree = "<group>"; };
+		ECA3CD2F1E1A25940034815A /* TCPSocket.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = TCPSocket.hpp; sourceTree = "<group>"; };
+		ECA3CD311E1A2D3C0034815A /* Network.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Network.h; sourceTree = "<group>"; };
 		ECAA64211E02DB35009A1051 /* Window.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Window.cpp; sourceTree = "<group>"; };
 		ECAA64221E02DB35009A1051 /* Window.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Window.hpp; sourceTree = "<group>"; };
 		ECAD975C1E0038340051EF2B /* GLUT.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GLUT.framework; path = System/Library/Frameworks/GLUT.framework; sourceTree = SDKROOT; };
 		ECAD975E1E0038480051EF2B /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
 		ECEF18C51DFBE3940044974E /* Vector.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Vector.cpp; sourceTree = "<group>"; };
 		ECEF18C61DFBE3940044974E /* Vector.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Vector.hpp; sourceTree = "<group>"; };
+		ECFAFB801E194F73009C4962 /* SocketAddress.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SocketAddress.cpp; sourceTree = "<group>"; };
+		ECFAFB811E194F73009C4962 /* SocketAddress.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = SocketAddress.hpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -91,6 +98,7 @@
 				EC5936731E0828BA00075699 /* Presets.cpp */,
 				EC5936741E0828BA00075699 /* Presets.hpp */,
 				EC81246D1E0F8933002A339E /* Geometry */,
+				ECFAFB7F1E194F2D009C4962 /* Network */,
 			);
 			path = LifeGame;
 			sourceTree = "<group>";
@@ -116,6 +124,18 @@
 				EC8124711E0FBE57002A339E /* Geometry.h */,
 			);
 			name = Geometry;
+			sourceTree = "<group>";
+		};
+		ECFAFB7F1E194F2D009C4962 /* Network */ = {
+			isa = PBXGroup;
+			children = (
+				ECFAFB801E194F73009C4962 /* SocketAddress.cpp */,
+				ECFAFB811E194F73009C4962 /* SocketAddress.hpp */,
+				ECA3CD2E1E1A25940034815A /* TCPSocket.cpp */,
+				ECA3CD2F1E1A25940034815A /* TCPSocket.hpp */,
+				ECA3CD311E1A2D3C0034815A /* Network.h */,
+			);
+			name = Network;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -176,8 +196,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				EC8124701E0FB862002A339E /* Matrix.cpp in Sources */,
+				ECFAFB821E194F73009C4962 /* SocketAddress.cpp in Sources */,
 				EC0CB9461E059456009E443E /* GameField.cpp in Sources */,
 				EC69E6001DFB1ED500C2AF7E /* main.cpp in Sources */,
+				ECA3CD301E1A25940034815A /* TCPSocket.cpp in Sources */,
 				EC5936751E0828BA00075699 /* Presets.cpp in Sources */,
 				ECAA64231E02DB35009A1051 /* Window.cpp in Sources */,
 				ECEF18C71DFBE3940044974E /* Vector.cpp in Sources */,

@@ -12,21 +12,19 @@
 #include <vector>
 #include "Geometry.h"
 
-using namespace Geometry;
-
 class Window {
     const static int KeyMinus;
     const static int KeyPlus;
     const static int KeyEscape;
     const static int KeySpace;
     
-    mutable std::vector<Vector> selectedCells;
-    Vector rightButtonPressedPos;
-    Vector leftButtonPressedPos;
-    Vector cellOffset;
-    Vector windowSize;
-    Vector mousePosition;
-    Matrix3x3 loadedUnitsTRS;
+    mutable std::vector<Geometry::Vector> selectedCells;
+    Geometry::Vector rightButtonPressedPos;
+    Geometry::Vector leftButtonPressedPos;
+    Geometry::Vector cellOffset;
+    Geometry::Vector windowSize;
+    Geometry::Vector mousePosition;
+    Geometry::Matrix3x3 loadedUnitsTRS;
     
     bool cellSelected;
     bool cameraScrolled;
@@ -43,16 +41,15 @@ class Window {
     
     class GameField *gameField;
     class Presets *presets;
-    const std::vector<Vector> *loadedUnits;
+    const std::vector<Geometry::Vector> *loadedUnits;
     
 public:
     static Window &Instance();
     
-    void MainLoop(int &argc, char **argv, const char *label, Vector size);
+    void MainLoop(int &argc, char **argv, const char *label, Geometry::Vector size);
     void Init(GameField *gameField, Presets *presets);
     void Refresh() const;
-    Vector GetCellUnderMouse() const;
-    bool CellSelected() const { return cellSelected; }
+    Geometry::Vector GetCellUnderMouse() const;
     
 private:
     static void Reshape(int w, int h);
@@ -64,7 +61,7 @@ private:
     
     void DrawGrid();
     void DrawPoints();
-    void DrawPoint(Vector pos);
+    void DrawPoint(Geometry::Vector pos);
     void RecalculateSize();
     void DrawNumbers();
     void DrawNumber(int number);
@@ -72,17 +69,17 @@ private:
     void DrawCell();
     
     void Zoom(float zoom);
-    void LeftMouseHandle(Vector mousePos, bool pressed);
-    void RightMouseHandle(Vector mousePos, bool pressed);
-    void KeyboardHandle(unsigned char key, Vector mousePos);
-    void NumbersHandle(unsigned char key, Vector mousePos);
-    void CameraScroll(Vector pos);
-    Vector ScreenToCell(int x, int y) const;
-    Vector ScreenToCell(Vector vec) const;
-    Vector CellToScreen(int x, int y) const;
-    Vector CellToScreen(Vector vec) const;
+    void LeftMouseHandle(Geometry::Vector mousePos, bool pressed);
+    void RightMouseHandle(Geometry::Vector mousePos, bool pressed);
+    void KeyboardHandle(unsigned char key, Geometry::Vector mousePos);
+    void NumbersHandle(unsigned char key, Geometry::Vector mousePos);
+    void CameraScroll(Geometry::Vector pos);
+    Geometry::Vector ScreenToCell(int x, int y) const;
+    Geometry::Vector ScreenToCell(Geometry::Vector vec) const;
+    Geometry::Vector CellToScreen(int x, int y) const;
+    Geometry::Vector CellToScreen(Geometry::Vector vec) const;
     void CalulateSelectedCells() const;
-    const std::vector<Vector> *GetSelectedCells() const;
+    const std::vector<Geometry::Vector> *GetSelectedCells() const;
     
     explicit Window();
     ~Window();

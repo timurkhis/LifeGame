@@ -10,6 +10,8 @@
 #include "GameField.hpp"
 #include "Window.hpp"
 
+using namespace Geometry;
+
 GameField::GameField(Vector size) : size(size) {}
 
 void GameField::AddUnit(Vector unit) {
@@ -39,18 +41,15 @@ void GameField::ProcessUnits() {
 }
 
 void GameField::ProcessUnit(Vector unit, std::unordered_map<Vector, int> &processCells) {
-    if (processCells.find(unit) == processCells.end()) {
-        processCells.insert(std::make_pair(unit, 0));
-    }
+    processCells.insert(std::make_pair(unit, 0));
     for (int x = -1; x <= 1; x++) {
         for (int y = -1; y <= 1; y++) {
             if (x == 0 && y == 0) continue;
             Vector pos = unit + Vector(x, y);
             ClampVector(pos);
-            if (processCells.find(pos) == processCells.end()) {
-                processCells.insert(std::make_pair(pos, 1));
-            } else {
-                processCells[pos]++;
+            const auto iter = processCells.insert(std::make_pair(pos, 1));
+            if (!iter.second) {
+                iter.first->second++;
             }
         }
     }

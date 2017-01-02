@@ -46,55 +46,55 @@ namespace Geometry {
     };
     
     //Just for templated fun
-    void MultiplyMatrices(float *result, const float *lMatrix, const float *rMatrix, size_t lRows, size_t lColumns, size_t rColumns);
-    
-    template <size_t rows, size_t columns>
-    class Matrix {
-        float matrix[rows][columns];
-        
-    public:
-        
-        constexpr size_t Rows() const { return rows; }
-        constexpr size_t Columns() const { return columns; }
-        
-        const float *GetPtr() const { return &matrix[0][0]; }
-        float *GetPtr() { return &matrix[0][0]; }
-        
-        static Matrix Identity() {
-            static_assert(rows == columns, "Identity matrix should be a square matrix!");
-            Matrix result;
-            for (int i = 0; i < rows; i++) {
-                result.matrix[i][i] = 1.f;
-            }
-            return result;
-        }
-
-        explicit Matrix() {
-            for (int i = 0; i < rows; i++) {
-                for (int j = 0; j < columns; j++) {
-                    matrix[i][j] = 0.f;
-                }
-            }
-        }
-        
-        template <size_t r, size_t c>
-        friend const Matrix<rows, c> operator * (const Matrix &lhs, const Matrix<r, c> &rhs) {
-            static_assert(columns == r, "Multiplication of matrices is possible only if count of columns in lhs equals count of rows in rhs!");
-            Matrix<rows, c> result;
-            MultiplyMatrices(result.GetPtr(), lhs.GetPtr(), rhs.GetPtr(), lhs.Rows(), lhs.Columns(), rhs.Columns());
-            return result;
-        }
-        
-        friend const Vector operator * (const Matrix &lhs, const Vector &rhs) {
-            Matrix<3, 1> fromVector;
-            float *ptr = fromVector.GetPtr();
-            ptr[0] = rhs.x;
-            ptr[1] = rhs.y;
-            ptr[2] = 1.f;
-            Matrix<3, 1> result = lhs * fromVector;
-            return Vector(result.GetPtr()[0], result.GetPtr()[1]);
-        }
-    };
+//    void MultiplyMatrices(float *result, const float *lMatrix, const float *rMatrix, size_t lRows, size_t lColumns, size_t rColumns);
+//    
+//    template <size_t rows, size_t columns>
+//    class Matrix {
+//        float matrix[rows][columns];
+//        
+//    public:
+//        
+//        constexpr size_t Rows() const { return rows; }
+//        constexpr size_t Columns() const { return columns; }
+//        
+//        const float *GetPtr() const { return &matrix[0][0]; }
+//        float *GetPtr() { return &matrix[0][0]; }
+//        
+//        static Matrix Identity() {
+//            static_assert(rows == columns, "Identity matrix should be a square matrix!");
+//            Matrix result;
+//            for (int i = 0; i < rows; i++) {
+//                result.matrix[i][i] = 1.f;
+//            }
+//            return result;
+//        }
+//
+//        explicit Matrix() {
+//            for (int i = 0; i < rows; i++) {
+//                for (int j = 0; j < columns; j++) {
+//                    matrix[i][j] = 0.f;
+//                }
+//            }
+//        }
+//        
+//        template <size_t r, size_t c>
+//        friend const Matrix<rows, c> operator * (const Matrix &lhs, const Matrix<r, c> &rhs) {
+//            static_assert(columns == r, "Multiplication of matrices is possible only if count of columns in lhs equals count of rows in rhs!");
+//            Matrix<rows, c> result;
+//            MultiplyMatrices(result.GetPtr(), lhs.GetPtr(), rhs.GetPtr(), lhs.Rows(), lhs.Columns(), rhs.Columns());
+//            return result;
+//        }
+//        
+//        friend const Vector operator * (const Matrix &lhs, const Vector &rhs) {
+//            Matrix<3, 1> fromVector;
+//            float *ptr = fromVector.GetPtr();
+//            ptr[0] = rhs.x;
+//            ptr[1] = rhs.y;
+//            ptr[2] = 1.f;
+//            Matrix<3, 1> result = lhs * fromVector;
+//            return Vector(result.GetPtr()[0], result.GetPtr()[1]);
+//        }
+//    };
     
 }
 

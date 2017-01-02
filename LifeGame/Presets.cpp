@@ -12,6 +12,8 @@
 #include <iostream>
 #include "Presets.hpp"
 
+using namespace Geometry;
+
 Presets::Presets(const char *path) : path(path) {
     std::fstream file;
     file.open(path, std::fstream::in | std::fstream::out);

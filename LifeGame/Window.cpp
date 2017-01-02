@@ -24,6 +24,8 @@
 #include "GameField.hpp"
 #include "Presets.hpp"
 
+using namespace Geometry;
+
 const int Window::KeyMinus = 45;
 const int Window::KeyPlus = 61;
 const int Window::KeyEscape = 27;
