@@ -9,22 +9,35 @@
 #include "Window.hpp"
 #include "Presets.hpp"
 #include "GameField.hpp"
-#include "Args.hpp"
 #include "Server.hpp"
 #include "Client.hpp"
 
+struct {
+    Geometry::Vector field = Geometry::Vector(1000, 1000);
+    Geometry::Vector window = Geometry::Vector(800, 600);
+    Network::SocketAddress address = Network::SocketAddress();
+    std::string presetPath = "presets.txt";
+    std::string label = "LifeGame";
+    bool server = true;
+} args;
+
+void Parse(int argc, char **argv);
+
 int main(int argc, char **argv) {
-    Args::Parse(argc, argv);
-    if (Args::Server()) {
-        static Server server(Args::Field());
-        Args::Address() = server.Address();
+    Parse(argc, argv);
+    if (args.server) {
+        static Server server(args.field);
+        args.address = server.Address();
     }
-    Client client(Args::Address());
+    Client client(args.address);
     GameField gameField(&client);
-    Presets presets(Args::PresetPath());
+    Presets presets(args.presetPath);
     Window &instance = Window::Instance();
     instance.Init(&gameField, &presets);
-    instance.MainLoop(argc, argv, Args::Label(), Args::Window());
+    instance.MainLoop(argc, argv, args.label, args.window);
     return 0;
 }
 
+void Parse(int argc, char **argv) {
+    
+}
