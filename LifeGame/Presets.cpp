@@ -14,7 +14,7 @@
 
 using namespace Geometry;
 
-Presets::Presets(const char *path) : path(path) {
+Presets::Presets(const std::string &path) : path(path) {
     std::fstream file;
     file.open(path, std::fstream::in | std::fstream::out);
     std::string str;

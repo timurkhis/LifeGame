@@ -15,10 +15,11 @@
 
 class GameField {
     std::unordered_set<Geometry::Vector> units;
-    const Geometry::Vector size;
+    const class Client *client;
+    Geometry::Vector size;
     
 public:
-    explicit GameField(Geometry::Vector size);
+    explicit GameField(const class Client *client);
     void ClampVector(Geometry::Vector &vec) const;
     Geometry::Vector GetSize() const { return size; }
     const std::unordered_set<Geometry::Vector> *GetUnits() const { return &units; }

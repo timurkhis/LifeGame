@@ -9,14 +9,18 @@
 #include <netdb.h>
 #include <unistd.h>
 #include <string>
+#include <iostream>
+#include <stdexcept>
+#include <arpa/inet.h>
 #include "SocketAddress.hpp"
 
 namespace Network {
     
-    SocketAddress::SocketAddress() : SocketAddress(INADDR_ANY, 1100) {}
+    SocketAddress::SocketAddress() : SocketAddress(INADDR_ANY, 0) {}
     
     SocketAddress::SocketAddress(uint32_t host, uint16_t port) {
         sockaddr_in *sockAddr = AsSockAddrIn();
+        memset(sockAddr, 0, Size());
         sockAddr->sin_family = AF_INET;
         sockAddr->sin_addr.s_addr = htonl(host);
         sockAddr->sin_port = htons(port);
@@ -46,18 +50,26 @@ namespace Network {
         int error = getaddrinfo(host.c_str(), serive.c_str(), &info, &result);
         if (error != 0 && result != nullptr) {
             freeaddrinfo(result);
-            return nullptr;
+            throw std::invalid_argument("SocketAddress::CreateIPv4 failed!");
         }
         while (!result->ai_addr && result->ai_next) {
             result = result->ai_next;
         }
         if (!result->ai_addr) {
             freeaddrinfo(result);
-            return nullptr;
+            throw std::invalid_argument("SocketAddress::CreateIPv4 failed!");
         }
         std::shared_ptr<SocketAddress> address = std::make_shared<SocketAddress>(*result->ai_addr);
         freeaddrinfo(result);
         return address;
     }
-
+    
+    std::ostream &operator << (std::ostream &stream, const SocketAddress &address) {
+        const sockaddr_in *addrIn = reinterpret_cast<const sockaddr_in *>(&address.addr);
+        char addr[INET_ADDRSTRLEN];
+        inet_ntop(AF_INET, &addrIn->sin_addr.s_addr, addr, INET_ADDRSTRLEN);
+        stream << addr << ':' << addrIn->sin_port;
+        return stream;
+    }
+    
 }

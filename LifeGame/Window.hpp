@@ -46,7 +46,7 @@ class Window {
 public:
     static Window &Instance();
     
-    void MainLoop(int &argc, char **argv, const char *label, Geometry::Vector size);
+    void MainLoop(int &argc, char **argv, const std::string &label, Geometry::Vector size);
     void Init(GameField *gameField, Presets *presets);
     void Refresh() const;
     Geometry::Vector GetCellUnderMouse() const;

@@ -9,13 +9,15 @@
 #include "Presets.hpp"
 #include "GameField.hpp"
 #include "Window.hpp"
+#include "Client.hpp"
 
 using namespace Geometry;
 
-GameField::GameField(Vector size) : size(size) {}
+GameField::GameField(const Client *client) : client(client) {
+    size = client->FieldSize();
+}
 
 void GameField::AddUnit(Vector unit) {
-    if (units.find(unit) != units.end()) return;
     units.insert(unit);
 }
 

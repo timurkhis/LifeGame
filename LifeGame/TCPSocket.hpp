@@ -20,9 +20,10 @@ namespace Network {
         static std::shared_ptr<TCPSocket> Create();
         
         ~TCPSocket();
-        int Connect(SocketAddress &address);
-        int Bind(SocketAddress &address);
-        int Listen(int backLog = 32);
+        void Addr(SocketAddress &address);
+        void Connect(SocketAddress &address);
+        void Bind(SocketAddress &address);
+        void Listen(int backLog = SOMAXCONN);
         int Send(void *buffer, size_t len);
         int Recv(void *buffer, size_t len);
         std::shared_ptr<TCPSocket> Accept(SocketAddress &address);

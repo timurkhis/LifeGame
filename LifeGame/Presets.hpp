@@ -11,14 +11,15 @@
 
 #include <unordered_map>
 #include <vector>
+#include <string>
 #include "Geometry.h"
 
 class Presets {
     std::unordered_map<unsigned char, std::vector<Geometry::Vector>> presets;
-    const char *const path;
+    const std::string path;
     
 public:
-    explicit Presets(const char *path);
+    explicit Presets(const std::string &path);
     void SaveOnDisk();
     void Save(unsigned char preset, const std::vector<Geometry::Vector> *units);
     const std::vector<Geometry::Vector> *Load(unsigned char preset) const;

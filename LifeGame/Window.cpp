@@ -56,12 +56,12 @@ Window &Window::Instance() {
     return window;
 }
 
-void Window::MainLoop(int &argc, char **argv, const char *label, Vector size) {
+void Window::MainLoop(int &argc, char **argv, const std::string &label, Vector size) {
     if (gameField == nullptr || presets == nullptr) throw std::invalid_argument("GameField or Presets does not exist!");
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA);
     glutInitWindowSize(size.x, size.y);
-    glutCreateWindow(label);
+    glutCreateWindow(label.c_str());
     glutReshapeFunc(Window::Reshape);
     glutDisplayFunc(Window::Display);
     glutMouseFunc(Window::MouseFunc);
