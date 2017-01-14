@@ -24,7 +24,7 @@ class Client {
     const class GameField *gameField;
     
 public:
-    explicit Client(std::shared_ptr<Network::SocketAddress> address, size_t inputSize = 1024);
+    explicit Client(std::shared_ptr<Network::SocketAddress> address, size_t inputCapacity = 1024);
     
     void Init(const class GameField *gameField);
     Geometry::Vector FieldSize() const { return fieldSize; }

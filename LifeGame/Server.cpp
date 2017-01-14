@@ -16,7 +16,7 @@
 using namespace Geometry;
 using namespace Network;
 
-Server::Server(Vector fieldSize) : fieldSize(fieldSize) {
+Server::Server(Vector fieldSize, size_t outputCapacity) : fieldSize(fieldSize), output(outputCapacity) {
     address = std::make_shared<SocketAddress>();
     listen = TCPSocket::Create();
     listen->Bind(*address);
@@ -30,6 +30,6 @@ void Server::Update() {
     auto newSock = listen->Accept(*address);
     players.push_back(newSock);
     output << fieldSize.x << fieldSize.y;
-    newSock->Send(output.Data(), output.Length());
+    newSock->Send(output.Data(), output.Size());
     output.Clear();
 }

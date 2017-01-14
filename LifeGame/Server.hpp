@@ -24,7 +24,7 @@ class Server {
     Network::OutputMemoryStream output;
     
 public:
-    explicit Server(Geometry::Vector fieldSize);
+    explicit Server(Geometry::Vector fieldSize, size_t outputCapacity = 1024);
     
     std::shared_ptr<Network::SocketAddress> Address() { return address; }
     

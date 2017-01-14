@@ -73,15 +73,17 @@ namespace Network {
         virtual bool IsInput() const = 0;
         
     protected:
-        std::vector<uint8_t> buffer;
-        uint32_t head;
+        uint8_t *buffer;
+        size_t size;
+        size_t capacity;
         
     public:
+        MemoryStream(size_t capacity);
         virtual ~MemoryStream() = 0;
-        virtual size_t Length() const { return head; }
-        void *Data() { return buffer.data(); }
-        void Clear() { head = 0; }
-        void Resize(size_t size) { buffer.resize(size); }
+        virtual size_t Size() const { return size; }
+        void *Data() { return buffer; }
+        void Clear() { size = 0; }
+        void Realloc(size_t size);
         
         template <typename T>
         void Serialize(T &data) {
@@ -103,10 +105,10 @@ namespace Network {
         virtual void Serialize(void *data, uint32_t bytesCount) override;
         
     public:
-        InputMemoryStream(size_t size);
+        InputMemoryStream(size_t capacity);
         ~InputMemoryStream() override {}
         
-        virtual size_t Length() const override { return buffer.capacity() - head; }
+        virtual size_t Size() const override { return capacity - size; }
         
         template <typename T>
         friend InputMemoryStream &operator >> (InputMemoryStream &stream, T &data) {
@@ -121,7 +123,7 @@ namespace Network {
         virtual void Serialize(void *data, uint32_t bytesCount) override;
         
     public:
-        OutputMemoryStream();
+        OutputMemoryStream(size_t capacity);
         ~OutputMemoryStream() override {}
         
         template <typename T>

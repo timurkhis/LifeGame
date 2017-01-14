@@ -6,6 +6,8 @@
 //  Copyright © 2017 Arsonist (gmoximko@icloud.com). All rights reserved.
 //
 
+#include <iostream>
+#include <cstdlib>
 #include <stdexcept>
 #include "MemoryStream.hpp"
 
@@ -13,33 +15,42 @@ using namespace Geometry;
 
 namespace Network {
     
-    MemoryStream::~MemoryStream() {}
-    
-    InputMemoryStream::InputMemoryStream(size_t size) {
-        head = 0;
-        Resize(size);
+    MemoryStream::MemoryStream(size_t capacity) : size(0), capacity(capacity) {
+        buffer = static_cast<uint8_t *>(std::malloc(capacity));
     }
+    
+    MemoryStream::~MemoryStream() {
+        std::free(buffer);
+    }
+    
+    void MemoryStream::Realloc(size_t size) {
+        void *newPtr = std::realloc(buffer, size);
+        if (newPtr == nullptr) {
+            throw std::bad_alloc();
+        }
+        buffer = static_cast<uint8_t *>(newPtr);
+        capacity = size;
+    }
+    
+    InputMemoryStream::InputMemoryStream(size_t capacity) : MemoryStream(capacity) {}
     
     void InputMemoryStream::Serialize(void *data, uint32_t bytesCount) {
-        if (Length() < bytesCount) {
+        if (Size() < bytesCount) {
             throw std::out_of_range("Not enough data!");
         }
-        std::memcpy(data, buffer.data() + head, bytesCount);
-        head += bytesCount;
+        std::memcpy(data, buffer + size, bytesCount);
+        size += bytesCount;
     }
     
-    OutputMemoryStream::OutputMemoryStream() {
-        head = 0;
-    }
+    OutputMemoryStream::OutputMemoryStream(size_t capacity) : MemoryStream(capacity) {}
     
     void OutputMemoryStream::Serialize(void *data, uint32_t bytesCount) {
-        const int capacity = static_cast<int>(buffer.capacity());
-        const int newSize = static_cast<int>(head + bytesCount);
+        const size_t newSize = size + bytesCount;
         if (newSize > capacity) {
-            Resize(std::max(capacity * 2, newSize));
+            Realloc(std::max(capacity * 2, newSize));
         }
-        std::memcpy(buffer.data() + head, data, bytesCount);
-        head += bytesCount;
+        std::memcpy(buffer + size, data, bytesCount);
+        size += bytesCount;
     }
     
 }

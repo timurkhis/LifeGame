@@ -13,10 +13,10 @@
 using namespace Geometry;
 using namespace Network;
 
-Client::Client(std::shared_ptr<SocketAddress> address, size_t inputSize) : address(address), input(inputSize) {
+Client::Client(std::shared_ptr<SocketAddress> address, size_t inputCapacity) : address(address), input(inputCapacity) {
     server = TCPSocket::Create();
     server->Connect(*address);
-    server->Recv(input.Data(), input.Length());
+    server->Recv(input.Data(), input.Size());
     input >> fieldSize.x >> fieldSize.y;
     input.Clear();
 }
