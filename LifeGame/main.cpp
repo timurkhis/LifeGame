@@ -5,17 +5,19 @@
 //  Created by Максим Бакиров on 10.12.16.
 //  Copyright © 2016 Arsonist (gmoximko@icloud.com). All rights reserved.
 //
+#include <string>
 #include <iostream>
 #include "Window.hpp"
 #include "Presets.hpp"
 #include "GameField.hpp"
 #include "Server.hpp"
 #include "Client.hpp"
+#include "Network.h"
 
 struct {
     Geometry::Vector field = Geometry::Vector(1000, 1000);
     Geometry::Vector window = Geometry::Vector(800, 600);
-    Network::SocketAddress address = Network::SocketAddress();
+    std::shared_ptr<Network::SocketAddress> address = std::make_shared<Network::SocketAddress>();
     std::string presetPath = "presets.txt";
     std::string label = "LifeGame";
     bool server = true;

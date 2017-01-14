@@ -13,12 +13,12 @@
 using namespace Geometry;
 using namespace Network;
 
-Client::Client(SocketAddress &address) {
-    memset(buffer, 0, size);
+Client::Client(std::shared_ptr<SocketAddress> address, size_t inputSize) : address(address), input(inputSize) {
     server = TCPSocket::Create();
-    server->Connect(address);
-    server->Recv(buffer, size);
-    memcpy(&fieldSize, buffer, sizeof(fieldSize));
+    server->Connect(*address);
+    server->Recv(input.Data(), input.Length());
+    input >> fieldSize.x >> fieldSize.y;
+    input.Clear();
 }
 
 void Client::Init(const GameField *gameField) {

@@ -17,6 +17,7 @@
 		ECAA64231E02DB35009A1051 /* Window.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ECAA64211E02DB35009A1051 /* Window.cpp */; };
 		ECAD975D1E0038340051EF2B /* GLUT.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ECAD975C1E0038340051EF2B /* GLUT.framework */; };
 		ECAD975F1E0038480051EF2B /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ECAD975E1E0038480051EF2B /* OpenGL.framework */; };
+		ECB682201E26F828009D9C3C /* MemoryStream.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ECB6821E1E26F828009D9C3C /* MemoryStream.cpp */; };
 		ECDD95931E25310400B15392 /* Server.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ECDD95911E25310400B15392 /* Server.cpp */; };
 		ECDD95961E2534F500B15392 /* Client.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ECDD95941E2534F500B15392 /* Client.cpp */; };
 		ECEF18C71DFBE3940044974E /* Vector.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ECEF18C51DFBE3940044974E /* Vector.cpp */; };
@@ -56,6 +57,8 @@
 		ECAA64221E02DB35009A1051 /* Window.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Window.hpp; sourceTree = "<group>"; };
 		ECAD975C1E0038340051EF2B /* GLUT.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GLUT.framework; path = System/Library/Frameworks/GLUT.framework; sourceTree = SDKROOT; };
 		ECAD975E1E0038480051EF2B /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
+		ECB6821E1E26F828009D9C3C /* MemoryStream.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MemoryStream.cpp; sourceTree = "<group>"; };
+		ECB6821F1E26F828009D9C3C /* MemoryStream.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = MemoryStream.hpp; sourceTree = "<group>"; };
 		ECDD95911E25310400B15392 /* Server.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Server.cpp; sourceTree = "<group>"; };
 		ECDD95921E25310400B15392 /* Server.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Server.hpp; sourceTree = "<group>"; };
 		ECDD95941E2534F500B15392 /* Client.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Client.cpp; sourceTree = "<group>"; };
@@ -148,6 +151,8 @@
 				ECA3CD2F1E1A25940034815A /* TCPSocket.hpp */,
 				EC50722F1E25F27900C482CB /* Reporter.cpp */,
 				EC5072301E25F27900C482CB /* Reporter.hpp */,
+				ECB6821E1E26F828009D9C3C /* MemoryStream.cpp */,
+				ECB6821F1E26F828009D9C3C /* MemoryStream.hpp */,
 				ECA3CD311E1A2D3C0034815A /* Network.h */,
 			);
 			name = Network;
@@ -217,6 +222,7 @@
 				EC5072311E25F27900C482CB /* Reporter.cpp in Sources */,
 				EC69E6001DFB1ED500C2AF7E /* main.cpp in Sources */,
 				ECA3CD301E1A25940034815A /* TCPSocket.cpp in Sources */,
+				ECB682201E26F828009D9C3C /* MemoryStream.cpp in Sources */,
 				EC5936751E0828BA00075699 /* Presets.cpp in Sources */,
 				ECAA64231E02DB35009A1051 /* Window.cpp in Sources */,
 				ECEF18C71DFBE3940044974E /* Vector.cpp in Sources */,

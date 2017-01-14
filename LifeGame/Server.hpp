@@ -17,15 +17,16 @@
 
 class Server {
     std::vector<std::shared_ptr<Network::TCPSocket>> players;
+    std::vector<bool> playerTurns;
     std::shared_ptr<Network::TCPSocket> listen;
+    std::shared_ptr<Network::SocketAddress> address;
     Geometry::Vector fieldSize;
-    Network::SocketAddress address;
-    int playersTurns;
+    Network::OutputMemoryStream output;
     
 public:
     explicit Server(Geometry::Vector fieldSize);
     
-    Network::SocketAddress &Address() { return address; }
+    std::shared_ptr<Network::SocketAddress> Address() { return address; }
     
 private:
     void Update();
