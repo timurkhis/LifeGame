@@ -22,6 +22,7 @@ namespace Network {
         void Add(TCPSocketPtr socketPtr);
         void Remove(TCPSocketPtr socketPtr);
         
+        size_t Size() { return sockets.size(); }
         int Select(std::vector<TCPSocketPtr> *read, std::vector<TCPSocketPtr> *write, std::vector<TCPSocketPtr> *except);
         
     private:

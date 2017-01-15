@@ -12,7 +12,6 @@
 #include "GameField.hpp"
 #include "Server.hpp"
 #include "Client.hpp"
-#include "Network.h"
 
 struct {
     Geometry::Vector field = Geometry::Vector(1000, 1000);

@@ -14,20 +14,17 @@
 #include "Network.h"
 
 class Client {
-    const static int size = 1000;
     std::vector<Geometry::Vector> addedUnits;
     std::vector<Geometry::Vector> removedUnits;
     std::shared_ptr<Network::SocketAddress> address;
     Network::TCPSocketPtr server;
     Network::InputMemoryStream input;
-    Geometry::Vector fieldSize;
-    const class GameField *gameField;
+    class GameField *gameField;
     
 public:
     explicit Client(std::shared_ptr<Network::SocketAddress> address, size_t inputCapacity = 1024);
     
-    void Init(const class GameField *gameField);
-    Geometry::Vector FieldSize() const { return fieldSize; }
+    void Init(class GameField *gameField);
     std::shared_ptr<Network::SocketAddress> Address() { return address; }
 };
 

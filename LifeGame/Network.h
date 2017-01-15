@@ -17,7 +17,12 @@
 
 namespace Network {
     
-    
+    enum class Message {
+        Init,
+        Add,
+        Turn,
+        Process
+    };
     
 }
 

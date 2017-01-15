@@ -137,7 +137,32 @@ void Window::DrawGrid() {
 }
 
 void Window::DrawPoints() {
-    glColor3f(0.0f, 1.0f, 0.0f);
+    switch (gameField->Player()) {
+        case 0:
+            glColor3f(1.0f, 0.0f, 0.0f);
+            break;
+        case 1:
+            glColor3f(0.0f, 1.0f, 0.0f);
+            break;
+        case 2:
+            glColor3f(0.0f, 0.0f, 1.0f);
+            break;
+        case 3:
+            glColor3f(1.0f, 1.0f, 0.0f);
+            break;
+        case 4:
+            glColor3f(1.0f, 0.0f, 1.0f);
+            break;
+        case 5:
+            glColor3f(0.0f, 1.0f, 1.0f);
+            break;
+        case 6:
+            glColor3f(1.0f, 1.0f, 1.0f);
+            break;
+        default:
+            glColor3f(0.5f, 0.5f, 0.5f);
+            break;
+    }
     for (const auto &unit : *gameField->GetUnits()) {
         Vector pos(unit + cellOffset);
         gameField->ClampVector(pos);

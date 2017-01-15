@@ -20,7 +20,7 @@ class Server {
     std::shared_ptr<Network::SocketAddress> address;
     Geometry::Vector fieldSize;
     Network::TCPSocketPtr listener;
-    Network::SocketSelector selector;
+    Network::SocketSelector players;
     Network::OutputMemoryStream output;
     
 public:

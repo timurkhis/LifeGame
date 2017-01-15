@@ -14,12 +14,16 @@
 #include "Geometry.h"
 
 class GameField {
+    friend class Client;
     std::unordered_set<Geometry::Vector> units;
-    const class Client *client;
+    class Client *client;
     Geometry::Vector size;
+    int player;
     
 public:
-    explicit GameField(const class Client *client);
+    explicit GameField(class Client *client);
+    
+    int Player() const { return player; }
     void ClampVector(Geometry::Vector &vec) const;
     Geometry::Vector GetSize() const { return size; }
     const std::unordered_set<Geometry::Vector> *GetUnits() const { return &units; }

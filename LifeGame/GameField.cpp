@@ -13,8 +13,8 @@
 
 using namespace Geometry;
 
-GameField::GameField(const Client *client) : client(client) {
-    size = client->FieldSize();
+GameField::GameField(Client *client) : client(client) {
+    client->Init(this);
 }
 
 void GameField::AddUnit(Vector unit) {

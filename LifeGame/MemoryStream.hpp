@@ -127,7 +127,7 @@ namespace Network {
         ~OutputMemoryStream() override {}
         
         template <typename T>
-        friend OutputMemoryStream &operator << (OutputMemoryStream &stream, T &data) {
+        friend OutputMemoryStream &operator << (OutputMemoryStream &stream, T data) {
             stream.MemoryStream::Serialize(data);
             return stream;
         }

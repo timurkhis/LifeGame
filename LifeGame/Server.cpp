@@ -10,7 +10,6 @@
 #include <iostream>
 #include <unistd.h>
 #include <netdb.h>
-#include <arpa/inet.h>
 #include "Server.hpp"
 
 using namespace Geometry;
@@ -22,7 +21,7 @@ Server::Server(Vector fieldSize, size_t outputCapacity) : fieldSize(fieldSize), 
     listener->Bind(*address);
     listener->Listen();
     listener->Addr(*address);
-    selector.Add(listener);
+    players.Add(listener);
     std::thread update(&Server::Update, this);
     update.detach();
 }
@@ -32,14 +31,16 @@ void Server::Update() {
     std::vector<TCPSocketPtr> write;
     std::vector<TCPSocketPtr> except;
     
-    while (selector.Select(&read, &write, &except) > 0) {
+    while (players.Select(&read, &write, &except) > 0) {
         auto newPlayer = std::find(read.begin(), read.end(), listener);
         if (newPlayer != read.end()) {
             TCPSocketPtr newSocket = newPlayer->get()->Accept(*address);
-            selector.Add(newSocket);
-            output << fieldSize.x << fieldSize.y;
+            int32_t type = static_cast<int32_t>(Message::Init);
+            int32_t number = static_cast<int32_t>(players.Size() - 1);
+            output << type << number << static_cast<int32_t>(fieldSize.x) << static_cast<int32_t>(fieldSize.y);
             newSocket->Send(output.Data(), output.Size());
             output.Clear();
+            players.Add(newSocket);
         }
     }
 }
