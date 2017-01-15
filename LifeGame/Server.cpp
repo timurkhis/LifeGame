@@ -18,18 +18,28 @@ using namespace Network;
 
 Server::Server(Vector fieldSize, size_t outputCapacity) : fieldSize(fieldSize), output(outputCapacity) {
     address = std::make_shared<SocketAddress>();
-    listen = TCPSocket::Create();
-    listen->Bind(*address);
-    listen->Listen();
-    listen->Addr(*address);
+    listener = TCPSocket::Create();
+    listener->Bind(*address);
+    listener->Listen();
+    listener->Addr(*address);
+    selector.Add(listener);
     std::thread update(&Server::Update, this);
     update.detach();
 }
 
 void Server::Update() {
-    auto newSock = listen->Accept(*address);
-    players.push_back(newSock);
-    output << fieldSize.x << fieldSize.y;
-    newSock->Send(output.Data(), output.Size());
-    output.Clear();
+    std::vector<TCPSocketPtr> read;
+    std::vector<TCPSocketPtr> write;
+    std::vector<TCPSocketPtr> except;
+    
+    while (selector.Select(&read, &write, &except) > 0) {
+        auto newPlayer = std::find(read.begin(), read.end(), listener);
+        if (newPlayer != read.end()) {
+            TCPSocketPtr newSocket = newPlayer->get()->Accept(*address);
+            selector.Add(newSocket);
+            output << fieldSize.x << fieldSize.y;
+            newSocket->Send(output.Data(), output.Size());
+            output.Clear();
+        }
+    }
 }

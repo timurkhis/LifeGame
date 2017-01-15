@@ -35,7 +35,7 @@ namespace Network {
     InputMemoryStream::InputMemoryStream(size_t capacity) : MemoryStream(capacity) {}
     
     void InputMemoryStream::Serialize(void *data, uint32_t bytesCount) {
-        if (Size() < bytesCount) {
+        if (capacity - size < bytesCount) {
             throw std::out_of_range("Not enough data!");
         }
         std::memcpy(data, buffer + size, bytesCount);

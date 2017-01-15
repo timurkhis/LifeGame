@@ -17,8 +17,8 @@ class Client {
     const static int size = 1000;
     std::vector<Geometry::Vector> addedUnits;
     std::vector<Geometry::Vector> removedUnits;
-    std::shared_ptr<Network::TCPSocket> server;
     std::shared_ptr<Network::SocketAddress> address;
+    Network::TCPSocketPtr server;
     Network::InputMemoryStream input;
     Geometry::Vector fieldSize;
     const class GameField *gameField;

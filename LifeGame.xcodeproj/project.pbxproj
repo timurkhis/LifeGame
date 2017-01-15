@@ -20,6 +20,7 @@
 		ECB682201E26F828009D9C3C /* MemoryStream.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ECB6821E1E26F828009D9C3C /* MemoryStream.cpp */; };
 		ECDD95931E25310400B15392 /* Server.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ECDD95911E25310400B15392 /* Server.cpp */; };
 		ECDD95961E2534F500B15392 /* Client.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ECDD95941E2534F500B15392 /* Client.cpp */; };
+		ECDDBA641E2B379B00F74A73 /* SocketSelector.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ECDDBA621E2B379B00F74A73 /* SocketSelector.cpp */; };
 		ECEF18C71DFBE3940044974E /* Vector.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ECEF18C51DFBE3940044974E /* Vector.cpp */; };
 		ECFAFB821E194F73009C4962 /* SocketAddress.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ECFAFB801E194F73009C4962 /* SocketAddress.cpp */; };
 /* End PBXBuildFile section */
@@ -63,6 +64,8 @@
 		ECDD95921E25310400B15392 /* Server.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Server.hpp; sourceTree = "<group>"; };
 		ECDD95941E2534F500B15392 /* Client.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Client.cpp; sourceTree = "<group>"; };
 		ECDD95951E2534F500B15392 /* Client.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Client.hpp; sourceTree = "<group>"; };
+		ECDDBA621E2B379B00F74A73 /* SocketSelector.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SocketSelector.cpp; sourceTree = "<group>"; };
+		ECDDBA631E2B379B00F74A73 /* SocketSelector.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = SocketSelector.hpp; sourceTree = "<group>"; };
 		ECEF18C51DFBE3940044974E /* Vector.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Vector.cpp; sourceTree = "<group>"; };
 		ECEF18C61DFBE3940044974E /* Vector.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Vector.hpp; sourceTree = "<group>"; };
 		ECFAFB801E194F73009C4962 /* SocketAddress.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SocketAddress.cpp; sourceTree = "<group>"; };
@@ -153,6 +156,8 @@
 				EC5072301E25F27900C482CB /* Reporter.hpp */,
 				ECB6821E1E26F828009D9C3C /* MemoryStream.cpp */,
 				ECB6821F1E26F828009D9C3C /* MemoryStream.hpp */,
+				ECDDBA621E2B379B00F74A73 /* SocketSelector.cpp */,
+				ECDDBA631E2B379B00F74A73 /* SocketSelector.hpp */,
 				ECA3CD311E1A2D3C0034815A /* Network.h */,
 			);
 			name = Network;
@@ -218,6 +223,7 @@
 				EC8124701E0FB862002A339E /* Matrix.cpp in Sources */,
 				ECFAFB821E194F73009C4962 /* SocketAddress.cpp in Sources */,
 				ECDD95961E2534F500B15392 /* Client.cpp in Sources */,
+				ECDDBA641E2B379B00F74A73 /* SocketSelector.cpp in Sources */,
 				EC0CB9461E059456009E443E /* GameField.cpp in Sources */,
 				EC5072311E25F27900C482CB /* Reporter.cpp in Sources */,
 				EC69E6001DFB1ED500C2AF7E /* main.cpp in Sources */,

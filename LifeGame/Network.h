@@ -13,5 +13,12 @@
 #include "TCPSocket.hpp"
 #include "Reporter.hpp"
 #include "MemoryStream.hpp"
+#include "SocketSelector.hpp"
+
+namespace Network {
+    
+    
+    
+}
 
 #endif /* Network_h */

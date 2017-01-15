@@ -16,7 +16,7 @@ using namespace Network;
 Client::Client(std::shared_ptr<SocketAddress> address, size_t inputCapacity) : address(address), input(inputCapacity) {
     server = TCPSocket::Create();
     server->Connect(*address);
-    server->Recv(input.Data(), input.Size());
+    server->Recv(input.Data(), input.Capacity());
     input >> fieldSize.x >> fieldSize.y;
     input.Clear();
 }

@@ -14,6 +14,7 @@
 namespace Network {
     
     class TCPSocket {
+        friend class SocketSelector;
         int sock;
         
     public:
@@ -32,5 +33,7 @@ namespace Network {
         explicit TCPSocket(int socket) : sock(socket) {}
     };
 
+    typedef std::shared_ptr<TCPSocket> TCPSocketPtr;
+    
 }
 #endif /* TCPSocket_hpp */

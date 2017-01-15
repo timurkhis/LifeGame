@@ -78,9 +78,11 @@ namespace Network {
         size_t capacity;
         
     public:
-        MemoryStream(size_t capacity);
+        explicit MemoryStream(size_t capacity);
         virtual ~MemoryStream() = 0;
-        virtual size_t Size() const { return size; }
+        
+        size_t Capacity() const { return capacity; }
+        size_t Size() const { return size; }
         void *Data() { return buffer; }
         void Clear() { size = 0; }
         void Realloc(size_t size);
@@ -105,10 +107,8 @@ namespace Network {
         virtual void Serialize(void *data, uint32_t bytesCount) override;
         
     public:
-        InputMemoryStream(size_t capacity);
+        explicit InputMemoryStream(size_t capacity);
         ~InputMemoryStream() override {}
-        
-        virtual size_t Size() const override { return capacity - size; }
         
         template <typename T>
         friend InputMemoryStream &operator >> (InputMemoryStream &stream, T &data) {
@@ -123,7 +123,7 @@ namespace Network {
         virtual void Serialize(void *data, uint32_t bytesCount) override;
         
     public:
-        OutputMemoryStream(size_t capacity);
+        explicit OutputMemoryStream(size_t capacity);
         ~OutputMemoryStream() override {}
         
         template <typename T>

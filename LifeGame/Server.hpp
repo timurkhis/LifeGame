@@ -16,11 +16,11 @@
 #include "Network.h"
 
 class Server {
-    std::vector<std::shared_ptr<Network::TCPSocket>> players;
     std::vector<bool> playerTurns;
-    std::shared_ptr<Network::TCPSocket> listen;
     std::shared_ptr<Network::SocketAddress> address;
     Geometry::Vector fieldSize;
+    Network::TCPSocketPtr listener;
+    Network::SocketSelector selector;
     Network::OutputMemoryStream output;
     
 public:

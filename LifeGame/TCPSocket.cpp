@@ -14,12 +14,12 @@
 
 namespace Network {
     
-    std::shared_ptr<TCPSocket> TCPSocket::Create() {
-        const int sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+    TCPSocketPtr TCPSocket::Create() {
+        int sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
         if (sock < 0) {
             Reporter::Report("TCPSocket::Create failed!");
         }
-        return std::shared_ptr<TCPSocket>(new TCPSocket(sock));
+        return TCPSocketPtr(new TCPSocket(sock));
     }
     
     TCPSocket::~TCPSocket() {
@@ -71,13 +71,13 @@ namespace Network {
         return result;
     }
     
-    std::shared_ptr<TCPSocket> TCPSocket::Accept(SocketAddress &address) {
+    TCPSocketPtr TCPSocket::Accept(SocketAddress &address) {
         socklen_t addrlen = address.Size();
-        const int newSocket = accept(sock, address.AsSockAddr(), &addrlen);
+        int newSocket = accept(sock, address.AsSockAddr(), &addrlen);
         if (newSocket < 0) {
             Reporter::Report("TCPSocket::Accept failed!");
         }
-        return std::shared_ptr<TCPSocket>(new TCPSocket(newSocket));
+        return TCPSocketPtr(new TCPSocket(newSocket));
     }
     
 }
