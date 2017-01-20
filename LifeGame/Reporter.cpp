@@ -14,7 +14,7 @@ namespace Network {
     
     void Reporter::Report(const char *report) {
         std::string error(report);
-        throw std::invalid_argument(error + std::to_string(errno));
+        throw NetworkException(error + std::to_string(errno));
     }
     
 }

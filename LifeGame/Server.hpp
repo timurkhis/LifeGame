@@ -16,20 +16,23 @@
 #include "Network.h"
 
 class Server {
+    std::unordered_map<int, std::vector<Geometry::Vector>> addedUnits;
     std::vector<bool> playerTurns;
     std::shared_ptr<Network::SocketAddress> address;
     Geometry::Vector fieldSize;
     Network::TCPSocketPtr listener;
     Network::SocketSelector players;
+    Network::InputMemoryStream input;
     Network::OutputMemoryStream output;
     
 public:
-    explicit Server(Geometry::Vector fieldSize, size_t outputCapacity = 1024);
+    explicit Server(Geometry::Vector fieldSize, size_t capacity = 1024);
     
     std::shared_ptr<Network::SocketAddress> Address() { return address; }
     
 private:
     void Update();
+    void AddPlayer(Network::TCPSocketPtr newPlayer);
 };
 
 #endif /* Server_hpp */

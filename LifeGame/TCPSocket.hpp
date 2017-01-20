@@ -27,7 +27,7 @@ namespace Network {
         void Listen(int backLog = SOMAXCONN);
         int Send(void *buffer, size_t len);
         int Recv(void *buffer, size_t len);
-        std::shared_ptr<TCPSocket> Accept(SocketAddress &address);
+        std::shared_ptr<TCPSocket> Accept(SocketAddress address);
         
     private:
         explicit TCPSocket(int socket) : sock(socket) {}

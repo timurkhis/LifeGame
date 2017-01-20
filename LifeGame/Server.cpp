@@ -15,8 +15,11 @@
 using namespace Geometry;
 using namespace Network;
 
-Server::Server(Vector fieldSize, size_t outputCapacity) : fieldSize(fieldSize), output(outputCapacity) {
-    address = std::make_shared<SocketAddress>();
+Server::Server(Vector fieldSize, size_t capacity) :
+    fieldSize(fieldSize),
+    input(capacity),
+    output(capacity) {
+    address = SocketAddress::CreateIPv4("127.0.0.1");
     listener = TCPSocket::Create();
     listener->Bind(*address);
     listener->Listen();
@@ -28,19 +31,43 @@ Server::Server(Vector fieldSize, size_t outputCapacity) : fieldSize(fieldSize), 
 
 void Server::Update() {
     std::vector<TCPSocketPtr> read;
-    std::vector<TCPSocketPtr> write;
-    std::vector<TCPSocketPtr> except;
-    
-    while (players.Select(&read, &write, &except) > 0) {
+//    try {
+    while (players.Select(&read, nullptr, nullptr) > 0) {
         auto newPlayer = std::find(read.begin(), read.end(), listener);
         if (newPlayer != read.end()) {
-            TCPSocketPtr newSocket = newPlayer->get()->Accept(*address);
-            int32_t type = static_cast<int32_t>(Message::Init);
-            int32_t number = static_cast<int32_t>(players.Size() - 1);
-            output << type << number << static_cast<int32_t>(fieldSize.x) << static_cast<int32_t>(fieldSize.y);
-            newSocket->Send(output.Data(), output.Size());
+            AddPlayer(*newPlayer);
+            read.erase(newPlayer);
+        }
+        for (int i = 0; i < read.size(); i++) {
+            read[i]->Recv(input.Data(), input.Capacity());
+            int player;
+            std::vector<Vector> vec;
+            Read<Message::Turn>(input, player, vec);
+            addedUnits.insert(std::make_pair(player, std::move(vec)));
+            playerTurns[i] = true;
+            input.Clear();
+        }
+        if (std::count_if(playerTurns.begin(), playerTurns.end(), [](bool value){ return value; }) == playerTurns.size()) {
+            Write<Message::Process>(output, addedUnits);
+            for (int i = 0; i < players.Size(); i++) {
+                TCPSocketPtr ptr = players.At(i);
+                if (ptr != listener) {
+                    ptr->Send(output.Data(), output.Size());
+                }
+                playerTurns[i] = false;
+            }
             output.Clear();
-            players.Add(newSocket);
         }
     }
+//    } catch (NetworkException e) {}
+}
+
+void Server::AddPlayer(TCPSocketPtr newPlayer) {
+    TCPSocketPtr newSocket = newPlayer.get()->Accept(*address);
+    int result = static_cast<int>(players.Size() - 1);
+    Write<Message::Init>(output, result, fieldSize);
+    newSocket->Send(output.Data(), output.Size());
+    output.Clear();
+    playerTurns.push_back(false);
+    players.Add(newPlayer);
 }

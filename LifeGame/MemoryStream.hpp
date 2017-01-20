@@ -30,7 +30,7 @@ namespace Network {
     };
     
     template <typename T, size_t size>
-    class ByteSwapper {};
+    struct ByteSwapper {};
     
     template <typename T>
     T ByteSwap(T data, bool out) {
@@ -38,8 +38,7 @@ namespace Network {
     }
     
     template <typename T>
-    class ByteSwapper<T, 2> {
-    public:
+    struct ByteSwapper<T, 2> {
         T Swap(T data, bool out) {
             uint16_t temp = TypeAliaser<T, uint16_t>(data).Get();
             uint16_t result = out ? htons(temp) : ntohs(temp);
@@ -48,8 +47,7 @@ namespace Network {
     };
     
     template <typename T>
-    class ByteSwapper<T, 4> {
-    public:
+    struct ByteSwapper<T, 4> {
         T Swap(T data, bool out) {
             uint32_t temp = TypeAliaser<T, uint32_t>(data).Get();
             uint32_t result = out ? htonl(temp) : ntohl(temp);
@@ -58,8 +56,7 @@ namespace Network {
     };
     
     template <typename T>
-    class ByteSwapper<T, 8> {
-    public:
+    struct ByteSwapper<T, 8> {
         T Swap(T data, bool out) {
             uint64_t temp = TypeAliaser<T, uint64_t>(data).Get();
             uint64_t result = out ? htonll(temp) : ntohll(temp);
@@ -83,6 +80,7 @@ namespace Network {
         
         size_t Capacity() const { return capacity; }
         size_t Size() const { return size; }
+        bool Empty() const { return size == 0; }
         void *Data() { return buffer; }
         void Clear() { size = 0; }
         void Realloc(size_t size);

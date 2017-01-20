@@ -37,7 +37,7 @@ Presets::Presets(const std::string &path) : path(path) {
             start = end + 1;
             end = str.find(' ', start);
         }
-        presets.insert(std::make_pair(preset, std::move(vectors)));
+        presets.insert(std::make_pair(preset, std::make_shared<Vectors>(std::move(vectors))));
     }
     file.close();
 }
@@ -46,11 +46,12 @@ void Presets::SaveOnDisk() {
     std::fstream file;
     file.open(path, std::fstream::out | std::fstream::trunc);
     for (const auto &iter : presets) {
-        const std::vector<Vector> &vector = iter.second;
-        if (vector.empty()) continue;
+        const VectorsPtr vector = iter.second;
+        if (vector->empty()) continue;
         file << iter.first << '=';
-        for (int i = 0; i < vector.size(); i++) {
-            file << std::to_string(vector[i].x) << ',' << std::to_string(vector[i].y) << ' ';
+        for (int i = 0; i < vector->size(); i++) {
+            auto vec = vector->at(i);
+            file << std::to_string(vec.x) << ',' << std::to_string(vec.y) << ' ';
 //            std::cout << vector[i].x << " " << vector[i].y << std::endl;
         }
         file << '\n';
@@ -58,22 +59,22 @@ void Presets::SaveOnDisk() {
     file.close();
 }
 
-void Presets::Save(unsigned char preset, const std::vector<Vector> *units) {
+void Presets::Save(unsigned char preset, const VectorsPtr units) {
     auto result = presets.find(preset);
-    std::vector<Vector> *vector;
+    VectorsPtr vector;
     if (result == presets.end()) {
-        auto inserted = presets.insert(std::make_pair(preset, std::vector<Vector>()));
+        auto inserted = presets.insert(std::make_pair(preset, std::make_shared<Vectors>()));
         if (!inserted.second) return;
-        vector = &inserted.first->second;
+        vector = inserted.first->second;
     } else {
-        vector = &result->second;
+        vector = result->second;
         vector->clear();
     }
     vector->assign(units->cbegin(), units->cend());
 }
 
-const std::vector<Vector> *Presets::Load(unsigned char preset) const {
+const std::shared_ptr<std::vector<Vector>> Presets::Load(unsigned char preset) const {
     auto result = presets.find(preset);
     if (result == presets.end()) return nullptr;
-    return &result->second;
+    return result->second;
 }

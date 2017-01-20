@@ -18,7 +18,11 @@ GameField::GameField(Client *client) : client(client) {
 }
 
 void GameField::AddUnit(Vector unit) {
-    units.insert(unit);
+    if (turn) return;
+    auto inserted = units.insert(unit);
+    if (inserted.second) {
+        client->AddUnit(unit);
+    }
 }
 
 void GameField::ClampVector(Vector &vec) const {
@@ -40,6 +44,12 @@ void GameField::ProcessUnits() {
             units.erase(cell.first);
         }
     }
+}
+
+void GameField::Turn() {
+    if (turn) return;
+    turn = true;
+    client->Turn();
 }
 
 void GameField::ProcessUnit(Vector unit, std::unordered_map<Vector, int> &processCells) {

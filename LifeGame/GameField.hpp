@@ -19,6 +19,7 @@ class GameField {
     class Client *client;
     Geometry::Vector size;
     int player;
+    bool turn;
     
 public:
     explicit GameField(class Client *client);
@@ -28,6 +29,7 @@ public:
     Geometry::Vector GetSize() const { return size; }
     const std::unordered_set<Geometry::Vector> *GetUnits() const { return &units; }
     void AddUnit(Geometry::Vector unit);
+    void Turn();
     void ProcessUnits();
     
 private:

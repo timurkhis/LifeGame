@@ -18,7 +18,7 @@ class Window {
     const static int KeyEscape;
     const static int KeySpace;
     
-    mutable std::vector<Geometry::Vector> selectedCells;
+    mutable std::shared_ptr<std::vector<Geometry::Vector>> selectedCells;
     Geometry::Vector rightButtonPressedPos;
     Geometry::Vector leftButtonPressedPos;
     Geometry::Vector cellOffset;
@@ -41,7 +41,7 @@ class Window {
     
     class GameField *gameField;
     class Presets *presets;
-    const std::vector<Geometry::Vector> *loadedUnits;
+    std::shared_ptr<std::vector<Geometry::Vector>> loadedUnits;
     
 public:
     static Window &Instance();
@@ -79,7 +79,7 @@ private:
     Geometry::Vector CellToScreen(int x, int y) const;
     Geometry::Vector CellToScreen(Geometry::Vector vec) const;
     void CalulateSelectedCells() const;
-    const std::vector<Geometry::Vector> *GetSelectedCells() const;
+    const std::shared_ptr<std::vector<Geometry::Vector>> GetSelectedCells() const;
     
     explicit Window();
     ~Window();

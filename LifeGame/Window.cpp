@@ -47,7 +47,9 @@ Window::Window() :
     rightButtonPressed(false),
     leftButtonPressed(false),
     cellSelected(false),
-    cameraScrolled(false) {}
+    cameraScrolled(false) {
+        selectedCells = std::make_shared<std::vector<Vector>>();
+    }
 
 Window::~Window() {}
 
@@ -224,7 +226,7 @@ void Window::DrawNumber(int number) {
 
 void Window::DrawRect() {
     if (!rightButtonPressed || rightButtonPressedPos == mousePosition) {
-        if (!selectedCells.empty()) selectedCells.clear();
+        if (!selectedCells->empty()) selectedCells->clear();
         return;
     }
     const Vector min = rightButtonPressedPos;
@@ -311,7 +313,7 @@ void Window::KeyboardHandle(unsigned char key, Vector mousePos) {
     } else if (key == KeyPlus) {
         Zoom(+cellSizeRatioStep);
     } else if (key == KeySpace) {
-        gameField->ProcessUnits();
+        gameField->Turn();
     } else if (key >= '0' && key <= '9') {
         NumbersHandle(key, mousePos);
     } else if (loadedUnits != nullptr && (key == 'a' || key == 'd' || key == 'w' || key == 's')) {
@@ -337,12 +339,12 @@ void Window::KeyboardHandle(unsigned char key, Vector mousePos) {
 }
 
 void Window::NumbersHandle(unsigned char key, Vector mousePos) {
-    const std::vector<Vector> *cells = GetSelectedCells();
+    const auto cells = GetSelectedCells();
     if (!cells->empty()) {
         presets->Save(key, cells);
         return;
     }
-    const std::vector<Vector> *newLoadedUnits = presets->Load(key);
+    const auto newLoadedUnits = presets->Load(key);
     if (loadedUnits == newLoadedUnits && loadedUnits != nullptr) {
         for (int i = 0; i < loadedUnits->size(); i++) {
             Vector pos = loadedUnitsTRS * loadedUnits->at(i);
@@ -394,7 +396,7 @@ Vector Window::CellToScreen(Vector vec) const {
 }
 
 void Window::CalulateSelectedCells() const {
-    selectedCells.clear();
+    selectedCells->clear();
     Vector min = mousePosition;
     Vector max = rightButtonPressedPos;
     if (min.x > max.x) {
@@ -417,24 +419,25 @@ void Window::CalulateSelectedCells() const {
             cellMin.y = screenUnit.y < cellMin.y ? screenUnit.y : cellMin.y;
             cellMax.x = screenUnit.x > cellMax.x ? screenUnit.x : cellMax.x;
             cellMax.y = screenUnit.y > cellMax.y ? screenUnit.y : cellMax.y;
-            selectedCells.push_back(screenUnit);
+            selectedCells->push_back(screenUnit);
         }
     }
     const Rect rect(cellMin, cellMax - cellMin);
     const Vector center = rect.Center();
-    for (int i = 0; i < selectedCells.size(); i++) {
-        selectedCells[i] = selectedCells[i] - center;
-        float cellX = selectedCells[i].x / cellSize;
-        float cellY = selectedCells[i].y / cellSize;
-        selectedCells[i] = Vector(ceilf(cellX + 0.5f), -ceilf(cellY + 0.5f));
+    std::vector<Vector> &vec = *selectedCells.get();
+    for (int i = 0; i < vec.size(); i++) {
+        vec[i] = vec[i] - center;
+        float cellX = vec[i].x / cellSize;
+        float cellY = vec[i].y / cellSize;
+        vec[i] = Vector(ceilf(cellX + 0.5f), -ceilf(cellY + 0.5f));
     }
 }
 
-const std::vector<Vector> *Window::GetSelectedCells() const {
+const std::shared_ptr<std::vector<Vector>> Window::GetSelectedCells() const {
     if (rightButtonPressed) {
         CalulateSelectedCells();
     }
-    return &selectedCells;
+    return selectedCells;
 }
 
 void Window::Init(GameField *gameField, Presets *presets) {

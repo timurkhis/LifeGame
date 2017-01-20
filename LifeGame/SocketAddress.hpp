@@ -26,6 +26,7 @@ namespace Network {
         explicit SocketAddress();
         explicit SocketAddress(uint32_t host, uint16_t port);
         explicit SocketAddress(const sockaddr &addr);
+        SocketAddress(const SocketAddress &other);
         
         constexpr socklen_t Size() const { return sizeof(addr); }
         

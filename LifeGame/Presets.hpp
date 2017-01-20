@@ -15,14 +15,17 @@
 #include "Geometry.h"
 
 class Presets {
-    std::unordered_map<unsigned char, std::vector<Geometry::Vector>> presets;
+    typedef std::vector<Geometry::Vector> Vectors;
+    typedef std::shared_ptr<Vectors> VectorsPtr;
+    
+    std::unordered_map<unsigned char, VectorsPtr> presets;
     const std::string path;
     
 public:
     explicit Presets(const std::string &path);
     void SaveOnDisk();
-    void Save(unsigned char preset, const std::vector<Geometry::Vector> *units);
-    const std::vector<Geometry::Vector> *Load(unsigned char preset) const;
+    void Save(unsigned char preset, const VectorsPtr units);
+    const VectorsPtr Load(unsigned char preset) const;
 };
 
 #endif /* Presets_hpp */

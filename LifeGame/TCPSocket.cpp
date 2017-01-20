@@ -71,7 +71,7 @@ namespace Network {
         return result;
     }
     
-    TCPSocketPtr TCPSocket::Accept(SocketAddress &address) {
+    TCPSocketPtr TCPSocket::Accept(SocketAddress address) {
         socklen_t addrlen = address.Size();
         int newSocket = accept(sock, address.AsSockAddr(), &addrlen);
         if (newSocket < 0) {

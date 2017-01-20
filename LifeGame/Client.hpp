@@ -15,17 +15,23 @@
 
 class Client {
     std::vector<Geometry::Vector> addedUnits;
-    std::vector<Geometry::Vector> removedUnits;
     std::shared_ptr<Network::SocketAddress> address;
     Network::TCPSocketPtr server;
     Network::InputMemoryStream input;
+    Network::OutputMemoryStream output;
     class GameField *gameField;
     
 public:
-    explicit Client(std::shared_ptr<Network::SocketAddress> address, size_t inputCapacity = 1024);
+    explicit Client(std::shared_ptr<Network::SocketAddress> address, size_t capacity = 1024);
     
+    void Turn();
+    void AddUnit(const Geometry::Vector vector);
     void Init(class GameField *gameField);
     std::shared_ptr<Network::SocketAddress> Address() { return address; }
+    
+private:
+    void Send();
+    void Recv();
 };
 
 #endif /* Client_hpp */

@@ -14,19 +14,47 @@
 using namespace Geometry;
 using namespace Network;
 
-Client::Client(std::shared_ptr<SocketAddress> address, size_t inputCapacity) : address(address), input(inputCapacity) {
-    server = TCPSocket::Create();
-    server->Connect(*address);
+Client::Client(std::shared_ptr<SocketAddress> address, size_t capacity) :
+    address(address),
+    input(capacity),
+    output(capacity) {}
+
+void Client::Turn() {
+    Send();
+    Recv();
+}
+
+void Client::AddUnit(const Geometry::Vector vector) {
+    addedUnits.push_back(vector);
 }
 
 void Client::Init(GameField *gameField) {
     this->gameField = gameField;
+    server = TCPSocket::Create();
+    server->Connect(*address);
     server->Recv(input.Data(), input.Capacity());
-    int32_t type, player, sizeX, sizeY;
-    input >> type >> player >> sizeX >> sizeY;
-    assert(static_cast<Message>(type) == Message::Init);
-    gameField->player = static_cast<int>(player);
-    gameField->size.x = static_cast<int>(sizeX);
-    gameField->size.y = static_cast<int>(sizeY);
+    Read<Message::Init>(input, gameField->player, gameField->size);
+    input.Clear();
+}
+
+void Client::Send() {
+    Write<Message::Turn>(output, gameField->player, addedUnits);
+    server->Send(output.Data(), output.Size());
+    output.Clear();
+    addedUnits.clear();
+}
+
+void Client::Recv() {
+    server->Recv(input.Data(), input.Capacity());
+    gameField->turn = false;
+    std::unordered_map<int, std::vector<Vector>> allAddedUnits;
+    Read<Message::Process>(input, allAddedUnits);
+    for (auto &iter : allAddedUnits) {
+        for (int i = 0; i < iter.second.size(); i++) {
+            gameField->units.insert(iter.second[i]);
+        }
+    }
+    gameField->ProcessUnits();
+    addedUnits.clear();
     input.Clear();
 }

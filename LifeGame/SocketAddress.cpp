@@ -28,34 +28,40 @@ namespace Network {
     
     SocketAddress::SocketAddress(const sockaddr &addr) {
         std::memcpy(&this->addr, &addr, Size());
+        sockaddr_in *sockAddr = AsSockAddrIn();
+        sockAddr->sin_port = htons(sockAddr->sin_port);
     }
+    
+    SocketAddress::SocketAddress(const SocketAddress &other) : SocketAddress(other.addr) {}
     
     std::shared_ptr<SocketAddress> SocketAddress::CreateIPv4(const std::string &hostName) {
         size_t pos = hostName.find_last_of(':');
         std::string host;
-        std::string serive;
+        std::string service;
         
         if (pos == std::string::npos) {
             host = hostName;
-            serive = "0";
+            service = "0";
         } else {
             host = hostName.substr(0, pos);
-            serive = hostName.substr(pos + 1);
+            service = hostName.substr(pos + 1);
         }
         addrinfo info;
         std::memset(&info, 0, sizeof(addrinfo));
         info.ai_family = AF_INET;
         
         addrinfo *result;
-        int error = getaddrinfo(host.c_str(), serive.c_str(), &info, &result);
-        if (error != 0 && result != nullptr) {
-            freeaddrinfo(result);
+        int error = getaddrinfo(host.c_str(), service.c_str(), &info, &result);
+        if (error != 0) {
+            if (result != nullptr) {
+                freeaddrinfo(result);
+            }
             throw std::invalid_argument("SocketAddress::CreateIPv4 failed!");
         }
-        while (!result->ai_addr && result->ai_next) {
+        while (result->ai_addr == nullptr && result->ai_next != nullptr) {
             result = result->ai_next;
         }
-        if (!result->ai_addr) {
+        if (result->ai_addr == nullptr) {
             freeaddrinfo(result);
             throw std::invalid_argument("SocketAddress::CreateIPv4 failed!");
         }
