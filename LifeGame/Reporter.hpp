@@ -9,7 +9,9 @@
 #ifndef Reporter_hpp
 #define Reporter_hpp
 
+#include <sstream>
 #include <stdexcept>
+#include <errno.h>
 
 namespace Network {
     
@@ -20,7 +22,24 @@ namespace Network {
     
     class Reporter {
     public:
-        static void Report(const char *report);
+        template <typename ...Args>
+        static void Report(Args... args) {
+            std::stringstream stream;
+            Message(stream, args...);
+            throw NetworkException(stream.str());
+        }
+        
+    private:
+        template <typename T, typename ...Args>
+        static void Message(std::stringstream &stream, T t, Args... args) {
+            stream << t << ' ';
+            Message(stream, args...);
+        }
+        
+        template <typename T>
+        static void Message(std::stringstream &stream, T t) {
+            stream << t << ' ' << errno;
+        }
     };
     
 }

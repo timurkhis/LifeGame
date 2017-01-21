@@ -47,11 +47,11 @@ void Client::Send() {
 void Client::Recv() {
     server->Recv(input.Data(), input.Capacity());
     gameField->turn = false;
-    std::unordered_map<int, std::vector<Vector>> allAddedUnits;
+    std::vector<std::vector<Vector>> allAddedUnits;
     Read<Message::Process>(input, allAddedUnits);
-    for (auto &iter : allAddedUnits) {
-        for (int i = 0; i < iter.second.size(); i++) {
-            gameField->units.insert(iter.second[i]);
+    for (int i = 0; i < allAddedUnits.size(); i++) {
+        for (int j = 0; j < allAddedUnits[i].size(); j++) {
+            gameField->units.insert(allAddedUnits[i][j]);
         }
     }
     gameField->ProcessUnits();

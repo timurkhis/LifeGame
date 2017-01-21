@@ -43,7 +43,7 @@ void Server::Update() {
             int player;
             std::vector<Vector> vec;
             Read<Message::Turn>(input, player, vec);
-            addedUnits.insert(std::make_pair(player, std::move(vec)));
+            addedUnits[player] = std::move(vec);
             playerTurns[i] = true;
             input.Clear();
         }
@@ -68,6 +68,7 @@ void Server::AddPlayer(TCPSocketPtr newPlayer) {
     Write<Message::Init>(output, result, fieldSize);
     newSocket->Send(output.Data(), output.Size());
     output.Clear();
+    addedUnits.push_back(std::vector<Vector>());
     playerTurns.push_back(false);
     players.Add(newPlayer);
 }

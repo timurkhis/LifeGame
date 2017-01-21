@@ -9,7 +9,6 @@
 #ifndef Network_h
 #define Network_h
 
-#include <unordered_map>
 #include "Vector.hpp"
 #include "SocketAddress.hpp"
 #include "TCPSocket.hpp"
@@ -44,7 +43,7 @@ namespace Network {
             int32_t type, number, x, y;
             stream >> type >> number >> x >> y;
             if (static_cast<Message>(type) != Message::Init) {
-                Reporter::Report("Messages types are not the same!");
+                Reporter::Report("Messages types are not the same!", type);
             }
             player = static_cast<int>(number);
             fieldSize = Geometry::Vector(static_cast<int>(x), static_cast<int>(y));
@@ -62,7 +61,7 @@ namespace Network {
             int32_t type, number, size;
             stream >> type >> number >> size;
             if (static_cast<Message>(type) != Message::Turn) {
-                Reporter::Report("Messages types are not the same!");
+                Reporter::Report("Messages types are not the same!", type);
             }
             player = static_cast<int>(number);
             units.reserve(size);
@@ -83,32 +82,32 @@ namespace Network {
     };
     
     template <>
-    struct Msg<Message::Process, std::unordered_map<int, std::vector<Geometry::Vector>>> {
-        void Read(InputMemoryStream &stream, std::unordered_map<int, std::vector<Geometry::Vector>> &newUnits) {
+    struct Msg<Message::Process, std::vector<std::vector<Geometry::Vector>>> {
+        void Read(InputMemoryStream &stream, std::vector<std::vector<Geometry::Vector>> &newUnits) {
             int32_t type, units;
             stream >> type >> units;
             if (static_cast<Message>(type) != Message::Process) {
-                Reporter::Report("Messages types are not the same!");
+                Reporter::Report("Messages types are not the same!", type);
             }
             for (int i = 0; i < units; i++) {
-                int32_t player, size;
-                stream >> player >> size;
+                int32_t size;
+                stream >> size;
                 std::vector<Geometry::Vector> vec(size);
                 for (int i = 0; i < size; i++) {
                     int32_t x, y;
                     stream >> x >> y;
                     vec.push_back(Geometry::Vector(static_cast<int>(x), static_cast<int>(y)));
                 }
-                newUnits.insert(std::make_pair(static_cast<int>(player), std::move(vec)));
+                newUnits.push_back(std::move(vec));
             }
         }
         
-        void Write(OutputMemoryStream &stream, std::unordered_map<int, std::vector<Geometry::Vector>> &newUnits) {
+        void Write(OutputMemoryStream &stream, std::vector<std::vector<Geometry::Vector>> &newUnits) {
             stream << static_cast<int32_t>(Message::Process) << static_cast<int32_t>(newUnits.size());
-            for (auto &iter : newUnits) {
-                stream << static_cast<int32_t>(iter.first) << static_cast<int32_t>(iter.second.size());
-                for (int i = 0; i < iter.second.size(); i++) {
-                    stream << static_cast<int32_t>(iter.second[i].x) << static_cast<int32_t>(iter.second[i].y);
+            for (int i = 0; i < newUnits.size(); i++) {
+                stream << static_cast<int32_t>(newUnits[i].size());
+                for (int j = 0; j < newUnits[i].size(); j++) {
+                    stream << static_cast<int32_t>(newUnits[i][j].x) << static_cast<int32_t>(newUnits[i][j].y);
                 }
             }
         }

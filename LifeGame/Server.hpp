@@ -11,12 +11,11 @@
 
 #include <vector>
 #include <unordered_set>
-#include <unordered_map>
 #include "Vector.hpp"
 #include "Network.h"
 
 class Server {
-    std::unordered_map<int, std::vector<Geometry::Vector>> addedUnits;
+    std::vector<std::vector<Geometry::Vector>> addedUnits;
     std::vector<bool> playerTurns;
     std::shared_ptr<Network::SocketAddress> address;
     Geometry::Vector fieldSize;
