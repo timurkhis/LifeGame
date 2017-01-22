@@ -51,7 +51,7 @@ void Client::Recv() {
     Read<Message::Process>(input, allAddedUnits);
     for (int i = 0; i < allAddedUnits.size(); i++) {
         for (int j = 0; j < allAddedUnits[i].size(); j++) {
-            gameField->units.insert(allAddedUnits[i][j]);
+            gameField->units->insert(allAddedUnits[i][j]);
         }
     }
     gameField->ProcessUnits();

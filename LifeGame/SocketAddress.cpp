@@ -10,9 +10,9 @@
 #include <unistd.h>
 #include <string>
 #include <iostream>
-#include <stdexcept>
 #include <arpa/inet.h>
 #include "SocketAddress.hpp"
+#include "Log.hpp"
 
 namespace Network {
     
@@ -56,14 +56,14 @@ namespace Network {
             if (result != nullptr) {
                 freeaddrinfo(result);
             }
-            throw std::invalid_argument("SocketAddress::CreateIPv4 failed!");
+            Log::Error("SocketAddress::CreateIPv4 failed!");
         }
         while (result->ai_addr == nullptr && result->ai_next != nullptr) {
             result = result->ai_next;
         }
         if (result->ai_addr == nullptr) {
             freeaddrinfo(result);
-            throw std::invalid_argument("SocketAddress::CreateIPv4 failed!");
+            Log::Error("SocketAddress::CreateIPv4 failed!");
         }
         std::shared_ptr<SocketAddress> address = std::make_shared<SocketAddress>(*result->ai_addr);
         freeaddrinfo(result);

@@ -14,12 +14,13 @@
 using namespace Geometry;
 
 GameField::GameField(Client *client) : client(client) {
+    units = std::make_shared<std::unordered_set<Vector>>();
     client->Init(this);
 }
 
 void GameField::AddUnit(Vector unit) {
     if (turn) return;
-    auto inserted = units.insert(unit);
+    auto inserted = units->insert(unit);
     if (inserted.second) {
         client->AddUnit(unit);
     }
@@ -34,14 +35,14 @@ void GameField::ClampVector(Vector &vec) const {
 
 void GameField::ProcessUnits() {
     std::unordered_map<Vector, int> processCells;
-    for (const auto &unit : units) {
+    for (const auto &unit : *units) {
         ProcessUnit(unit, processCells);
     }
     for (const auto &cell : processCells) {
-        if (cell.second == 3 && units.find(cell.first) == units.end()) {
-            units.insert(cell.first);
-        } else if ((cell.second < 2 || cell.second > 3) && units.find(cell.first) != units.end()) {
-            units.erase(cell.first);
+        if (cell.second == 3 && units->find(cell.first) == units->end()) {
+            units->insert(cell.first);
+        } else if ((cell.second < 2 || cell.second > 3) && units->find(cell.first) != units->end()) {
+            units->erase(cell.first);
         }
     }
 }
@@ -49,6 +50,7 @@ void GameField::ProcessUnits() {
 void GameField::Turn() {
     if (turn) return;
     turn = true;
+  
     client->Turn();
 }
 

@@ -12,7 +12,7 @@
 #include "Vector.hpp"
 #include "SocketAddress.hpp"
 #include "TCPSocket.hpp"
-#include "Reporter.hpp"
+#include "Log.hpp"
 #include "MemoryStream.hpp"
 #include "SocketSelector.hpp"
 
@@ -43,7 +43,7 @@ namespace Network {
             int32_t type, number, x, y;
             stream >> type >> number >> x >> y;
             if (static_cast<Message>(type) != Message::Init) {
-                Reporter::Report("Messages types are not the same!", type);
+                Log::Error("Messages types are not the same!", type);
             }
             player = static_cast<int>(number);
             fieldSize = Geometry::Vector(static_cast<int>(x), static_cast<int>(y));
@@ -61,7 +61,7 @@ namespace Network {
             int32_t type, number, size;
             stream >> type >> number >> size;
             if (static_cast<Message>(type) != Message::Turn) {
-                Reporter::Report("Messages types are not the same!", type);
+                Log::Error("Messages types are not the same!", type);
             }
             player = static_cast<int>(number);
             units.reserve(size);
@@ -87,13 +87,14 @@ namespace Network {
             int32_t type, units;
             stream >> type >> units;
             if (static_cast<Message>(type) != Message::Process) {
-                Reporter::Report("Messages types are not the same!", type);
+                Log::Error("Messages types are not the same!", type);
             }
             for (int i = 0; i < units; i++) {
                 int32_t size;
                 stream >> size;
-                std::vector<Geometry::Vector> vec(size);
-                for (int i = 0; i < size; i++) {
+                std::vector<Geometry::Vector> vec;
+                vec.reserve(size);
+                for (int j = 0; j < size; j++) {
                     int32_t x, y;
                     stream >> x >> y;
                     vec.push_back(Geometry::Vector(static_cast<int>(x), static_cast<int>(y)));

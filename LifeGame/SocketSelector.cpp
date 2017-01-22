@@ -7,8 +7,8 @@
 //
 
 #include <sys/select.h>
-#include "Reporter.hpp"
 #include "SocketSelector.hpp"
+#include "Log.hpp"
 
 namespace Network {
     
@@ -33,7 +33,7 @@ namespace Network {
         FillSet(&exceptSet);
         int result = select(maxSocket + 1, &readSet, &writeSet, &exceptSet, nullptr);
         if (result < 0) {
-            Reporter::Report("SocketSelector::Select failed!");
+            Log::Error("SocketSelector::Select failed!");
         }
         FillVector(read, &readSet);
         FillVector(write, &writeSet);

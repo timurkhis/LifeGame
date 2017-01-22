@@ -25,7 +25,7 @@ Presets::Presets(const std::string &path) : path(path) {
         char preset = str[0];
         size_t start = 2;
         size_t end = str.find(' ', start);
-        std::vector<Vector> vectors;
+        auto iter = presets.insert(std::make_pair(preset, std::make_shared<Vectors>()));
         
         while (end != std::string::npos) {
             Vector result;
@@ -33,11 +33,10 @@ Presets::Presets(const std::string &path) : path(path) {
             if (comma == std::string::npos) continue;
             result.x = std::stoi(str.substr(start, comma - 1));
             result.y = std::stoi(str.substr(comma + 1, end - 1));
-            vectors.push_back(result);
+            iter.first->second->push_back(result);
             start = end + 1;
             end = str.find(' ', start);
         }
-        presets.insert(std::make_pair(preset, std::make_shared<Vectors>(std::move(vectors))));
     }
     file.close();
 }

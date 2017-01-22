@@ -15,7 +15,7 @@
 
 class GameField {
     friend class Client;
-    std::unordered_set<Geometry::Vector> units;
+    std::shared_ptr<std::unordered_set<Geometry::Vector>> units;
     class Client *client;
     Geometry::Vector size;
     int player;
@@ -27,7 +27,7 @@ public:
     int Player() const { return player; }
     void ClampVector(Geometry::Vector &vec) const;
     Geometry::Vector GetSize() const { return size; }
-    const std::unordered_set<Geometry::Vector> *GetUnits() const { return &units; }
+    const std::shared_ptr<std::unordered_set<Geometry::Vector>> GetUnits() const { return units; }
     void AddUnit(Geometry::Vector unit);
     void Turn();
     void ProcessUnits();

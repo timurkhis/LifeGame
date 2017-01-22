@@ -9,7 +9,7 @@
 #include <sys/socket.h>
 #include <netdb.h>
 #include <unistd.h>
-#include "Reporter.hpp"
+#include "Log.hpp"
 #include "TCPSocket.hpp"
 
 namespace Network {
@@ -17,7 +17,7 @@ namespace Network {
     TCPSocketPtr TCPSocket::Create() {
         int sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
         if (sock < 0) {
-            Reporter::Report("TCPSocket::Create failed!");
+            Log::Error("TCPSocket::Create failed!");
         }
         return TCPSocketPtr(new TCPSocket(sock));
     }
@@ -30,35 +30,35 @@ namespace Network {
         socklen_t addrlen = address.Size();
         int result = getsockname(sock, address.AsSockAddr(), &addrlen);
         if (result < 0) {
-            Reporter::Report("TCPSocket::Addr failed!");
+            Log::Error("TCPSocket::Addr failed!");
         }
     }
     
     void TCPSocket::Connect(SocketAddress &address) {
         int result = connect(sock, address.AsSockAddr(), address.Size());
         if (result < 0) {
-            Reporter::Report("TCPSocket::Connect failed!");
+            Log::Error("TCPSocket::Connect failed!");
         }
     }
     
     void TCPSocket::Bind(SocketAddress &address) {
         int result = bind(sock, address.AsSockAddr(), address.Size());
         if (result < 0) {
-            Reporter::Report("TCPSocket::Bind failed!");
+            Log::Error("TCPSocket::Bind failed!");
         }
     }
     
     void TCPSocket::Listen(int backLog) {
         int result = listen(sock, backLog);
         if (result < 0) {
-            Reporter::Report("TCPSocket::Listen failed!");
+            Log::Error("TCPSocket::Listen failed!");
         }
     }
     
     int TCPSocket::Send(void *buffer, size_t len) {
         int result = static_cast<int>(send(sock, buffer, len, 0));
         if (result < 0) {
-            Reporter::Report("TCPSocket::Send failed!");
+            Log::Error("TCPSocket::Send failed!");
         }
         return result;
     }
@@ -66,7 +66,7 @@ namespace Network {
     int TCPSocket::Recv(void *buffer, size_t len) {
         int result = static_cast<int>(recv(sock, buffer, len, 0));
         if (result < 0) {
-            Reporter::Report("TCPSocket::Recv failed!");
+            Log::Error("TCPSocket::Recv failed!");
         }
         return result;
     }
@@ -75,7 +75,7 @@ namespace Network {
         socklen_t addrlen = address.Size();
         int newSocket = accept(sock, address.AsSockAddr(), &addrlen);
         if (newSocket < 0) {
-            Reporter::Report("TCPSocket::Accept failed!");
+            Log::Error("TCPSocket::Accept failed!");
         }
         return TCPSocketPtr(new TCPSocket(newSocket));
     }
