@@ -28,10 +28,17 @@ namespace Network {
         fd_set readSet;
         fd_set writeSet;
         fd_set exceptSet;
-        FillSet(&readSet);
-        FillSet(&writeSet);
-        FillSet(&exceptSet);
-        int result = select(maxSocket + 1, &readSet, &writeSet, &exceptSet, nullptr);
+        if (read != nullptr)
+            FillSet(&readSet);
+        if (write != nullptr)
+            FillSet(&writeSet);
+        if (except != nullptr)
+            FillSet(&exceptSet);
+        int result = select(maxSocket + 1,
+                            read == nullptr ? nullptr : &readSet,
+                            write == nullptr ? nullptr : &writeSet,
+                            except == nullptr ? nullptr : &exceptSet,
+                            nullptr);
         if (result < 0) {
             Log::Error("SocketSelector::Select failed!");
         }

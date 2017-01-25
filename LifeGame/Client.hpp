@@ -22,7 +22,7 @@ class Client {
     class GameField *gameField;
     
 public:
-    explicit Client(std::shared_ptr<Network::SocketAddress> address, size_t capacity = 1024);
+    explicit Client(std::shared_ptr<Network::SocketAddress> address, uint32_t capacity = 1024);
     
     void Turn();
     void AddUnit(const Geometry::Vector vector);

@@ -14,7 +14,7 @@
 using namespace Geometry;
 using namespace Network;
 
-Client::Client(std::shared_ptr<SocketAddress> address, size_t capacity) :
+Client::Client(std::shared_ptr<SocketAddress> address, uint32_t capacity) :
     address(address),
     input(capacity),
     output(capacity) {}

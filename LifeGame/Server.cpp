@@ -15,7 +15,7 @@
 using namespace Geometry;
 using namespace Network;
 
-Server::Server(Vector fieldSize, size_t capacity) :
+Server::Server(Vector fieldSize, uint32_t capacity) :
     fieldSize(fieldSize),
     input(capacity),
     output(capacity) {
@@ -31,20 +31,24 @@ Server::Server(Vector fieldSize, size_t capacity) :
 
 void Server::Update() {
     std::vector<TCPSocketPtr> read;
-//    try {
     while (players.Select(&read, nullptr, nullptr) > 0) {
         auto newPlayer = std::find(read.begin(), read.end(), listener);
         if (newPlayer != read.end()) {
-            AddPlayer(*newPlayer);
+            AddPlayer();
             read.erase(newPlayer);
         }
         for (int i = 0; i < read.size(); i++) {
-            read[i]->Recv(input.Data(), input.Capacity());
+            int result = read[i]->Recv(input.Data(), input.Capacity());
             int player;
             std::vector<Vector> vec;
             Read<Message::Turn>(input, player, vec);
-            addedUnits[player] = std::move(vec);
-            playerTurns[i] = true;
+            if (result == 0) {
+                RemovePlayer(player);
+                players.Remove(read[i]);
+            } else {
+                addedUnits[player] = std::move(vec);
+                playerTurns[player] = true;
+            }
             input.Clear();
         }
         if (std::count_if(playerTurns.begin(), playerTurns.end(), [](bool value){ return value; }) == playerTurns.size()) {
@@ -54,21 +58,27 @@ void Server::Update() {
                 if (ptr != listener) {
                     ptr->Send(output.Data(), output.Size());
                 }
+            }
+            for (int i = 0; i < playerTurns.size(); i++) {
                 playerTurns[i] = false;
             }
             output.Clear();
         }
     }
-//    } catch (NetworkException e) {}
 }
 
-void Server::AddPlayer(TCPSocketPtr newPlayer) {
-    TCPSocketPtr newSocket = newPlayer.get()->Accept(*address);
+void Server::AddPlayer() {
+    TCPSocketPtr newPlayer = listener.get()->Accept(*address);
     int result = static_cast<int>(players.Size() - 1);
     Write<Message::Init>(output, result, fieldSize);
-    newSocket->Send(output.Data(), output.Size());
+    newPlayer->Send(output.Data(), output.Size());
     output.Clear();
-    addedUnits.push_back(std::vector<Vector>());
+    addedUnits.emplace_back();
     playerTurns.push_back(false);
     players.Add(newPlayer);
+}
+
+void Server::RemovePlayer(int player) {
+    playerTurns.erase(playerTurns.begin() + player);
+    addedUnits.erase(addedUnits.begin() + player);
 }

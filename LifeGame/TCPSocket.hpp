@@ -21,12 +21,14 @@ namespace Network {
         static std::shared_ptr<TCPSocket> Create();
         
         ~TCPSocket();
+        void NagleAlgorithm(bool enable);
         void Addr(SocketAddress &address);
         void Connect(SocketAddress &address);
         void Bind(SocketAddress &address);
         void Listen(int backLog = SOMAXCONN);
         int Send(void *buffer, size_t len);
-        int Recv(void *buffer, size_t len);
+        int Recv(void *buffer, size_t len, bool peek = false);
+        int DataSize() const;
         std::shared_ptr<TCPSocket> Accept(SocketAddress address);
         
     private:

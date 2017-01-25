@@ -25,13 +25,14 @@ class Server {
     Network::OutputMemoryStream output;
     
 public:
-    explicit Server(Geometry::Vector fieldSize, size_t capacity = 1024);
+    explicit Server(Geometry::Vector fieldSize, uint32_t capacity = 1024);
     
     std::shared_ptr<Network::SocketAddress> Address() { return address; }
     
 private:
     void Update();
-    void AddPlayer(Network::TCPSocketPtr newPlayer);
+    void AddPlayer();
+    void RemovePlayer(int player);
 };
 
 #endif /* Server_hpp */

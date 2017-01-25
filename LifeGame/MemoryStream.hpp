@@ -66,51 +66,61 @@ namespace Network {
     
     class MemoryStream {
     private:
-        virtual void Serialize(void *data, uint32_t bytesCount) = 0;
+        virtual uint32_t Serialize(void *data, uint32_t bytesCount, uint32_t pos) = 0;
         virtual bool IsInput() const = 0;
         
     protected:
         uint8_t *buffer;
-        size_t size;
-        size_t capacity;
+        uint32_t size;
+        uint32_t capacity;
         
     public:
-        explicit MemoryStream(size_t capacity);
+        explicit MemoryStream(uint32_t capacity);
         virtual ~MemoryStream() = 0;
         
-        size_t Capacity() const { return capacity; }
-        size_t Size() const { return size; }
+        uint32_t Capacity() const { return capacity; }
+        uint32_t Size() const { return size; }
         bool Empty() const { return size == 0; }
         void *Data() { return buffer; }
         void Clear() { size = 0; }
-        void Realloc(size_t size);
+        void Resize(uint32_t newSize);
+        void Realloc(uint32_t size);
         
+    protected:
         template <typename T>
-        void Serialize(T &data) {
+        uint32_t Serialize(T &data, uint32_t pos) {
             static_assert(std::is_arithmetic<T>::value || std::is_enum<T>::value, "Template Serialize only supports primitive data types!");
+            uint32_t result;
             if (IsInput()) {
                 T temp;
-                Serialize(&temp, sizeof(T));
+                result = Serialize(&temp, sizeof(T), pos);
                 data = ByteSwap(temp, false);
             } else {
                 T swapped = ByteSwap(data, true);
-                Serialize(&swapped, sizeof(T));
+                result = Serialize(&swapped, sizeof(T), pos);
             }
+            return result;
         }
     };
     
     class InputMemoryStream : public MemoryStream {
     private:
         virtual bool IsInput() const override { return true; }
-        virtual void Serialize(void *data, uint32_t bytesCount) override;
+        virtual uint32_t Serialize(void *data, uint32_t bytesCount, uint32_t pos) override;
         
     public:
-        explicit InputMemoryStream(size_t capacity);
+        explicit InputMemoryStream(uint32_t capacity);
         ~InputMemoryStream() override {}
         
         template <typename T>
+        void Read(T &data, uint32_t pos) {
+            MemoryStream::Serialize(data, pos);
+        }
+        
+        template <typename T>
         friend InputMemoryStream &operator >> (InputMemoryStream &stream, T &data) {
-            stream.MemoryStream::Serialize(data);
+            uint32_t result = stream.MemoryStream::Serialize(data, stream.size);
+            stream.size += result;
             return stream;
         }
     };
@@ -118,15 +128,21 @@ namespace Network {
     class OutputMemoryStream : public MemoryStream {
     private:
         virtual bool IsInput() const override { return false; }
-        virtual void Serialize(void *data, uint32_t bytesCount) override;
+        virtual uint32_t Serialize(void *data, uint32_t bytesCount, uint32_t pos) override;
         
     public:
-        explicit OutputMemoryStream(size_t capacity);
+        explicit OutputMemoryStream(uint32_t capacity);
         ~OutputMemoryStream() override {}
         
         template <typename T>
+        void Write(T data, uint32_t pos) {
+            MemoryStream::Serialize(data, pos);
+        }
+        
+        template <typename T>
         friend OutputMemoryStream &operator << (OutputMemoryStream &stream, T data) {
-            stream.MemoryStream::Serialize(data);
+            uint32_t result = stream.MemoryStream::Serialize(data, stream.size);
+            stream.size += result;
             return stream;
         }
     };

@@ -15,7 +15,7 @@ using namespace Geometry;
 
 namespace Network {
     
-    MemoryStream::MemoryStream(size_t capacity) : size(0), capacity(capacity) {
+    MemoryStream::MemoryStream(uint32_t capacity) : size(0), capacity(capacity) {
         buffer = static_cast<uint8_t *>(std::malloc(capacity));
     }
     
@@ -23,7 +23,7 @@ namespace Network {
         std::free(buffer);
     }
     
-    void MemoryStream::Realloc(size_t size) {
+    void MemoryStream::Realloc(uint32_t size) {
         void *newPtr = std::realloc(buffer, size);
         if (newPtr == nullptr) {
             throw std::bad_alloc();
@@ -32,25 +32,32 @@ namespace Network {
         capacity = size;
     }
     
-    InputMemoryStream::InputMemoryStream(size_t capacity) : MemoryStream(capacity) {}
-    
-    void InputMemoryStream::Serialize(void *data, uint32_t bytesCount) {
-        if (capacity - size < bytesCount) {
-            throw std::out_of_range("Not enough data!");
-        }
-        std::memcpy(data, buffer + size, bytesCount);
-        size += bytesCount;
-    }
-    
-    OutputMemoryStream::OutputMemoryStream(size_t capacity) : MemoryStream(capacity) {}
-    
-    void OutputMemoryStream::Serialize(void *data, uint32_t bytesCount) {
-        const size_t newSize = size + bytesCount;
+    void MemoryStream::Resize(uint32_t newSize) {
         if (newSize > capacity) {
             Realloc(std::max(capacity * 2, newSize));
         }
-        std::memcpy(buffer + size, data, bytesCount);
-        size += bytesCount;
+        size = newSize;
+    }
+    
+    InputMemoryStream::InputMemoryStream(uint32_t capacity) : MemoryStream(capacity) {}
+    
+    uint32_t InputMemoryStream::Serialize(void *data, uint32_t bytesCount, uint32_t pos) {
+        if (capacity - pos < bytesCount) {
+            throw std::out_of_range("Not enough data!");
+        }
+        std::memcpy(data, buffer + pos, bytesCount);
+        return bytesCount;
+    }
+    
+    OutputMemoryStream::OutputMemoryStream(uint32_t capacity) : MemoryStream(capacity) {}
+    
+    uint32_t OutputMemoryStream::Serialize(void *data, uint32_t bytesCount, uint32_t pos) {
+        const uint32_t newSize = pos + bytesCount;
+        if (newSize > capacity) {
+            Realloc(std::max(capacity * 2, newSize));
+        }
+        std::memcpy(buffer + pos, data, bytesCount);
+        return bytesCount;
     }
     
 }

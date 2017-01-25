@@ -40,8 +40,9 @@ namespace Network {
     template <>
     struct Msg<Message::Init, int, Geometry::Vector> {
         void Read(InputMemoryStream &stream, int &player, Geometry::Vector &fieldSize) {
+            uint32_t msgSize;
             int32_t type, number, x, y;
-            stream >> type >> number >> x >> y;
+            stream >> msgSize >> type >> number >> x >> y;
             if (static_cast<Message>(type) != Message::Init) {
                 Log::Error("Messages types are not the same!", type);
             }
@@ -50,16 +51,20 @@ namespace Network {
         }
         
         void Write(OutputMemoryStream &stream, int &player, Geometry::Vector &fieldSize) {
-            stream << static_cast<int32_t>(Message::Init) << static_cast<int32_t>(player);
+            uint32_t msgSize;
+            stream << msgSize << static_cast<int32_t>(Message::Init) << static_cast<int32_t>(player);
             stream << static_cast<int32_t>(fieldSize.x) << static_cast<int32_t>(fieldSize.y);
+            msgSize = stream.Size();
+            stream.Write(msgSize, 0);
         }
     };
     
     template <>
     struct Msg<Message::Turn, int, std::vector<Geometry::Vector>> {
         void Read(InputMemoryStream &stream, int &player, std::vector<Geometry::Vector> &units) {
+            uint32_t msgSize;
             int32_t type, number, size;
-            stream >> type >> number >> size;
+            stream >> msgSize >> type >> number >> size;
             if (static_cast<Message>(type) != Message::Turn) {
                 Log::Error("Messages types are not the same!", type);
             }
@@ -73,19 +78,23 @@ namespace Network {
         }
         
         void Write(OutputMemoryStream &stream, int &player, std::vector<Geometry::Vector> &units) {
-            stream << static_cast<int32_t>(Message::Turn) << static_cast<int32_t>(player) << static_cast<int32_t>(units.size());
+            uint32_t msgSize;
+            stream << msgSize << static_cast<int32_t>(Message::Turn) << static_cast<int32_t>(player) << static_cast<int32_t>(units.size());
             for (int i = 0; i < units.size(); i++) {
                 Geometry::Vector vec = units[i];
                 stream << static_cast<int32_t>(vec.x) << static_cast<int32_t>(vec.y);
             }
+            msgSize = stream.Size();
+            stream.Write(msgSize, 0);
         }
     };
     
     template <>
     struct Msg<Message::Process, std::vector<std::vector<Geometry::Vector>>> {
         void Read(InputMemoryStream &stream, std::vector<std::vector<Geometry::Vector>> &newUnits) {
+            uint32_t msgSize;
             int32_t type, units;
-            stream >> type >> units;
+            stream >> msgSize >> type >> units;
             if (static_cast<Message>(type) != Message::Process) {
                 Log::Error("Messages types are not the same!", type);
             }
@@ -104,13 +113,16 @@ namespace Network {
         }
         
         void Write(OutputMemoryStream &stream, std::vector<std::vector<Geometry::Vector>> &newUnits) {
-            stream << static_cast<int32_t>(Message::Process) << static_cast<int32_t>(newUnits.size());
+            uint32_t msgSize;
+            stream << msgSize << static_cast<int32_t>(Message::Process) << static_cast<int32_t>(newUnits.size());
             for (int i = 0; i < newUnits.size(); i++) {
                 stream << static_cast<int32_t>(newUnits[i].size());
                 for (int j = 0; j < newUnits[i].size(); j++) {
                     stream << static_cast<int32_t>(newUnits[i][j].x) << static_cast<int32_t>(newUnits[i][j].y);
                 }
             }
+            msgSize = stream.Size();
+            stream.Write(msgSize, 0);
         }
     };
     

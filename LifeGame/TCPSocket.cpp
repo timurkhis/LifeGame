@@ -6,7 +6,9 @@
 //  Copyright © 2017 Arsonist (gmoximko@icloud.com). All rights reserved.
 //
 
+#include <sys/ioctl.h>
 #include <sys/socket.h>
+#include <netinet/tcp.h>
 #include <netdb.h>
 #include <unistd.h>
 #include "Log.hpp"
@@ -24,6 +26,14 @@ namespace Network {
     
     TCPSocket::~TCPSocket() {
         close(sock);
+    }
+    
+    void TCPSocket::NagleAlgorithm(bool enable) {
+        int flag = enable ? 1 : 0;
+        int result = setsockopt(sock, IPPROTO_TCP, TCP_NODELAY, &flag, sizeof(flag));
+        if (result < 0) {
+            Log::Error("TCPSocket::NagleAlgorithm failed!");
+        }
     }
     
     void TCPSocket::Addr(SocketAddress &address) {
@@ -63,12 +73,21 @@ namespace Network {
         return result;
     }
     
-    int TCPSocket::Recv(void *buffer, size_t len) {
-        int result = static_cast<int>(recv(sock, buffer, len, 0));
+    int TCPSocket::Recv(void *buffer, size_t len, bool peek) {
+        int result = static_cast<int>(recv(sock, buffer, len, peek ? MSG_PEEK : 0));
         if (result < 0) {
             Log::Error("TCPSocket::Recv failed!");
         }
         return result;
+    }
+    
+    int TCPSocket::DataSize() const {
+        int size;
+        int result = ioctl(sock, FIONREAD, &size);
+        if (result < 0) {
+            Log::Error("TCPSocket::DataSize failed!");
+        }
+        return size;
     }
     
     TCPSocketPtr TCPSocket::Accept(SocketAddress address) {
