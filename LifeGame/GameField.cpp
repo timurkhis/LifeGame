@@ -9,20 +9,20 @@
 #include "Presets.hpp"
 #include "GameField.hpp"
 #include "Window.hpp"
-#include "Client.hpp"
+#include "Messenger.hpp"
 
 using namespace Geometry;
 
-GameField::GameField(Client *client) : client(client) {
+GameField::GameField(Messenger *messenger) : messenger(messenger), turn(false), player(-1) {
     units = std::make_shared<std::unordered_set<Vector>>();
-    client->Init(this);
+    messenger->Init(this);
 }
 
 void GameField::AddUnit(Vector unit) {
     if (turn) return;
     auto inserted = units->insert(unit);
     if (inserted.second) {
-        client->AddUnit(unit);
+        messenger->AddUnit(unit);
     }
 }
 
@@ -50,8 +50,11 @@ void GameField::ProcessUnits() {
 void GameField::Turn() {
     if (turn) return;
     turn = true;
-  
-    client->Turn();
+    messenger->Turn();
+}
+
+void GameField::Update() {
+    messenger->Update();
 }
 
 void GameField::ProcessUnit(Vector unit, std::unordered_map<Vector, int> &processCells) {

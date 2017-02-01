@@ -38,6 +38,7 @@ class Window {
     const float cellSizeRatioMin;
     const float cellSizeRatioMax;
     const float cellSizeRatioStep;
+    const unsigned deltaTime;
     
     class GameField *gameField;
     class Presets *presets;
@@ -58,6 +59,7 @@ private:
     static void KeyboardFunc(unsigned char key, int x, int y);
     static void MotionFunc(int x, int y);
     static void PassiveMotionFunc(int x, int y);
+    static void Update(int value);
     
     void DrawGrid();
     void DrawPoints();

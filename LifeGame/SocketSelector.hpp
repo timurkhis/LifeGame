@@ -15,20 +15,23 @@
 namespace Network {
     
     class SocketSelector {
-        std::vector<TCPSocketPtr> sockets;
-        int maxSocket;
-        
     public:
-        void Add(TCPSocketPtr socketPtr);
-        void Remove(TCPSocketPtr socketPtr);
-        TCPSocketPtr At(int i) const { return sockets[i]; }
+        static int Select(const std::vector<TCPSocketPtr> *inRead,
+                                std::vector<TCPSocketPtr> *outRead,
+                          const std::vector<TCPSocketPtr> *inWrite,
+                                std::vector<TCPSocketPtr> *outWrite,
+                          const std::vector<TCPSocketPtr> *inExcept,
+                                std::vector<TCPSocketPtr> *outExcept,
+                          bool block = true);
         
-        size_t Size() { return sockets.size(); }
-        int Select(std::vector<TCPSocketPtr> *read, std::vector<TCPSocketPtr> *write, std::vector<TCPSocketPtr> *except);
+        static int SelectRead(const std::vector<TCPSocketPtr> *inRead, std::vector<TCPSocketPtr> *outRead, bool block = true);
+        static int SelectWrite(const std::vector<TCPSocketPtr> *inWrite, std::vector<TCPSocketPtr> *outWrite, bool block = true);
+        static int SelectExcept(const std::vector<TCPSocketPtr> *inExcept, std::vector<TCPSocketPtr> *outExcept, bool block = true);
         
     private:
-        void FillSet(fd_set *set);
-        void FillVector(std::vector<TCPSocketPtr> *result, const fd_set *set);
+        static timeval *SetBlock(timeval *time, bool block);
+        static fd_set *FillSet(const std::vector<TCPSocketPtr> *sockets, fd_set *set, int *maxSocket);
+        static void FillVector(const std::vector<TCPSocketPtr> *sockets, std::vector<TCPSocketPtr> *result, const fd_set *set);
     };
     
 }

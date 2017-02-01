@@ -12,8 +12,7 @@
 #include "Window.hpp"
 #include "Presets.hpp"
 #include "GameField.hpp"
-#include "Server.hpp"
-#include "Client.hpp"
+#include "Messenger.hpp"
 
 struct {
     Geometry::Vector field = Geometry::Vector(1000, 1000);
@@ -28,17 +27,21 @@ void Parse(int argc, char **argv);
 
 int main(int argc, char **argv) {
     Parse(argc, argv);
+    std::shared_ptr<Messenger> messenger;
+    std::stringstream label;
     if (args.server) {
-        static Server server(args.field);
-        args.address = server.Address();
+        messenger = std::make_shared<Server>(args.field);
+        args.address = messenger->Address();
+        label << "Server ";
+    } else {
+        messenger = std::make_shared<Client>(args.address);
+        label << "Client ";
     }
-    Client client(args.address);
-    GameField gameField(&client);
+    GameField gameField(messenger.get());
     Presets presets(args.presetPath);
     Window &instance = Window::Instance();
     instance.Init(&gameField, &presets);
     
-    std::stringstream label;
     label << args.label << " " << *args.address;
     instance.MainLoop(argc, argv, label.str(), args.window);
     return 0;

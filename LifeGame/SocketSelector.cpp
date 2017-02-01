@@ -12,55 +12,66 @@
 
 namespace Network {
     
-    void SocketSelector::Add(TCPSocketPtr socketPtr) {
-        sockets.push_back(socketPtr);
-        maxSocket = std::max(maxSocket, socketPtr->sock);
-    }
-    
-    void SocketSelector::Remove(TCPSocketPtr socketPtr) {
-        auto sockToRemove = std::find(sockets.begin(), sockets.end(), socketPtr);
-        if (sockToRemove != sockets.end()) {
-            sockets.erase(sockToRemove);
-        }
-    }
-    
-    int SocketSelector::Select(std::vector<TCPSocketPtr> *read, std::vector<TCPSocketPtr> *write, std::vector<TCPSocketPtr> *except) {
-        fd_set readSet;
-        fd_set writeSet;
-        fd_set exceptSet;
-        if (read != nullptr)
-            FillSet(&readSet);
-        if (write != nullptr)
-            FillSet(&writeSet);
-        if (except != nullptr)
-            FillSet(&exceptSet);
-        int result = select(maxSocket + 1,
-                            read == nullptr ? nullptr : &readSet,
-                            write == nullptr ? nullptr : &writeSet,
-                            except == nullptr ? nullptr : &exceptSet,
-                            nullptr);
+    int SocketSelector::Select(const std::vector<TCPSocketPtr> *inRead,
+                                     std::vector<TCPSocketPtr> *outRead,
+                               const std::vector<TCPSocketPtr> *inWrite,
+                                     std::vector<TCPSocketPtr> *outWrite,
+                               const std::vector<TCPSocketPtr> *inExcept,
+                                     std::vector<TCPSocketPtr> *outExcept,
+                               bool block) {
+        int maxSocket = 0;
+        timeval time;
+        timeval *timePtr = SetBlock(&time, block);
+        fd_set readSet, writeSet, exceptSet;
+        fd_set *readPtr = FillSet(inRead, &readSet, &maxSocket);
+        fd_set *writePtr = FillSet(inWrite, &writeSet, &maxSocket);
+        fd_set *exceptPtr = FillSet(inExcept, &exceptSet, &maxSocket);
+        int result = select(maxSocket + 1, readPtr, writePtr, exceptPtr, timePtr);
         if (result < 0) {
             Log::Error("SocketSelector::Select failed!");
         }
-        FillVector(read, &readSet);
-        FillVector(write, &writeSet);
-        FillVector(except, &exceptSet);
+        FillVector(inRead, outRead, &readSet);
+        FillVector(inWrite, outWrite, &writeSet);
+        FillVector(inExcept, outExcept, &exceptSet);
         return result;
     }
     
-    void SocketSelector::FillSet(fd_set *set) {
-        FD_ZERO(set);
-        for (int i = 0; i < sockets.size(); i++) {
-            FD_SET(sockets[i]->sock, set);
-        }
+    int SocketSelector::SelectRead(const std::vector<TCPSocketPtr> *inRead, std::vector<TCPSocketPtr> *outRead, bool block) {
+        return Select(inRead, outRead, nullptr, nullptr, nullptr, nullptr, block);
     }
     
-    void SocketSelector::FillVector(std::vector<TCPSocketPtr> *result, const fd_set *set) {
-        if (result == nullptr) return;
+    int SocketSelector::SelectWrite(const std::vector<TCPSocketPtr> *inWrite, std::vector<TCPSocketPtr> *outWrite, bool block) {
+        return Select(nullptr, nullptr, inWrite, outWrite, nullptr, nullptr, block);
+    }
+    
+    int SocketSelector::SelectExcept(const std::vector<TCPSocketPtr> *inExcept, std::vector<TCPSocketPtr> *outExcept, bool block) {
+        return Select(nullptr, nullptr, nullptr, nullptr, inExcept, outExcept, block);
+    }
+    
+    timeval *SocketSelector::SetBlock(timeval *time, bool block) {
+        if (block) return nullptr;
+        std::memset(time, 0, sizeof(timeval));
+        return time;
+    }
+    
+    fd_set *SocketSelector::FillSet(const std::vector<TCPSocketPtr> *sockets, fd_set *set, int *maxSocket) {
+        if (sockets == nullptr || sockets->size() == 0) return nullptr;
+        FD_ZERO(set);
+        for (int i = 0; i < sockets->size(); i++) {
+            TCPSocketPtr socket = sockets->at(i);
+            *maxSocket = std::max(socket->sock, *maxSocket);
+            FD_SET(socket->sock, set);
+        }
+        return set;
+    }
+    
+    void SocketSelector::FillVector(const std::vector<TCPSocketPtr> *sockets, std::vector<TCPSocketPtr> *result, const fd_set *set) {
+        if (sockets == nullptr || sockets->size() == 0 || result == nullptr) return;
         result->clear();
-        for (int i = 0; i < sockets.size(); i++) {
-            if (FD_ISSET(sockets[i]->sock, set)) {
-                result->push_back(sockets[i]);
+        for (int i = 0; i < sockets->size(); i++) {
+            TCPSocketPtr socket = sockets->at(i);
+            if (FD_ISSET(socket->sock, set)) {
+                result->push_back(socket);
             }
         }
     }

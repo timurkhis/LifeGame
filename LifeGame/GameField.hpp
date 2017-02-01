@@ -15,14 +15,15 @@
 
 class GameField {
     friend class Client;
+    friend class Server;
     std::shared_ptr<std::unordered_set<Geometry::Vector>> units;
-    class Client *client;
+    class Messenger *messenger;
     Geometry::Vector size;
     int player;
     bool turn;
     
 public:
-    explicit GameField(class Client *client);
+    explicit GameField(class Messenger *messenger);
     
     int Player() const { return player; }
     void ClampVector(Geometry::Vector &vec) const;
@@ -30,6 +31,7 @@ public:
     const std::shared_ptr<std::unordered_set<Geometry::Vector>> GetUnits() const { return units; }
     void AddUnit(Geometry::Vector unit);
     void Turn();
+    void Update();
     void ProcessUnits();
     
 private:

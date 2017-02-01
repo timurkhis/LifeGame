@@ -40,6 +40,7 @@ Window::Window() :
     cellSizeRatioStep(0.01f),
     cellSizeRatio(0.05f),
     cellSize(0.0f),
+    deltaTime(1000 / 60),
     gameField(nullptr),
     presets(nullptr),
     loadedUnits(nullptr),
@@ -70,6 +71,7 @@ void Window::MainLoop(int &argc, char **argv, const std::string &label, Vector s
     glutKeyboardFunc(Window::KeyboardFunc);
     glutMotionFunc(Window::MotionFunc);
     glutPassiveMotionFunc(Window::PassiveMotionFunc);
+    glutTimerFunc(Instance().deltaTime, Window::Update, 0);
     Instance().RecalculateSize();
     glutMainLoop();
 }
@@ -121,6 +123,11 @@ void Window::MotionFunc(int x, int y) {
 
 void Window::PassiveMotionFunc(int x, int y) {
     Instance().mousePosition = Vector(x, y);
+}
+
+void Window::Update(int value) {
+    Instance().gameField->Update();
+    glutTimerFunc(Instance().deltaTime, Window::Update, 0);
 }
 
 void Window::DrawGrid() {
