@@ -77,8 +77,10 @@ void Messenger::Read(const std::vector<TCPSocketPtr> &outRead) {
             connections.erase(iter);
             Remove(connection->socket, recvList);
             Remove(connection->socket, sendList);
+            Remove(connection->socket, exceptList);
         } else if (connection->CanRead()) {
             Remove(connection->socket, recvList);
+            OnMessageRecv(connection);
         }
     }
     OnRead(outRead);
@@ -92,6 +94,7 @@ void Messenger::Write(const std::vector<TCPSocketPtr> &outWrite) {
         connection->Send();
         if (connection->CanWrite()) {
             Remove(connection->socket, sendList);
+            OnMessageSend(connection);
         }
     }
     OnWrite(outWrite);
@@ -132,20 +135,20 @@ void Client::Init(GameField *gameField) {
         Update(true);
     } while (!server->CanWrite());
     assert(sendList.size() == 0);
-    recvList.push_back(server->socket);
     do {
         Update(true);
     } while (!server->CanRead());
+    assert(recvList.size() == 0);
     ::Read<Message::Init>(server->input, gameField->player, gameField->size);
     server->input.Clear();
 }
 
-void Client::OnRead(const std::vector<TCPSocketPtr> &outRead) {
-    if (gameField->player == -1 || !server->CanRead()) return;
+void Client::OnMessageRecv(ConnectionPtr connection) {
+    if (gameField->player == -1) return;
     assert(recvList.size() == 0);
     gameField->turn = false;
     std::vector<std::vector<Vector>> allAddedUnits;
-    ::Read<Message::Process>(server->input, allAddedUnits);
+    ::Read<Message::Process>(connection->input, allAddedUnits);
     for (int i = 0; i < allAddedUnits.size(); i++) {
         for (int j = 0; j < allAddedUnits[i].size(); j++) {
             gameField->units->insert(allAddedUnits[i][j]);
@@ -153,15 +156,13 @@ void Client::OnRead(const std::vector<TCPSocketPtr> &outRead) {
     }
     gameField->ProcessUnits();
     addedUnits.clear();
-    server->input.Clear();
+    connection->input.Clear();
 }
 
-void Client::OnWrite(const std::vector<TCPSocketPtr> &outWrite) {
-    if (server->CanWrite()) {
-        assert(sendList.size() == 0);
-        recvList.push_back(server->socket);
-        server->output.Clear();
-    }
+void Client::OnMessageSend(ConnectionPtr connection) {
+    assert(sendList.size() == 0);
+    recvList.push_back(connection->socket);
+    connection->output.Clear();
 }
 
 Server::Server(Vector fieldSize) :
@@ -184,16 +185,16 @@ void Server::OnRead(const std::vector<TCPSocketPtr> &outRead) {
     if (newPlayer != outRead.end()) {
         AddPlayer();
     }
-    for (ConnectionPtr connection : connections) {
-        if (connection->CanRead()) {
-            int player;
-            std::vector<Vector> newUnits;
-            ::Read<Message::Turn>(connection->input, player, newUnits);
-            allUnits[player] = std::move(newUnits);
-            playerTurns[player] = true;
-            connection->input.Clear();
-        }
-    }
+}
+
+void Server::OnMessageRecv(ConnectionPtr connection) {
+    int player;
+    std::vector<Vector> newUnits;
+    ::Read<Message::Turn>(connection->input, player, newUnits);
+    allUnits[player] = std::move(newUnits);
+    playerTurns[player] = true;
+    connection->input.Clear();
+    
     if (std::count_if(playerTurns.begin(), playerTurns.end(), [](bool value){ return value; }) == playerTurns.size()) {
         assert(sendList.size() == 0);
         for (int i = 0; i < connections.size(); i++) {
@@ -205,13 +206,9 @@ void Server::OnRead(const std::vector<TCPSocketPtr> &outRead) {
     }
 }
 
-void Server::OnWrite(const std::vector<TCPSocketPtr> &outWrite) {
-    for (ConnectionPtr connection : connections) {
-        if (connection->CanWrite()) {
-            connection->output.Clear();
-            recvList.push_back(connection->socket);
-        }
-    }
+void Server::OnMessageSend(ConnectionPtr connection) {
+    connection->output.Clear();
+    recvList.push_back(connection->socket);
 }
 
 void Server::OnCloseConnection(const ConnectionPtr connection) {
@@ -227,7 +224,7 @@ void Server::OnCloseConnection(const ConnectionPtr connection) {
 void Server::AddPlayer() {
     TCPSocketPtr newPlayer = listener->Accept(*address);
     ConnectionPtr connection = std::make_shared<Connection>(newPlayer);
-    int result = static_cast<int>(connections.size() - 1);
+    int result = static_cast<int>(connections.size());
     ::Write<Message::Init>(connection->output, result, fieldSize);
     sendList.push_back(connection->socket);
     allUnits.emplace_back();

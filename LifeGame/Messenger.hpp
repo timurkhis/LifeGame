@@ -57,6 +57,8 @@ protected:
     virtual void OnRead(const std::vector<Network::TCPSocketPtr> &outRead) {}
     virtual void OnWrite(const std::vector<Network::TCPSocketPtr> &outWrite) {}
     virtual void OnExcept(const std::vector<Network::TCPSocketPtr> &outExcept) {}
+    virtual void OnMessageRecv(ConnectionPtr connection) {}
+    virtual void OnMessageSend(ConnectionPtr connection) {}
     virtual void OnCloseConnection(const ConnectionPtr connection) {}
     
 private:
@@ -80,8 +82,8 @@ public:
     virtual void Init(class GameField *gameField) override;
     
 protected:
-    virtual void OnRead(const std::vector<Network::TCPSocketPtr> &outRead) override;
-    virtual void OnWrite(const std::vector<Network::TCPSocketPtr> &outWrite) override;
+    virtual void OnMessageRecv(ConnectionPtr connection) override;
+    virtual void OnMessageSend(ConnectionPtr connection) override;
 };
 
 class Server : public Messenger {
@@ -100,7 +102,8 @@ public:
     
 protected:
     virtual void OnRead(const std::vector<Network::TCPSocketPtr> &outRead) override;
-    virtual void OnWrite(const std::vector<Network::TCPSocketPtr> &outWrite) override;
+    virtual void OnMessageRecv(ConnectionPtr connection) override;
+    virtual void OnMessageSend(ConnectionPtr connection) override;
     virtual void OnCloseConnection(const ConnectionPtr connection) override;
     
 private:
