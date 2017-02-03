@@ -10,9 +10,9 @@
 #define Messenger_hpp
 
 #include <vector>
+#include <unordered_map>
 #include "Geometry.h"
 #include "Network.h"
-#include "Vector.hpp"
 
 class Connection {
     bool canRead;
@@ -65,6 +65,7 @@ private:
     void Read(const std::vector<Network::TCPSocketPtr> &outRead);
     void Write(const std::vector<Network::TCPSocketPtr> &outWrite);
     void Except(const std::vector<Network::TCPSocketPtr> &outExcept);
+    void CloseConnection(const ConnectionPtr connection);
     void Remove(Network::TCPSocketPtr socket, std::vector<Network::TCPSocketPtr> &from);
 };
 
@@ -87,8 +88,10 @@ protected:
 };
 
 class Server : public Messenger {
-    std::vector<std::vector<Geometry::Vector>> allUnits;
-    std::vector<bool> playerTurns;
+    const int maxPlayers;
+    std::unordered_map<int, std::vector<Geometry::Vector>> allUnits;
+    std::unordered_map<int, bool> playerTurns;
+    std::unordered_map<ConnectionPtr, int> ids;
     Geometry::Vector fieldSize;
     Network::TCPSocketPtr listener;
     
@@ -107,8 +110,8 @@ protected:
     virtual void OnCloseConnection(const ConnectionPtr connection) override;
     
 private:
-    void AddPlayer();
-    void RemovePlayer(int player);
+    void Process();
+    void AddPlayer(ConnectionPtr connection);
 };
 
 #endif /* Messenger_hpp */

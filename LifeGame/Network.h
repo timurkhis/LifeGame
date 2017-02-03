@@ -24,6 +24,13 @@ namespace Network {
         Process
     };
     
+    template <Message type>
+    bool IsType(InputMemoryStream &stream) {
+        int32_t msgType;
+        stream.Read(msgType, sizeof(uint32_t));
+        return static_cast<Message>(msgType) == type;
+    }
+    
     template <Message Type, typename ...Args>
     struct Msg {};
     
@@ -90,8 +97,8 @@ namespace Network {
     };
     
     template <>
-    struct Msg<Message::Process, std::vector<std::vector<Geometry::Vector>>> {
-        void Read(InputMemoryStream &stream, std::vector<std::vector<Geometry::Vector>> &newUnits) {
+    struct Msg<Message::Process, std::unordered_map<int, std::vector<Geometry::Vector>>> {
+        void Read(InputMemoryStream &stream, std::unordered_map<int, std::vector<Geometry::Vector>> &newUnits) {
             uint32_t msgSize;
             int32_t type, units;
             stream >> msgSize >> type >> units;
@@ -99,8 +106,8 @@ namespace Network {
                 Log::Error("Messages types are not the same!", type);
             }
             for (int i = 0; i < units; i++) {
-                int32_t size;
-                stream >> size;
+                int32_t player, size;
+                stream >> player >> size;
                 std::vector<Geometry::Vector> vec;
                 vec.reserve(size);
                 for (int j = 0; j < size; j++) {
@@ -108,17 +115,19 @@ namespace Network {
                     stream >> x >> y;
                     vec.push_back(Geometry::Vector(static_cast<int>(x), static_cast<int>(y)));
                 }
-                newUnits.push_back(std::move(vec));
+                newUnits[static_cast<int>(player)] = std::move(vec);
             }
         }
         
-        void Write(OutputMemoryStream &stream, std::vector<std::vector<Geometry::Vector>> &newUnits) {
+        void Write(OutputMemoryStream &stream, std::unordered_map<int, std::vector<Geometry::Vector>> &newUnits) {
             uint32_t msgSize;
             stream << msgSize << static_cast<int32_t>(Message::Process) << static_cast<int32_t>(newUnits.size());
-            for (int i = 0; i < newUnits.size(); i++) {
-                stream << static_cast<int32_t>(newUnits[i].size());
-                for (int j = 0; j < newUnits[i].size(); j++) {
-                    stream << static_cast<int32_t>(newUnits[i][j].x) << static_cast<int32_t>(newUnits[i][j].y);
+            for (const auto &iter : newUnits) {
+                int32_t player = static_cast<int32_t>(iter.first);
+                const std::vector<Geometry::Vector> &vec = iter.second;
+                stream << player << static_cast<int32_t>(vec.size());
+                for (int i = 0; i < vec.size(); i++) {
+                    stream << static_cast<int32_t>(vec[i].x) << static_cast<int32_t>(vec[i].y);
                 }
             }
             msgSize = stream.Size();

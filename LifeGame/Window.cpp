@@ -48,9 +48,8 @@ Window::Window() :
     rightButtonPressed(false),
     leftButtonPressed(false),
     cellSelected(false),
-    cameraScrolled(false) {
-        selectedCells = std::make_shared<std::vector<Vector>>();
-    }
+    cameraScrolled(false),
+    selectedCells(new std::vector<Vector>()) {}
 
 Window::~Window() {}
 
