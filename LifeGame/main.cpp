@@ -37,7 +37,7 @@ int main(int argc, char **argv) {
         messenger = std::make_shared<Client>(args.address);
         label << "Client ";
     }
-    GameField gameField(messenger.get());
+    GameField gameField(messenger);
     Presets presets(args.presetPath);
     Window &instance = Window::Instance();
     instance.Init(&gameField, &presets);

@@ -25,7 +25,7 @@ namespace Network {
     };
     
     template <Message type>
-    bool IsType(InputMemoryStream &stream) {
+    bool IsMsg(InputMemoryStream &stream) {
         int32_t msgType;
         stream.Read(msgType, sizeof(uint32_t));
         return static_cast<Message>(msgType) == type;

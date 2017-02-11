@@ -50,6 +50,7 @@ public:
     virtual void Init(class GameField *gameField) = 0;
     virtual void AddUnit(Geometry::Vector vec) {}
     virtual void Turn() {}
+    void Destroy();
     void Update(bool block = false);
     std::shared_ptr<Network::SocketAddress> Address() { return address; }
     
@@ -60,6 +61,7 @@ protected:
     virtual void OnMessageRecv(ConnectionPtr connection) {}
     virtual void OnMessageSend(ConnectionPtr connection) {}
     virtual void OnCloseConnection(const ConnectionPtr connection) {}
+    virtual void OnDestroy() {}
     
 private:
     void Read(const std::vector<Network::TCPSocketPtr> &outRead);
@@ -85,6 +87,7 @@ public:
 protected:
     virtual void OnMessageRecv(ConnectionPtr connection) override;
     virtual void OnMessageSend(ConnectionPtr connection) override;
+    virtual void OnDestroy() override;
 };
 
 class Server : public Messenger {
@@ -108,6 +111,7 @@ protected:
     virtual void OnMessageRecv(ConnectionPtr connection) override;
     virtual void OnMessageSend(ConnectionPtr connection) override;
     virtual void OnCloseConnection(const ConnectionPtr connection) override;
+    virtual void OnDestroy() override;
     
 private:
     void Process();

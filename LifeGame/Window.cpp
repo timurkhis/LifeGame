@@ -145,35 +145,19 @@ void Window::DrawGrid() {
 }
 
 void Window::DrawPoints() {
-    switch (gameField->Player()) {
-        case 0:
-            glColor3f(1.0f, 0.0f, 0.0f);
-            break;
-        case 1:
-            glColor3f(0.0f, 1.0f, 0.0f);
-            break;
-        case 2:
-            glColor3f(0.0f, 0.0f, 1.0f);
-            break;
-        case 3:
-            glColor3f(1.0f, 1.0f, 0.0f);
-            break;
-        case 4:
-            glColor3f(1.0f, 0.0f, 1.0f);
-            break;
-        case 5:
-            glColor3f(0.0f, 1.0f, 1.0f);
-            break;
-        case 6:
-            glColor3f(1.0f, 1.0f, 1.0f);
-            break;
-        default:
-            glColor3f(0.5f, 0.5f, 0.5f);
-            break;
-    }
     for (const auto &unit : *gameField->GetUnits()) {
-        Vector pos(unit + cellOffset);
+        Vector pos(unit.position + cellOffset);
         gameField->ClampVector(pos);
+        switch (unit.player) {
+            case 0: glColor3f(1.0f, 0.0f, 0.0f); break;
+            case 1: glColor3f(0.0f, 1.0f, 0.0f); break;
+            case 2: glColor3f(0.0f, 0.0f, 1.0f); break;
+            case 3: glColor3f(1.0f, 1.0f, 0.0f); break;
+            case 4: glColor3f(1.0f, 0.0f, 1.0f); break;
+            case 5: glColor3f(0.0f, 1.0f, 1.0f); break;
+            case 6: glColor3f(1.0f, 1.0f, 1.0f); break;
+            default:glColor3f(0.5f, 0.5f, 0.5f); break;
+        }
         DrawPoint(pos);
     }
     if (loadedUnits == nullptr) return;
@@ -313,6 +297,7 @@ void Window::RightMouseHandle(Vector mousePos, bool pressed) {
 void Window::KeyboardHandle(unsigned char key, Vector mousePos) {
     if (key == KeyEscape) {
         presets->SaveOnDisk();
+        gameField->Destroy();
         exit(0);
     } else if (key == KeyMinus) {
         Zoom(-cellSizeRatioStep);
@@ -419,7 +404,7 @@ void Window::CalulateSelectedCells() const {
     Vector cellMin = Vector::One() * std::numeric_limits<int>::max();
     Vector cellMax = Vector::One() * std::numeric_limits<int>::min();
     for (const auto &unit : *gameField->GetUnits()) {
-        Vector screenUnit = CellToScreen(unit);
+        Vector screenUnit = CellToScreen(unit.position);
         if (screentRect.Contains(screenUnit)) {
             cellMin.x = screenUnit.x < cellMin.x ? screenUnit.x : cellMin.x;
             cellMin.y = screenUnit.y < cellMin.y ? screenUnit.y : cellMin.y;

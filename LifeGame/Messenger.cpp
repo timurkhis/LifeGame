@@ -55,6 +55,14 @@ int Connection::Send() {
 
 Messenger::~Messenger() {}
 
+void Messenger::Destroy() {
+    OnDestroy();
+    recvList.clear();
+    sendList.clear();
+    exceptList.clear();
+    connections.clear();
+}
+
 void Messenger::Update(bool block) {
     std::vector<TCPSocketPtr> outRead;
     std::vector<TCPSocketPtr> outWrite;
@@ -148,9 +156,9 @@ void Client::Init(GameField *gameField) {
 }
 
 void Client::OnMessageRecv(ConnectionPtr connection) {
-    if (::IsType<Message::Init>(connection->input)) {
+    if (::IsMsg<Message::Init>(connection->input)) {
         ::Read<Message::Init>(server->input, gameField->player, gameField->size);
-    } else if (::IsType<Message::Process>(connection->input)) {
+    } else if (::IsMsg<Message::Process>(connection->input)) {
         assert(recvList.size() == 0);
         gameField->turn = false;
         std::unordered_map<int, std::vector<Vector>> allAddedUnits;
@@ -158,12 +166,11 @@ void Client::OnMessageRecv(ConnectionPtr connection) {
         for (const auto &iter : allAddedUnits) {
             const std::vector<Vector> &vec = iter.second;
             for (int i = 0; i < vec.size(); i++) {
-                gameField->units->insert(vec[i]);
+                gameField->units->emplace(iter.first, vec[i]);
             }
         }
         gameField->ProcessUnits();
         addedUnits.clear();
-
     }
     connection->input.Clear();
 }
@@ -172,6 +179,10 @@ void Client::OnMessageSend(ConnectionPtr connection) {
     assert(sendList.size() == 0);
     recvList.push_back(connection->socket);
     connection->output.Clear();
+}
+
+void Client::OnDestroy() {
+    server.reset();
 }
 
 Server::Server(Vector fieldSize) :
@@ -201,9 +212,9 @@ void Server::OnRead(const std::vector<TCPSocketPtr> &outRead) {
 }
 
 void Server::OnMessageRecv(ConnectionPtr connection) {
-    if (::IsType<Message::Init>(connection->input)) {
+    if (::IsMsg<Message::Init>(connection->input)) {
         AddPlayer(connection);
-    } else if (::IsType<Message::Turn>(connection->input)) {
+    } else if (::IsMsg<Message::Turn>(connection->input)) {
         int player;
         std::vector<Vector> newUnits;
         ::Read<Message::Turn>(connection->input, player, newUnits);
@@ -227,6 +238,10 @@ void Server::OnCloseConnection(const ConnectionPtr connection) {
     playerTurns.erase(index);
     allUnits.erase(index);
     ids.erase(connection);
+}
+
+void Server::OnDestroy() {
+    listener.reset();
 }
 
 void Server::Process() {

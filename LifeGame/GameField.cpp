@@ -13,14 +13,17 @@
 
 using namespace Geometry;
 
-GameField::GameField(Messenger *messenger) : messenger(messenger), turn(false), player(-1) {
-    units = std::make_shared<std::unordered_set<Vector>>();
+GameField::GameField(std::shared_ptr<Messenger> messenger) :
+    messenger(messenger),
+    turn(false),
+    player(-1),
+    units(new std::unordered_set<Unit>()) {
     messenger->Init(this);
 }
 
 void GameField::AddUnit(Vector unit) {
     if (turn) return;
-    auto inserted = units->insert(unit);
+    auto inserted = units->emplace(player, unit);
     if (inserted.second) {
         messenger->AddUnit(unit);
     }
@@ -34,15 +37,41 @@ void GameField::ClampVector(Vector &vec) const {
 }
 
 void GameField::ProcessUnits() {
-    std::unordered_map<Vector, int> processCells;
+    std::unordered_map<Unit, int> processCells;
     for (const auto &unit : *units) {
         ProcessUnit(unit, processCells);
     }
     for (const auto &cell : processCells) {
-        if (cell.second == 3 && units->find(cell.first) == units->end()) {
-            units->insert(cell.first);
-        } else if ((cell.second < 2 || cell.second > 3) && units->find(cell.first) != units->end()) {
-            units->erase(cell.first);
+        if (cell.second == 3) {
+            units->emplace(cell.first);
+        } else if (cell.second < 2 || cell.second > 3) {
+            auto contains = units->find(cell.first);
+            if (contains != units->end()) {
+                units->erase(contains);
+            }
+        }
+    }
+}
+
+void GameField::ProcessUnit(const Unit &unit, std::unordered_map<Unit, int> &processCells) {
+    processCells.emplace(unit, 0);
+    for (int x = -1; x <= 1; x++) {
+        for (int y = -1; y <= 1; y++) {
+            if (x == 0 && y == 0) continue;
+            Vector pos = unit.position + Vector(x, y);
+            ClampVector(pos);
+            Unit newUnit(unit.player, pos);
+            const auto iter = processCells.emplace(newUnit, 1);
+            if (!iter.second) {
+                if (iter.first->second == 0) {
+                    processCells.erase(iter.first);
+                    processCells.emplace(newUnit, 1);
+                } else if (iter.first->first.player == unit.player) {
+                    iter.first->second++;
+                } else {
+                    iter.first->second--;
+                }
+            }
         }
     }
 }
@@ -57,17 +86,6 @@ void GameField::Update() {
     messenger->Update();
 }
 
-void GameField::ProcessUnit(Vector unit, std::unordered_map<Vector, int> &processCells) {
-    processCells.insert(std::make_pair(unit, 0));
-    for (int x = -1; x <= 1; x++) {
-        for (int y = -1; y <= 1; y++) {
-            if (x == 0 && y == 0) continue;
-            Vector pos = unit + Vector(x, y);
-            ClampVector(pos);
-            const auto iter = processCells.insert(std::make_pair(pos, 1));
-            if (!iter.second) {
-                iter.first->second++;
-            }
-        }
-    }
+void GameField::Destroy() {
+    messenger->Destroy();
 }
