@@ -1,13 +1,13 @@
 //
-//  Messanger.hpp
+//  Messenger.hpp
 //  LifeGame
 //
 //  Created by Максим Бакиров on 12.02.17.
 //  Copyright © 2017 Arsonist (gmoximko@icloud.com). All rights reserved.
 //
 
-#ifndef Messanger_hpp
-#define Messanger_hpp
+#ifndef Messenger_hpp
+#define Messenger_hpp
 
 #include <vector>
 #include "Connection.hpp"
@@ -51,4 +51,4 @@ private:
     void Remove(Network::TCPSocketPtr socket, std::vector<Network::TCPSocketPtr> &from);
 };
 
-#endif /* Messanger_hpp */
+#endif /* Messenger_hpp */

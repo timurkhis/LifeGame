@@ -53,6 +53,7 @@ void Server::OnMessageSend(const ConnectionPtr connection) {
 }
 
 void Server::OnNewConnection(const ConnectionPtr connection) {
+    if (ids.size() >= maxPlayers) return;
     AddConnection(connection);
 }
 
@@ -77,13 +78,7 @@ void Server::Process() {
 }
 
 void Server::AddPlayer(const ConnectionPtr connection) {
-    int result;
-    for (result = 0; result < maxPlayers && playerTurns.find(result) != playerTurns.end(); result++);
-    if (result >= maxPlayers) {
-        auto iter = std::find(connections.begin(), connections.end(), connection);
-        connections.erase(iter);
-        return;
-    }
+    int result =  static_cast<int>(ids.size());
     std::unordered_map<int, std::vector<Vector>> units;
     for (const auto &unit : *gameField->units) {
         auto it = units.find(unit.player);

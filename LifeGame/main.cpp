@@ -22,6 +22,7 @@ struct {
     std::string presetPath = "presets.txt";
     std::string label = "LifeGame";
     bool server = true;
+    unsigned turnTime = 0;
 } args;
 
 void Parse(int argc, char **argv);
@@ -44,7 +45,7 @@ int main(int argc, char **argv) {
     instance.Init(&gameField, &presets);
     
     label << args.label << " " << *args.address;
-    instance.MainLoop(argc, argv, label.str(), args.window);
+    instance.MainLoop(argc, argv, label.str(), args.window, args.turnTime);
     return 0;
 }
 
@@ -65,6 +66,9 @@ void Parse(int argc, char **argv) {
         }
         if (std::strcmp("presets", argv[i]) == 0) {
             args.presetPath = argv[++i];
+        }
+        if (std::strcmp("turn", argv[i]) == 0) {
+            args.turnTime = atoi(argv[++i]);
         }
     }
 }

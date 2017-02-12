@@ -39,7 +39,7 @@ class Window {
     const float cellSizeRatioMax;
     const float cellSizeRatioStep;
     const unsigned deltaTime;
-    const unsigned turnTime;
+    unsigned turnTime;
     
     class GameField *gameField;
     class Presets *presets;
@@ -48,7 +48,7 @@ class Window {
 public:
     static Window &Instance();
     
-    void MainLoop(int &argc, char **argv, const std::string &label, Geometry::Vector size);
+    void MainLoop(int &argc, char **argv, const std::string &label, Geometry::Vector size, unsigned turnTime);
     void Init(GameField *gameField, Presets *presets);
     void Refresh() const;
     Geometry::Vector GetCellUnderMouse() const;

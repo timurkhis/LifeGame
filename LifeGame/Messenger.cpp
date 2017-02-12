@@ -1,5 +1,5 @@
 //
-//  Messanger.cpp
+//  Messenger.cpp
 //  LifeGame
 //
 //  Created by Максим Бакиров on 12.02.17.
@@ -40,7 +40,6 @@ void Messenger::Read(const std::vector<TCPSocketPtr> &outRead) {
         ConnectionPtr connection = *iter;
         if (connection->Recv() == 0) {
             CloseConnection(connection);
-            connections.erase(iter);
         } else if (connection->CanRead()) {
             OnMessageRecv(connection);
         }
@@ -76,6 +75,10 @@ void Messenger::CloseConnection(const ConnectionPtr connection) {
     Remove(connection->socket, recvList);
     Remove(connection->socket, sendList);
     Remove(connection->socket, exceptList);
+    auto iter = std::find(connections.begin(), connections.end(), connection);
+    if (iter != connections.end()) {
+        connections.erase(iter);
+    }
 }
 
 void Messenger::Remove(TCPSocketPtr socket, std::vector<TCPSocketPtr> &from) {

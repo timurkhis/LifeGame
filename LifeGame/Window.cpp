@@ -40,8 +40,8 @@ Window::Window() :
     cellSizeRatioStep(0.01f),
     cellSizeRatio(0.05f),
     cellSize(0.0f),
-    deltaTime(1000 / 60),
-    turnTime(500),
+    deltaTime(1000 / 30),
+    turnTime(0),
     gameField(nullptr),
     presets(nullptr),
     loadedUnits(nullptr),
@@ -59,7 +59,7 @@ Window &Window::Instance() {
     return window;
 }
 
-void Window::MainLoop(int &argc, char **argv, const std::string &label, Vector size) {
+void Window::MainLoop(int &argc, char **argv, const std::string &label, Vector size, unsigned turnTime) {
     if (gameField == nullptr || presets == nullptr) throw std::invalid_argument("GameField or Presets does not exist!");
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA);
@@ -72,7 +72,10 @@ void Window::MainLoop(int &argc, char **argv, const std::string &label, Vector s
     glutMotionFunc(Window::MotionFunc);
     glutPassiveMotionFunc(Window::PassiveMotionFunc);
     glutTimerFunc(deltaTime, Window::Update, 0);
-    glutTimerFunc(turnTime, Window::Update, 1);
+    this->turnTime = turnTime;
+    if (turnTime > 0) {
+        glutTimerFunc(turnTime, Window::Update, 1);
+    }
     RecalculateSize();
     glutMainLoop();
 }
@@ -310,6 +313,8 @@ void Window::KeyboardHandle(unsigned char key, Vector mousePos) {
         presets->SaveOnDisk();
         gameField->Destroy();
         exit(0);
+    } else if (key == KeySpace && turnTime == 0) {
+        gameField->Turn();
     } else if (key == KeyMinus) {
         Zoom(-cellSizeRatioStep);
     } else if (key == KeyPlus) {

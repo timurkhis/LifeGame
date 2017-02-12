@@ -6,6 +6,7 @@
 //  Copyright © 2017 Arsonist (gmoximko@icloud.com). All rights reserved.
 //
 
+#include <cassert>
 #include <unordered_map>
 #include "Client.hpp"
 #include "Geometry.h"
@@ -43,7 +44,7 @@ void Client::Init(GameField *gameField) {
     do {
         Update(true);
     } while (!server->CanRead());
-    server->input.Clear();
+    assert(gameField->player >= 0 && gameField->size.x > 0 && gameField->size.y > 0);
 }
 
 void Client::OnMessageRecv(const ConnectionPtr connection) {
