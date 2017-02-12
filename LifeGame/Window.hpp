@@ -39,6 +39,7 @@ class Window {
     const float cellSizeRatioMax;
     const float cellSizeRatioStep;
     const unsigned deltaTime;
+    const unsigned turnTime;
     
     class GameField *gameField;
     class Presets *presets;

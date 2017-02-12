@@ -12,7 +12,8 @@
 #include "Window.hpp"
 #include "Presets.hpp"
 #include "GameField.hpp"
-#include "Messenger.hpp"
+#include "Client.hpp"
+#include "Server.hpp"
 
 struct {
     Geometry::Vector field = Geometry::Vector(1000, 1000);

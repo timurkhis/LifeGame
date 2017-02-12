@@ -9,6 +9,7 @@
 #ifndef Network_h
 #define Network_h
 
+#include <unordered_map>
 #include "Vector.hpp"
 #include "SocketAddress.hpp"
 #include "TCPSocket.hpp"
@@ -45,22 +46,42 @@ namespace Network {
     }
     
     template <>
-    struct Msg<Message::Init, int, Geometry::Vector> {
-        void Read(InputMemoryStream &stream, int &player, Geometry::Vector &fieldSize) {
+    struct Msg<Message::Init, int, Geometry::Vector, std::unordered_map<int, std::vector<Geometry::Vector>>> {
+        void Read(InputMemoryStream &stream, int &player, Geometry::Vector &fieldSize, std::unordered_map<int, std::vector<Geometry::Vector>> &allUnits) {
             uint32_t msgSize;
-            int32_t type, number, x, y;
-            stream >> msgSize >> type >> number >> x >> y;
+            int32_t type, number, x, y, units;
+            stream >> msgSize >> type >> number >> x >> y >> units;
             if (static_cast<Message>(type) != Message::Init) {
                 Log::Error("Messages types are not the same!", type);
             }
             player = static_cast<int>(number);
             fieldSize = Geometry::Vector(static_cast<int>(x), static_cast<int>(y));
+            for (int i = 0; i < units; i++) {
+                int32_t player, size;
+                stream >> player >> size;
+                std::vector<Geometry::Vector> vec;
+                vec.reserve(size);
+                for (int j = 0; j < size; j++) {
+                    int32_t x, y;
+                    stream >> x >> y;
+                    vec.push_back(Geometry::Vector(static_cast<int>(x), static_cast<int>(y)));
+                }
+                allUnits[static_cast<int>(player)] = std::move(vec);
+            }
         }
         
-        void Write(OutputMemoryStream &stream, int &player, Geometry::Vector &fieldSize) {
+        void Write(OutputMemoryStream &stream, int &player, Geometry::Vector &fieldSize, std::unordered_map<int, std::vector<Geometry::Vector>> &allUnits) {
             uint32_t msgSize;
             stream << msgSize << static_cast<int32_t>(Message::Init) << static_cast<int32_t>(player);
-            stream << static_cast<int32_t>(fieldSize.x) << static_cast<int32_t>(fieldSize.y);
+            stream << static_cast<int32_t>(fieldSize.x) << static_cast<int32_t>(fieldSize.y) << static_cast<int32_t>(allUnits.size());
+            for (const auto &iter : allUnits) {
+                int32_t player = static_cast<int32_t>(iter.first);
+                const std::vector<Geometry::Vector> &vec = iter.second;
+                stream << player << static_cast<int32_t>(vec.size());
+                for (int i = 0; i < vec.size(); i++) {
+                    stream << static_cast<int32_t>(vec[i].x) << static_cast<int32_t>(vec[i].y);
+                }
+            }
             msgSize = stream.Size();
             stream.Write(msgSize, 0);
         }

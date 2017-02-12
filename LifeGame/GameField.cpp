@@ -51,6 +51,7 @@ void GameField::ProcessUnits() {
             }
         }
     }
+    Window::Instance().Refresh();
 }
 
 void GameField::ProcessUnit(const Unit &unit, std::unordered_map<Unit, int> &processCells) {

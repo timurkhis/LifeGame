@@ -41,6 +41,7 @@ Window::Window() :
     cellSizeRatio(0.05f),
     cellSize(0.0f),
     deltaTime(1000 / 60),
+    turnTime(500),
     gameField(nullptr),
     presets(nullptr),
     loadedUnits(nullptr),
@@ -71,6 +72,7 @@ void Window::MainLoop(int &argc, char **argv, const std::string &label, Vector s
     glutMotionFunc(Window::MotionFunc);
     glutPassiveMotionFunc(Window::PassiveMotionFunc);
     glutTimerFunc(deltaTime, Window::Update, 0);
+    glutTimerFunc(turnTime, Window::Update, 1);
     RecalculateSize();
     glutMainLoop();
 }
@@ -125,8 +127,17 @@ void Window::PassiveMotionFunc(int x, int y) {
 }
 
 void Window::Update(int value) {
-    Instance().gameField->Update();
-    glutTimerFunc(Instance().deltaTime, Window::Update, 0);
+    const Window &instance = Instance();
+    switch (value) {
+    case 0:
+        instance.gameField->Update();
+        glutTimerFunc(instance.deltaTime, Window::Update, 0);
+        break;
+    case 1:
+        instance.gameField->Turn();
+        glutTimerFunc(instance.turnTime, Window::Update, 1);
+        break;
+    }
 }
 
 void Window::DrawGrid() {
@@ -303,8 +314,6 @@ void Window::KeyboardHandle(unsigned char key, Vector mousePos) {
         Zoom(-cellSizeRatioStep);
     } else if (key == KeyPlus) {
         Zoom(+cellSizeRatioStep);
-    } else if (key == KeySpace) {
-        gameField->Turn();
     } else if (key >= '0' && key <= '9') {
         NumbersHandle(key, mousePos);
     } else if (loadedUnits != nullptr && (key == 'a' || key == 'd' || key == 'w' || key == 's')) {

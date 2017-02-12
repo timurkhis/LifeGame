@@ -12,13 +12,16 @@
 		EC562E3B1E06E64F0002F643 /* Rect.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EC562E391E06E64F0002F643 /* Rect.cpp */; };
 		EC5936751E0828BA00075699 /* Presets.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EC5936731E0828BA00075699 /* Presets.cpp */; };
 		EC69E6001DFB1ED500C2AF7E /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EC69E5FF1DFB1ED500C2AF7E /* main.cpp */; };
-		EC6A675E1E3F7C7800266F66 /* Messenger.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EC6A675C1E3F7C7800266F66 /* Messenger.cpp */; };
 		EC8124701E0FB862002A339E /* Matrix.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EC81246E1E0FB862002A339E /* Matrix.cpp */; };
 		ECA3CD301E1A25940034815A /* TCPSocket.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ECA3CD2E1E1A25940034815A /* TCPSocket.cpp */; };
 		ECAA64231E02DB35009A1051 /* Window.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ECAA64211E02DB35009A1051 /* Window.cpp */; };
 		ECAD975D1E0038340051EF2B /* GLUT.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ECAD975C1E0038340051EF2B /* GLUT.framework */; };
 		ECAD975F1E0038480051EF2B /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ECAD975E1E0038480051EF2B /* OpenGL.framework */; };
 		ECB682201E26F828009D9C3C /* MemoryStream.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ECB6821E1E26F828009D9C3C /* MemoryStream.cpp */; };
+		ECD81F351E507E0600FCBB74 /* Messenger.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ECD81F331E507E0600FCBB74 /* Messenger.cpp */; };
+		ECD81F381E507E1100FCBB74 /* Client.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ECD81F361E507E1100FCBB74 /* Client.cpp */; };
+		ECD81F3B1E507E1D00FCBB74 /* Server.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ECD81F391E507E1D00FCBB74 /* Server.cpp */; };
+		ECD81F3E1E507E2E00FCBB74 /* Connection.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ECD81F3C1E507E2E00FCBB74 /* Connection.cpp */; };
 		ECDDBA641E2B379B00F74A73 /* SocketSelector.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ECDDBA621E2B379B00F74A73 /* SocketSelector.cpp */; };
 		ECEF18C71DFBE3940044974E /* Vector.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ECEF18C51DFBE3940044974E /* Vector.cpp */; };
 		ECFAFB821E194F73009C4962 /* SocketAddress.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ECFAFB801E194F73009C4962 /* SocketAddress.cpp */; };
@@ -47,8 +50,6 @@
 		EC5936741E0828BA00075699 /* Presets.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Presets.hpp; sourceTree = "<group>"; };
 		EC69E5FC1DFB1ED500C2AF7E /* LifeGame */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = LifeGame; sourceTree = BUILT_PRODUCTS_DIR; };
 		EC69E5FF1DFB1ED500C2AF7E /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
-		EC6A675C1E3F7C7800266F66 /* Messenger.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Messenger.cpp; sourceTree = "<group>"; };
-		EC6A675D1E3F7C7800266F66 /* Messenger.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Messenger.hpp; sourceTree = "<group>"; };
 		EC81246E1E0FB862002A339E /* Matrix.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Matrix.cpp; sourceTree = "<group>"; };
 		EC81246F1E0FB862002A339E /* Matrix.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Matrix.hpp; sourceTree = "<group>"; };
 		EC8124711E0FBE57002A339E /* Geometry.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Geometry.h; sourceTree = "<group>"; };
@@ -61,6 +62,14 @@
 		ECAD975E1E0038480051EF2B /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
 		ECB6821E1E26F828009D9C3C /* MemoryStream.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MemoryStream.cpp; sourceTree = "<group>"; };
 		ECB6821F1E26F828009D9C3C /* MemoryStream.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = MemoryStream.hpp; sourceTree = "<group>"; };
+		ECD81F331E507E0600FCBB74 /* Messenger.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Messenger.cpp; sourceTree = "<group>"; };
+		ECD81F341E507E0600FCBB74 /* Messenger.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Messenger.hpp; sourceTree = "<group>"; };
+		ECD81F361E507E1100FCBB74 /* Client.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Client.cpp; sourceTree = "<group>"; };
+		ECD81F371E507E1100FCBB74 /* Client.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Client.hpp; sourceTree = "<group>"; };
+		ECD81F391E507E1D00FCBB74 /* Server.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Server.cpp; sourceTree = "<group>"; };
+		ECD81F3A1E507E1D00FCBB74 /* Server.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Server.hpp; sourceTree = "<group>"; };
+		ECD81F3C1E507E2E00FCBB74 /* Connection.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Connection.cpp; sourceTree = "<group>"; };
+		ECD81F3D1E507E2E00FCBB74 /* Connection.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Connection.hpp; sourceTree = "<group>"; };
 		ECDDBA621E2B379B00F74A73 /* SocketSelector.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SocketSelector.cpp; sourceTree = "<group>"; };
 		ECDDBA631E2B379B00F74A73 /* SocketSelector.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = SocketSelector.hpp; sourceTree = "<group>"; };
 		ECEF18C51DFBE3940044974E /* Vector.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Vector.cpp; sourceTree = "<group>"; };
@@ -107,14 +116,13 @@
 				ECAA64221E02DB35009A1051 /* Window.hpp */,
 				EC0CB9441E059456009E443E /* GameField.cpp */,
 				EC0CB9451E059456009E443E /* GameField.hpp */,
-				EC6A675C1E3F7C7800266F66 /* Messenger.cpp */,
-				EC6A675D1E3F7C7800266F66 /* Messenger.hpp */,
 				EC5936731E0828BA00075699 /* Presets.cpp */,
 				EC5936741E0828BA00075699 /* Presets.hpp */,
 				EC1C10881E34F774004F6BC2 /* Log.cpp */,
 				EC1C10891E34F774004F6BC2 /* Log.hpp */,
 				EC81246D1E0F8933002A339E /* Geometry */,
 				ECFAFB7F1E194F2D009C4962 /* Network */,
+				ECD81F321E507DB900FCBB74 /* Messaging */,
 			);
 			path = LifeGame;
 			sourceTree = "<group>";
@@ -140,6 +148,21 @@
 				EC8124711E0FBE57002A339E /* Geometry.h */,
 			);
 			name = Geometry;
+			sourceTree = "<group>";
+		};
+		ECD81F321E507DB900FCBB74 /* Messaging */ = {
+			isa = PBXGroup;
+			children = (
+				ECD81F3C1E507E2E00FCBB74 /* Connection.cpp */,
+				ECD81F3D1E507E2E00FCBB74 /* Connection.hpp */,
+				ECD81F331E507E0600FCBB74 /* Messenger.cpp */,
+				ECD81F341E507E0600FCBB74 /* Messenger.hpp */,
+				ECD81F361E507E1100FCBB74 /* Client.cpp */,
+				ECD81F371E507E1100FCBB74 /* Client.hpp */,
+				ECD81F391E507E1D00FCBB74 /* Server.cpp */,
+				ECD81F3A1E507E1D00FCBB74 /* Server.hpp */,
+			);
+			name = Messaging;
 			sourceTree = "<group>";
 		};
 		ECFAFB7F1E194F2D009C4962 /* Network */ = {
@@ -216,7 +239,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				EC8124701E0FB862002A339E /* Matrix.cpp in Sources */,
-				EC6A675E1E3F7C7800266F66 /* Messenger.cpp in Sources */,
+				ECD81F3B1E507E1D00FCBB74 /* Server.cpp in Sources */,
+				ECD81F3E1E507E2E00FCBB74 /* Connection.cpp in Sources */,
+				ECD81F381E507E1100FCBB74 /* Client.cpp in Sources */,
 				ECFAFB821E194F73009C4962 /* SocketAddress.cpp in Sources */,
 				ECDDBA641E2B379B00F74A73 /* SocketSelector.cpp in Sources */,
 				EC0CB9461E059456009E443E /* GameField.cpp in Sources */,
@@ -224,6 +249,7 @@
 				EC69E6001DFB1ED500C2AF7E /* main.cpp in Sources */,
 				ECA3CD301E1A25940034815A /* TCPSocket.cpp in Sources */,
 				ECB682201E26F828009D9C3C /* MemoryStream.cpp in Sources */,
+				ECD81F351E507E0600FCBB74 /* Messenger.cpp in Sources */,
 				EC5936751E0828BA00075699 /* Presets.cpp in Sources */,
 				ECAA64231E02DB35009A1051 /* Window.cpp in Sources */,
 				ECEF18C71DFBE3940044974E /* Vector.cpp in Sources */,
