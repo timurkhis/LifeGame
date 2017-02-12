@@ -38,12 +38,14 @@ public:
 typedef std::shared_ptr<Connection> ConnectionPtr;
 
 class Messenger {
-protected:
-    std::shared_ptr<Network::SocketAddress> address;
     std::vector<Network::TCPSocketPtr> recvList;
     std::vector<Network::TCPSocketPtr> sendList;
     std::vector<Network::TCPSocketPtr> exceptList;
+    Network::TCPSocketPtr listener;
+    
+protected:
     std::vector<ConnectionPtr> connections;
+    std::shared_ptr<Network::SocketAddress> address;
     
 public:
     virtual ~Messenger() = 0;
@@ -55,18 +57,20 @@ public:
     std::shared_ptr<Network::SocketAddress> Address() { return address; }
     
 protected:
-    virtual void OnRead(const std::vector<Network::TCPSocketPtr> &outRead) {}
-    virtual void OnWrite(const std::vector<Network::TCPSocketPtr> &outWrite) {}
-    virtual void OnExcept(const std::vector<Network::TCPSocketPtr> &outExcept) {}
-    virtual void OnMessageRecv(ConnectionPtr connection) {}
-    virtual void OnMessageSend(ConnectionPtr connection) {}
+    virtual void OnMessageRecv(const ConnectionPtr connection) {}
+    virtual void OnMessageSend(const ConnectionPtr connection) {}
+    virtual void OnNewConnection(const ConnectionPtr connection) {}
     virtual void OnCloseConnection(const ConnectionPtr connection) {}
     virtual void OnDestroy() {}
+    void Listen();
+    void AddConnection(const ConnectionPtr connection);
+    void Send(const ConnectionPtr connection);
     
 private:
     void Read(const std::vector<Network::TCPSocketPtr> &outRead);
     void Write(const std::vector<Network::TCPSocketPtr> &outWrite);
     void Except(const std::vector<Network::TCPSocketPtr> &outExcept);
+    void NewConnection(const std::vector<Network::TCPSocketPtr> &outRead);
     void CloseConnection(const ConnectionPtr connection);
     void Remove(Network::TCPSocketPtr socket, std::vector<Network::TCPSocketPtr> &from);
 };
@@ -85,8 +89,8 @@ public:
     virtual void Init(class GameField *gameField) override;
     
 protected:
-    virtual void OnMessageRecv(ConnectionPtr connection) override;
-    virtual void OnMessageSend(ConnectionPtr connection) override;
+    virtual void OnMessageRecv(const ConnectionPtr connection) override;
+    virtual void OnMessageSend(const ConnectionPtr connection) override;
     virtual void OnDestroy() override;
 };
 
@@ -96,7 +100,6 @@ class Server : public Messenger {
     std::unordered_map<int, bool> playerTurns;
     std::unordered_map<ConnectionPtr, int> ids;
     Geometry::Vector fieldSize;
-    Network::TCPSocketPtr listener;
     
 public:
     explicit Server(Geometry::Vector fieldSize);
@@ -107,15 +110,14 @@ public:
     virtual void Init(class GameField *gameField) override;
     
 protected:
-    virtual void OnRead(const std::vector<Network::TCPSocketPtr> &outRead) override;
-    virtual void OnMessageRecv(ConnectionPtr connection) override;
-    virtual void OnMessageSend(ConnectionPtr connection) override;
+    virtual void OnMessageRecv(const ConnectionPtr connection) override;
+    virtual void OnMessageSend(const ConnectionPtr connection) override;
+    virtual void OnNewConnection(const ConnectionPtr connection) override;
     virtual void OnCloseConnection(const ConnectionPtr connection) override;
-    virtual void OnDestroy() override;
     
 private:
     void Process();
-    void AddPlayer(ConnectionPtr connection);
+    void AddPlayer(const ConnectionPtr connection);
 };
 
 #endif /* Messenger_hpp */

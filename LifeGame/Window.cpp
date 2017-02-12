@@ -70,8 +70,8 @@ void Window::MainLoop(int &argc, char **argv, const std::string &label, Vector s
     glutKeyboardFunc(Window::KeyboardFunc);
     glutMotionFunc(Window::MotionFunc);
     glutPassiveMotionFunc(Window::PassiveMotionFunc);
-    glutTimerFunc(Instance().deltaTime, Window::Update, 0);
-    Instance().RecalculateSize();
+    glutTimerFunc(deltaTime, Window::Update, 0);
+    RecalculateSize();
     glutMainLoop();
 }
 
