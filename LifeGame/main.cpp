@@ -22,7 +22,7 @@ struct {
     std::string presetPath = "presets.txt";
     std::string label = "LifeGame";
     bool server = true;
-    unsigned turnTime = 0;
+    unsigned turnTime = 100;
 } args;
 
 void Parse(int argc, char **argv);

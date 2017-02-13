@@ -69,6 +69,7 @@ void Server::Process() {
     }
     for (int i = 0; i < connections.size(); i++) {
         ConnectionPtr connection = connections[i];
+        if (ids.find(connection) == ids.end()) continue;
         ::Write<Message::Process>(connection->output, allUnits);
         Send(connection);
         int index = ids[connection];
