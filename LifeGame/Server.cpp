@@ -67,10 +67,12 @@ void Server::Process() {
     for (const auto &iter : playerTurns) {
         if (!iter.second) return;
     }
-    for (const auto &iter : ids) {
-        ::Write<Message::Process>(iter.first->output, allUnits);
-        Send(iter.first);
-        int index = ids[iter.first];
+    for (int i = 0; i < connections.size(); i++) {
+        ConnectionPtr connection = connections[i];
+        if (ids.find(connection) == ids.end()) continue;
+        ::Write<Message::Process>(connection->output, allUnits);
+        Send(connection);
+        int index = ids[connection];
         playerTurns[index] = false;
     }
     gameField->ProcessUnits();
