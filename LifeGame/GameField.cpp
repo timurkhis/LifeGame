@@ -6,9 +6,7 @@
 //  Copyright © 2016 Arsonist (gmoximko@icloud.com). All rights reserved.
 //
 
-#include "Presets.hpp"
 #include "GameField.hpp"
-#include "Window.hpp"
 #include "Messenger.hpp"
 
 using namespace Geometry;
@@ -51,7 +49,6 @@ void GameField::ProcessUnits() {
             }
         }
     }
-    Window::Instance().Refresh();
 }
 
 void GameField::ProcessUnit(const Unit &unit, std::unordered_map<Unit, int> &processCells) {
@@ -89,4 +86,5 @@ void GameField::Update() {
 
 void GameField::Destroy() {
     messenger->Destroy();
+    exit(0);
 }

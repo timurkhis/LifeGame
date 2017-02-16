@@ -26,6 +26,7 @@ public:
 protected:
     virtual void OnMessageRecv(const ConnectionPtr connection) override;
     virtual void OnMessageSend(const ConnectionPtr connection) override;
+    virtual void OnCloseConnection(const ConnectionPtr connection) override;
     virtual void OnDestroy() override;
 };
 

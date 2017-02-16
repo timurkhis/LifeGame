@@ -122,7 +122,6 @@ void Window::MotionFunc(int x, int y) {
     if (instance.leftButtonPressed) {
         instance.CameraScroll(Vector(x, y));
     }
-    instance.Refresh();
 }
 
 void Window::PassiveMotionFunc(int x, int y) {
@@ -134,6 +133,7 @@ void Window::Update(int value) {
     switch (value) {
     case 0:
         instance.gameField->Update();
+        instance.Refresh();
         glutTimerFunc(instance.deltaTime, Window::Update, 0);
         break;
     case 1:
@@ -273,10 +273,17 @@ void Window::LeftMouseHandle(Vector mousePos, bool pressed) {
     if (!pressed) {
         if (cameraScrolled) {
             cameraScrolled = false;
+        } else if (loadedUnits != nullptr) {
+            for (int i = 0; i < loadedUnits->size(); i++) {
+                Vector pos = loadedUnitsTRS * loadedUnits->at(i);
+                gameField->ClampVector(pos);
+                gameField->AddUnit(pos);
+            }
+            loadedUnits = nullptr;
+            cellSelected = false;
         } else {
             const Vector cell = ScreenToCell(mousePos);
             gameField->AddUnit(cell);
-            Refresh();
         }
     }
     if (!leftButtonPressed && pressed) {
@@ -291,7 +298,6 @@ void Window::RightMouseHandle(Vector mousePos, bool pressed) {
     if (!pressed) {
         if (rightButtonPressedPos == mousePosition) {
             cellSelected = true;
-            Refresh();
         }
     }
     if (!rightButtonPressed && pressed) {
@@ -312,7 +318,6 @@ void Window::KeyboardHandle(unsigned char key, Vector mousePos) {
     if (key == KeyEscape) {
         presets->SaveOnDisk();
         gameField->Destroy();
-        exit(0);
     } else if (key == KeySpace && turnTime == 0) {
         gameField->Turn();
     } else if (key == KeyMinus) {
@@ -323,24 +328,15 @@ void Window::KeyboardHandle(unsigned char key, Vector mousePos) {
         NumbersHandle(key, mousePos);
     } else if (loadedUnits != nullptr && (key == 'a' || key == 'd' || key == 'w' || key == 's')) {
         switch (key) {
-            case 'a':
-                loadedUnitsTRS = loadedUnitsTRS * Matrix3x3::Rotation(90.f);
-                break;
-            case 'd':
-                loadedUnitsTRS = loadedUnitsTRS * Matrix3x3::Rotation(-90.f);
-                break;
-            case 'w':
-                loadedUnitsTRS = loadedUnitsTRS * Matrix3x3::Scale(Vector(1, -1));
-                break;
-            case 's':
-                loadedUnitsTRS = loadedUnitsTRS * Matrix3x3::Scale(Vector(-1, 1));
-                break;
+            case 'a': loadedUnitsTRS = loadedUnitsTRS * Matrix3x3::Rotation(90.f);       break;
+            case 'd': loadedUnitsTRS = loadedUnitsTRS * Matrix3x3::Rotation(-90.f);      break;
+            case 'w': loadedUnitsTRS = loadedUnitsTRS * Matrix3x3::Scale(Vector(1, -1)); break;
+            case 's': loadedUnitsTRS = loadedUnitsTRS * Matrix3x3::Scale(Vector(-1, 1)); break;
         }
     } else {
         cellSelected = false;
         loadedUnits = nullptr;
     }
-    Refresh();
 }
 
 void Window::NumbersHandle(unsigned char key, Vector mousePos) {
@@ -350,16 +346,11 @@ void Window::NumbersHandle(unsigned char key, Vector mousePos) {
         return;
     }
     const auto newLoadedUnits = presets->Load(key);
-    if (loadedUnits == newLoadedUnits && loadedUnits != nullptr) {
-        for (int i = 0; i < loadedUnits->size(); i++) {
-            Vector pos = loadedUnitsTRS * loadedUnits->at(i);
-            gameField->ClampVector(pos);
-            gameField->AddUnit(pos);
-        }
+    if (cellSelected && loadedUnits != newLoadedUnits) {
+        loadedUnits = newLoadedUnits;
+    } else {
         loadedUnits = nullptr;
         cellSelected = false;
-    } else if (cellSelected) {
-        loadedUnits = newLoadedUnits;
     }
 }
 

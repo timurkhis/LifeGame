@@ -10,7 +10,6 @@
 #include <unordered_map>
 #include "Client.hpp"
 #include "Geometry.h"
-#include "Network.h"
 #include "GameField.hpp"
 
 using namespace Geometry;
@@ -75,6 +74,11 @@ void Client::OnMessageRecv(const ConnectionPtr connection) {
 
 void Client::OnMessageSend(const ConnectionPtr connection) {
     connection->output.Clear();
+}
+
+void Client::OnCloseConnection(const ConnectionPtr connection) {
+    assert(connection == server);
+    gameField->Destroy();
 }
 
 void Client::OnDestroy() {

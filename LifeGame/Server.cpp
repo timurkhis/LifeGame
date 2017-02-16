@@ -9,7 +9,6 @@
 #include <cassert>
 #include "Server.hpp"
 #include "Geometry.h"
-#include "Network.h"
 #include "GameField.hpp"
 
 using namespace Geometry;

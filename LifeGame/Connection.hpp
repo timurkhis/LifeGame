@@ -9,8 +9,7 @@
 #ifndef Connection_hpp
 #define Connection_hpp
 
-#include "TCPSocket.hpp"
-#include "MemoryStream.hpp"
+#include "Network.h"
 
 class Connection {
     bool canRead;

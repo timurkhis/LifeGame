@@ -7,7 +7,6 @@
 //
 
 #include "Messenger.hpp"
-#include "Network.h"
 
 using namespace Network;
 

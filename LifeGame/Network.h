@@ -11,9 +11,9 @@
 
 #include <unordered_map>
 #include "Vector.hpp"
+#include "Log.hpp"
 #include "SocketAddress.hpp"
 #include "TCPSocket.hpp"
-#include "Log.hpp"
 #include "MemoryStream.hpp"
 #include "SocketSelector.hpp"
 
