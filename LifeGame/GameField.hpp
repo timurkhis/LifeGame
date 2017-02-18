@@ -32,18 +32,20 @@ struct std::hash<Unit> {
 };
 
 class GameField {
-    friend class Client;
-    friend class Server;
+    friend class Peer;
     std::shared_ptr<std::unordered_set<Unit>> units;
-    std::shared_ptr<class Messenger> messenger;
+    std::shared_ptr<class Peer> peer;
     Geometry::Vector size;
     int player;
+    unsigned turnTime;
     bool turn;
     
 public:
-    explicit GameField(std::shared_ptr<class Messenger> messenger);
+    explicit GameField();
+    explicit GameField(Geometry::Vector size, unsigned turnTime, int player);
     
     int Player() const { return player; }
+    unsigned TurnTime() const { return turnTime; }
     void ClampVector(Geometry::Vector &vec) const;
     Geometry::Vector GetSize() const { return size; }
     const std::shared_ptr<std::unordered_set<Unit>> GetUnits() const { return units; }

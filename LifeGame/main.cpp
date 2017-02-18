@@ -12,8 +12,7 @@
 #include "Window.hpp"
 #include "Presets.hpp"
 #include "GameField.hpp"
-#include "Client.hpp"
-#include "Server.hpp"
+#include "Peer.hpp"
 
 struct {
     Geometry::Vector field = Geometry::Vector(1000, 1000);
@@ -21,31 +20,34 @@ struct {
     std::shared_ptr<Network::SocketAddress> address = std::make_shared<Network::SocketAddress>();
     std::string presetPath = "presets.txt";
     std::string label = "LifeGame";
-    bool server = true;
+    bool master = true;
     unsigned turnTime = 100;
+    int players = 4;
 } args;
 
 void Parse(int argc, char **argv);
 
 int main(int argc, char **argv) {
     Parse(argc, argv);
-    std::shared_ptr<Messenger> messenger;
-    std::stringstream label;
-    if (args.server) {
-        messenger = std::make_shared<Server>(args.field);
-        args.address = messenger->Address();
-        label << "Server ";
-    } else {
-        messenger = std::make_shared<Client>(args.address);
-        label << "Client ";
-    }
-    GameField gameField(messenger);
-    Presets presets(args.presetPath);
-    Window &instance = Window::Instance();
-    instance.Init(&gameField, &presets);
+    std::shared_ptr<Peer> peer;
+    std::shared_ptr<GameField> gameField;
+    std::shared_ptr<Presets> presets = std::make_shared<Presets>(args.presetPath);
     
+    std::stringstream label;
+    if (args.master) {
+        gameField = std::make_shared<GameField>(args.field, args.turnTime, 0);
+        peer = std::make_shared<Peer>(gameField, args.players);
+        args.address = peer->Address();
+        label << "Master ";
+    } else {
+        gameField = std::make_shared<GameField>();
+        peer = std::make_shared<Peer>(gameField, args.address);
+        label << "Slave ";
+    }
+    Window &instance = Window::Instance();
+    instance.Init(gameField, presets);
     label << args.label << " " << *args.address;
-    instance.MainLoop(argc, argv, label.str(), args.window, args.turnTime);
+    instance.MainLoop(argc, argv, label.str(), args.window);
     return 0;
 }
 
@@ -62,13 +64,16 @@ void Parse(int argc, char **argv) {
         if (std::strcmp("server", argv[i]) == 0) {
             std::string address(argv[++i]);
             args.address = Network::SocketAddress::CreateIPv4(address);
-            args.server = false;
+            args.master = false;
         }
         if (std::strcmp("presets", argv[i]) == 0) {
             args.presetPath = argv[++i];
         }
         if (std::strcmp("turn", argv[i]) == 0) {
             args.turnTime = atoi(argv[++i]);
+        }
+        if (std::strcmp("players", argv[i]) == 0) {
+            args.players = atoi(argv[++i]);
         }
     }
 }

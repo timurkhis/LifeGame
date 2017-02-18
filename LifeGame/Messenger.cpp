@@ -38,7 +38,7 @@ void Messenger::Read(const std::vector<TCPSocketPtr> &outRead) {
         if (iter == connections.end()) continue;
         ConnectionPtr connection = *iter;
         if (connection->Recv() == 0) {
-            CloseConnection(connection);
+            CloseConnection(connection, true);
         } else if (connection->CanRead()) {
             OnMessageRecv(connection);
         }
@@ -58,9 +58,7 @@ void Messenger::Write(const std::vector<TCPSocketPtr> &outWrite) {
     }
 }
 
-void Messenger::Except(const std::vector<TCPSocketPtr> &outExcept) {
-    
-}
+void Messenger::Except(const std::vector<TCPSocketPtr> &outExcept) {}
 
 void Messenger::NewConnection(const std::vector<TCPSocketPtr> &outRead) {
     if (listener == nullptr || std::find(outRead.begin(), outRead.end(), listener) == outRead.end()) return;
@@ -69,8 +67,10 @@ void Messenger::NewConnection(const std::vector<TCPSocketPtr> &outRead) {
     OnNewConnection(connection);
 }
 
-void Messenger::CloseConnection(const ConnectionPtr connection) {
-    OnCloseConnection(connection);
+void Messenger::CloseConnection(const ConnectionPtr connection, bool callback) {
+    if (callback) {
+        OnCloseConnection(connection);
+    }
     Remove(connection->socket, recvList);
     Remove(connection->socket, sendList);
     Remove(connection->socket, exceptList);
@@ -87,12 +87,14 @@ void Messenger::Remove(TCPSocketPtr socket, std::vector<TCPSocketPtr> &from) {
     }
 }
 
-void Messenger::Listen() {
+uint16_t Messenger::Listen(std::shared_ptr<Network::SocketAddress> address) {
+    std::shared_ptr<SocketAddress> addr = address != nullptr ? address : SocketAddress::CreateIPv4("localhost");
     listener = TCPSocket::Create();
-    listener->Bind(*address);
+    listener->Bind(*addr);
     listener->Listen();
-    listener->Addr(*address);
+    listener->Addr(*addr);
     recvList.push_back(listener);
+    return addr->GetPort();
 }
 
 void Messenger::AddConnection(const ConnectionPtr connection) {
@@ -102,4 +104,8 @@ void Messenger::AddConnection(const ConnectionPtr connection) {
 
 void Messenger::Send(const ConnectionPtr connection) {
     sendList.push_back(connection->socket);
+}
+
+void Messenger::CloseConnection(const ConnectionPtr connection) {
+    CloseConnection(connection, false);
 }

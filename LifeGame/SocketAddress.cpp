@@ -34,6 +34,14 @@ namespace Network {
     
     SocketAddress::SocketAddress(const SocketAddress &other) : SocketAddress(other.addr) {}
     
+    uint32_t SocketAddress::GetHost() {
+        return static_cast<uint32_t>(AsSockAddrIn()->sin_addr.s_addr);
+    }
+    
+    uint16_t SocketAddress::GetPort() {
+        return static_cast<uint16_t>(AsSockAddrIn()->sin_port);
+    }
+    
     std::shared_ptr<SocketAddress> SocketAddress::CreateIPv4(const std::string &hostName) {
         size_t pos = hostName.find_last_of(':');
         std::string host;

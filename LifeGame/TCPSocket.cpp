@@ -36,9 +36,14 @@ namespace Network {
         }
     }
     
-    void TCPSocket::Addr(SocketAddress &address) {
+    void TCPSocket::Addr(SocketAddress &address, bool remote) {
         socklen_t addrlen = address.Size();
-        int result = getsockname(sock, address.AsSockAddr(), &addrlen);
+        int result;
+        if (remote) {
+            result = getpeername(sock, address.AsSockAddr(), &addrlen);
+        } else {
+            result = getsockname(sock, address.AsSockAddr(), &addrlen);
+        }
         if (result < 0) {
             Log::Error("TCPSocket::Addr failed!");
         }

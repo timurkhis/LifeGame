@@ -41,7 +41,6 @@ Window::Window() :
     cellSizeRatio(0.05f),
     cellSize(0.0f),
     deltaTime(1000 / 30),
-    turnTime(0),
     gameField(nullptr),
     presets(nullptr),
     loadedUnits(nullptr),
@@ -59,7 +58,7 @@ Window &Window::Instance() {
     return window;
 }
 
-void Window::MainLoop(int &argc, char **argv, const std::string &label, Vector size, unsigned turnTime) {
+void Window::MainLoop(int &argc, char **argv, const std::string &label, Vector size) {
     if (gameField == nullptr || presets == nullptr) throw std::invalid_argument("GameField or Presets does not exist!");
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA);
@@ -72,9 +71,8 @@ void Window::MainLoop(int &argc, char **argv, const std::string &label, Vector s
     glutMotionFunc(Window::MotionFunc);
     glutPassiveMotionFunc(Window::PassiveMotionFunc);
     glutTimerFunc(deltaTime, Window::Update, 0);
-    this->turnTime = turnTime;
-    if (turnTime > 0) {
-        glutTimerFunc(turnTime, Window::Update, 1);
+    if (gameField->TurnTime() > 0) {
+        glutTimerFunc(gameField->TurnTime(), Window::Update, 1);
     }
     RecalculateSize();
     glutMainLoop();
@@ -138,7 +136,7 @@ void Window::Update(int value) {
         break;
     case 1:
         instance.gameField->Turn();
-        glutTimerFunc(instance.turnTime, Window::Update, 1);
+        glutTimerFunc(instance.gameField->TurnTime(), Window::Update, 1);
         break;
     }
 }
@@ -318,7 +316,7 @@ void Window::KeyboardHandle(unsigned char key, Vector mousePos) {
     if (key == KeyEscape) {
         presets->SaveOnDisk();
         gameField->Destroy();
-    } else if (key == KeySpace && turnTime == 0) {
+    } else if (key == KeySpace && gameField->TurnTime() == 0) {
         gameField->Turn();
     } else if (key == KeyMinus) {
         Zoom(-cellSizeRatioStep);
@@ -436,7 +434,7 @@ const std::shared_ptr<std::vector<Vector>> Window::GetSelectedCells() const {
     return selectedCells;
 }
 
-void Window::Init(GameField *gameField, Presets *presets) {
+void Window::Init(std::shared_ptr<GameField> gameField, std::shared_ptr<Presets> presets) {
     this->gameField = gameField;
     this->presets = presets;
 }

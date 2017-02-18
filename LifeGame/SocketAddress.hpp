@@ -30,6 +30,9 @@ namespace Network {
         
         constexpr socklen_t Size() const { return sizeof(addr); }
         
+        uint32_t GetHost();
+        uint16_t GetPort();
+        
         sockaddr *AsSockAddr() { return &addr; }
         sockaddr_in *AsSockAddrIn() { return reinterpret_cast<sockaddr_in *>(&addr); }
         

@@ -22,7 +22,7 @@ namespace Network {
         
         ~TCPSocket();
         void NagleAlgorithm(bool enable);
-        void Addr(SocketAddress &address);
+        void Addr(SocketAddress &address, bool remote = false);
         void Connect(SocketAddress &address);
         void Bind(SocketAddress &address);
         void Listen(int backLog = SOMAXCONN);

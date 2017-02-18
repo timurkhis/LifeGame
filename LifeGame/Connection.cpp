@@ -18,7 +18,9 @@ Connection::Connection(TCPSocketPtr socket) :
     recvData(0),
     allRecvData(0),
     sendData(0),
-    socket(socket) {}
+    socket(socket) {
+    socket->NagleAlgorithm(false);
+}
 
 int Connection::Recv() {
     uint32_t dataSize = socket->DataSize();

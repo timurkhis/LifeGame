@@ -7,23 +7,24 @@
 //
 
 #include "GameField.hpp"
-#include "Messenger.hpp"
+#include "Peer.hpp"
 
 using namespace Geometry;
 
-GameField::GameField(std::shared_ptr<Messenger> messenger) :
-    messenger(messenger),
+GameField::GameField() : GameField(Vector(), 0, -1) {}
+
+GameField::GameField(Geometry::Vector size, unsigned turnTime, int player) :
     turn(false),
-    player(-1),
-    units(new std::unordered_set<Unit>()) {
-    messenger->Init(this);
-}
+    player(player),
+    turnTime(turnTime),
+    size(size),
+    units(new std::unordered_set<Unit>()) {}
 
 void GameField::AddUnit(Vector unit) {
     if (turn) return;
     auto inserted = units->emplace(player, unit);
     if (inserted.second) {
-        messenger->AddUnit(unit);
+        peer->AddUnit(unit);
     }
 }
 
@@ -77,14 +78,14 @@ void GameField::ProcessUnit(const Unit &unit, std::unordered_map<Unit, int> &pro
 void GameField::Turn() {
     if (turn) return;
     turn = true;
-    messenger->Turn();
+    peer->Turn();
 }
 
 void GameField::Update() {
-    messenger->Update();
+    peer->Update();
 }
 
 void GameField::Destroy() {
-    messenger->Destroy();
+    peer->Destroy();
     exit(0);
 }

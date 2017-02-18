@@ -21,13 +21,9 @@ class Messenger {
 protected:
     std::vector<ConnectionPtr> connections;
     std::shared_ptr<Network::SocketAddress> address;
-    class GameField *gameField;
     
 public:
     virtual ~Messenger() = 0;
-    virtual void Init(class GameField *gameField) = 0;
-    virtual void AddUnit(Geometry::Vector vec) {}
-    virtual void Turn() {}
     void Destroy();
     void Update(bool block = false);
     std::shared_ptr<Network::SocketAddress> Address() { return address; }
@@ -38,16 +34,17 @@ protected:
     virtual void OnNewConnection(const ConnectionPtr connection) {}
     virtual void OnCloseConnection(const ConnectionPtr connection) {}
     virtual void OnDestroy() {}
-    void Listen();
+    uint16_t Listen(std::shared_ptr<Network::SocketAddress> address = nullptr);
     void AddConnection(const ConnectionPtr connection);
     void Send(const ConnectionPtr connection);
+    void CloseConnection(const ConnectionPtr connection);
     
 private:
     void Read(const std::vector<Network::TCPSocketPtr> &outRead);
     void Write(const std::vector<Network::TCPSocketPtr> &outWrite);
     void Except(const std::vector<Network::TCPSocketPtr> &outExcept);
     void NewConnection(const std::vector<Network::TCPSocketPtr> &outRead);
-    void CloseConnection(const ConnectionPtr connection);
+    void CloseConnection(const ConnectionPtr connection, bool callback);
     void Remove(Network::TCPSocketPtr socket, std::vector<Network::TCPSocketPtr> &from);
 };
 
