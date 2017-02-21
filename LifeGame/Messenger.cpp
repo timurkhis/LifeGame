@@ -6,6 +6,7 @@
 //  Copyright © 2017 Arsonist (gmoximko@icloud.com). All rights reserved.
 //
 
+#include <string>
 #include "Messenger.hpp"
 
 using namespace Network;
@@ -87,14 +88,13 @@ void Messenger::Remove(TCPSocketPtr socket, std::vector<TCPSocketPtr> &from) {
     }
 }
 
-uint16_t Messenger::Listen(std::shared_ptr<Network::SocketAddress> address) {
+void Messenger::Listen(std::shared_ptr<Network::SocketAddress> address) {
     std::shared_ptr<SocketAddress> addr = address != nullptr ? address : SocketAddress::CreateIPv4("localhost");
     listener = TCPSocket::Create();
     listener->Bind(*addr);
     listener->Listen();
     listener->Addr(*addr);
     recvList.push_back(listener);
-    return addr->GetPort();
 }
 
 void Messenger::AddConnection(const ConnectionPtr connection) {
@@ -108,4 +108,13 @@ void Messenger::Send(const ConnectionPtr connection) {
 
 void Messenger::CloseConnection(const ConnectionPtr connection) {
     CloseConnection(connection, false);
+}
+
+uint16_t Messenger::ListenerPort() {
+    if (listener == nullptr) {
+        throw std::runtime_error("Listener is nullptr!");
+    }
+    SocketAddress address;
+    listener->Addr(address);
+    return address.GetPort();
 }

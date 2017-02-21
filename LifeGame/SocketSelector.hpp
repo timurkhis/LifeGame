@@ -9,6 +9,7 @@
 #ifndef SocketSelector_hpp
 #define SocketSelector_hpp
 
+#include <sys/time.h>
 #include <vector>
 #include "TCPSocket.hpp"
 

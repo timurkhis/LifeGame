@@ -36,8 +36,10 @@ namespace Network {
         sockaddr *AsSockAddr() { return &addr; }
         sockaddr_in *AsSockAddrIn() { return reinterpret_cast<sockaddr_in *>(&addr); }
         
+        std::string ToString() const;
         friend std::ostream &operator << (std::ostream &stream, const SocketAddress &address);
     };
-
+    
 }
+
 #endif /* SocketAddress_hpp */

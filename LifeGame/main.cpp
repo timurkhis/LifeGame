@@ -17,7 +17,7 @@
 struct {
     Geometry::Vector field = Geometry::Vector(1000, 1000);
     Geometry::Vector window = Geometry::Vector(800, 600);
-    std::shared_ptr<Network::SocketAddress> address = std::make_shared<Network::SocketAddress>();
+    std::shared_ptr<Network::SocketAddress> address;
     std::string presetPath = "presets.txt";
     std::string label = "LifeGame";
     bool master = true;
@@ -44,6 +44,7 @@ int main(int argc, char **argv) {
         peer = std::make_shared<Peer>(gameField, args.address);
         label << "Slave ";
     }
+    peer->Init();
     Window &instance = Window::Instance();
     instance.Init(gameField, presets);
     label << args.label << " " << *args.address;

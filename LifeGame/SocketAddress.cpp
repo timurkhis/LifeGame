@@ -78,6 +78,12 @@ namespace Network {
         return address;
     }
     
+    std::string SocketAddress::ToString() const {
+        std::stringstream stream;
+        stream << *this;
+        return stream.str();
+    }
+    
     std::ostream &operator << (std::ostream &stream, const SocketAddress &address) {
         const sockaddr_in *addrIn = reinterpret_cast<const sockaddr_in *>(&address.addr);
         char addr[INET_ADDRSTRLEN];

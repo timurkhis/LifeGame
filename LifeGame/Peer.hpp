@@ -13,13 +13,22 @@
 #include <unordered_map>
 #include "Messenger.hpp"
 
+enum class Msg {
+    NewPlayer,
+    AcceptPlayer,
+    ConnectPlayer,
+    ReadyForGame
+};
+
 class Peer : public Messenger {
-    struct Player;
+    class Command;
+    typedef std::shared_ptr<Command> CommandPtr;
+    typedef std::queue<CommandPtr> CommandsQueue;
     
     bool master;
+    int readyPlayers;
     int playersCount;
-    ConnectionPtr masterPeer;
-    std::unordered_map<int, Player> players;
+    std::unordered_map<int, CommandsQueue> players;
     std::unordered_map<ConnectionPtr, int> ids;
     std::shared_ptr<GameField> gameField;
     
@@ -40,66 +49,68 @@ protected:
     virtual void OnDestroy() override;
     
 private:
-    class Command {
-    public:
-        enum class MsgType {
-            NewPlayer,
-            Connect
-        };
-        virtual ~Command() = 0;
-        
-        static std::shared_ptr<Command> Read(Network::InputMemoryStream &stream);
-        void Write(Network::OutputMemoryStream &stream);
-        virtual void Apply(Peer &peer, const ConnectionPtr connection) = 0;
-        
-    protected:
-        virtual MsgType GetType() = 0;
-        virtual void OnWrite(Network::OutputMemoryStream &stream) = 0;
-    };
-    typedef std::shared_ptr<Command> CommandPtr;
-    typedef std::queue<CommandPtr> CommandsQueue;
+    void AddPlayer(int id, const ConnectionPtr connection);
+    void AcceptNewPlayer(const ConnectionPtr connection);
+    void BroadcastNewPlayer(uint32_t host, uint16_t port, int id);
+    void ConnectNewPlayer(uint32_t host, uint16_t port, int32_t id);
     
-    struct Player {
-        Player(int id, uint32_t host, uint16_t port) : id(id), host(host), port(port) {}
+    struct Message {
+        static std::shared_ptr<Message> Parse(Network::InputMemoryStream &stream);
         
+        virtual ~Message() = 0;
+        virtual Msg Type() = 0;
+        
+        void Write(Peer *peer, const ConnectionPtr connection);
+        void Read(Peer *peer, const ConnectionPtr connection);
+        
+    private:
+        virtual void OnWrite(Peer *peer, const ConnectionPtr connection) = 0;
+        virtual void OnRead(Peer *peer, const ConnectionPtr connection) = 0;
+    };
+    
+    struct NewPlayerMessage : public Message {
+    private:
         int id;
         uint32_t host;
         uint16_t port;
-        CommandsQueue commands;
-    };
-    
-    class NewPlayerCommand : public Command {
-        uint16_t listenerPort;
         
     public:
-        static std::shared_ptr<NewPlayerCommand> Read(Network::InputMemoryStream &stream);
-        explicit NewPlayerCommand(uint16_t listenerPort) : listenerPort(listenerPort) {}
-        virtual ~NewPlayerCommand() override {}
+        NewPlayerMessage() {}
+        NewPlayerMessage(int id, uint32_t host, uint16_t port) : id(id), host(host), port(port) {}
         
-        virtual void Apply(Peer &peer, const ConnectionPtr connection) override;
+        virtual ~NewPlayerMessage() override {}
+        virtual Msg Type() override { return Msg::NewPlayer; }
         
-    protected:
-        virtual MsgType GetType() override { return MsgType::NewPlayer; }
-        virtual void OnWrite(Network::OutputMemoryStream &stream) override;
+    private:
+        virtual void OnWrite(Peer *peer, const ConnectionPtr connection) override;
+        virtual void OnRead(Peer *peer, const ConnectionPtr connection) override;
     };
     
-    class ConnectPlayerCommand : public Command {
-        int id;
-        int playersCount;
-        Geometry::Vector fieldSize;
-        unsigned turnTime;
+    struct AcceptPlayerMessage : public Message {
+        virtual ~AcceptPlayerMessage() override {}
+        virtual Msg Type() override { return Msg::AcceptPlayer; }
         
-    public:
-        static std::shared_ptr<ConnectPlayerCommand> Read(Network::InputMemoryStream &stream);
-        explicit ConnectPlayerCommand(int id, int playersCount, Geometry::Vector fieldSize, unsigned turnTime)
-            : id(id), playersCount(playersCount), fieldSize(fieldSize) {}
-        virtual ~ConnectPlayerCommand() override {}
+    private:
+        virtual void OnWrite(Peer *peer, const ConnectionPtr connection) override;
+        virtual void OnRead(Peer *peer, const ConnectionPtr connection) override;
+    };
+    
+    struct ConnectNewPlayerMessage : public Message {
+        virtual ~ConnectNewPlayerMessage() override {}
+        virtual Msg Type() override { return Msg::ConnectPlayer; }
         
-        virtual void Apply(Peer &peer, const ConnectionPtr connection) override;
+    private:
+        virtual void OnWrite(Peer *peer, const ConnectionPtr connection) override;
+        virtual void OnRead(Peer *peer, const ConnectionPtr connection) override;
+    };
+    
+    struct ReadyForGameMessage : public Message {
+        virtual ~ReadyForGameMessage() override {}
+        virtual Msg Type() override { return Msg::ReadyForGame; }
         
-    protected:
-        virtual MsgType GetType() override { return MsgType::Connect; }
-        virtual void OnWrite(Network::OutputMemoryStream &stream) override;
+    private:
+        virtual void OnWrite(Peer *peer, const ConnectionPtr connection) override;
+        virtual void OnRead(Peer *peer, const ConnectionPtr connection) override;
     };
 };
 

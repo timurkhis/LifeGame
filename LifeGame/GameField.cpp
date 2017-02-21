@@ -6,6 +6,7 @@
 //  Copyright © 2016 Arsonist (gmoximko@icloud.com). All rights reserved.
 //
 
+#include <cstdlib>
 #include "GameField.hpp"
 #include "Peer.hpp"
 
@@ -87,5 +88,5 @@ void GameField::Update() {
 
 void GameField::Destroy() {
     peer->Destroy();
-    exit(0);
+    std::exit(EXIT_SUCCESS);
 }

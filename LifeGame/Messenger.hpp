@@ -34,10 +34,11 @@ protected:
     virtual void OnNewConnection(const ConnectionPtr connection) {}
     virtual void OnCloseConnection(const ConnectionPtr connection) {}
     virtual void OnDestroy() {}
-    uint16_t Listen(std::shared_ptr<Network::SocketAddress> address = nullptr);
+    void Listen(std::shared_ptr<Network::SocketAddress> address = nullptr);
     void AddConnection(const ConnectionPtr connection);
     void Send(const ConnectionPtr connection);
     void CloseConnection(const ConnectionPtr connection);
+    uint16_t ListenerPort();
     
 private:
     void Read(const std::vector<Network::TCPSocketPtr> &outRead);
