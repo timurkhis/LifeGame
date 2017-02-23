@@ -50,12 +50,13 @@ protected:
     virtual void OnDestroy() override;
     
 private:
-    bool IsMaster() { return masterPeer == nullptr; }
+    bool IsMaster() const { return masterPeer == nullptr; }
+    bool IsGameStarted() const { return playersCount == readyPlayers; }
     
     void AddPlayer(int id, const ConnectionPtr connection);
     void AcceptNewPlayer(const ConnectionPtr connection);
     void BroadcastNewPlayer(const std::string &listenerAddress, int id);
-    void ConnectNewPlayer(const std::string &listenerAddress, int32_t id);
+    void ConnectNewPlayer(const std::string &listenerAddress, int id);
     void CheckReadyForGame();
     
     struct Message {

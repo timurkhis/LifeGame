@@ -25,7 +25,7 @@ public:
     template <typename ...Args>
     static void Error(Args... args) {
         std::stringstream stream;
-        Message(stream, args...);
+        Message(stream, args..., errno);
         throw std::runtime_error(stream.str());
     }
     
@@ -45,7 +45,7 @@ private:
     
     template <typename T>
     static void Message(std::stringstream &stream, T t) {
-        stream << t << ' ' << errno;
+        stream << t;
     }
 };
 
