@@ -38,6 +38,13 @@ namespace Network {
     }
     
     template <typename T>
+    struct ByteSwapper<T, 1> {
+        T Swap(T data, bool out) {
+            return data;
+        }
+    };
+    
+    template <typename T>
     struct ByteSwapper<T, 2> {
         T Swap(T data, bool out) {
             uint16_t temp = TypeAliaser<T, uint16_t>(data).Get();

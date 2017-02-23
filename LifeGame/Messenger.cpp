@@ -6,6 +6,7 @@
 //  Copyright © 2017 Arsonist (gmoximko@icloud.com). All rights reserved.
 //
 
+#include <cassert>
 #include <string>
 #include "Messenger.hpp"
 
@@ -103,6 +104,7 @@ void Messenger::AddConnection(const ConnectionPtr connection) {
 }
 
 void Messenger::Send(const ConnectionPtr connection) {
+    assert(connection->CanWrite());
     sendList.push_back(connection->socket);
 }
 
@@ -110,11 +112,11 @@ void Messenger::CloseConnection(const ConnectionPtr connection) {
     CloseConnection(connection, false);
 }
 
-uint16_t Messenger::ListenerPort() {
+std::string Messenger::ListenerAddress() {
     if (listener == nullptr) {
         throw std::runtime_error("Listener is nullptr!");
     }
     SocketAddress address;
     listener->Addr(address);
-    return address.GetPort();
+    return address.ToString();
 }

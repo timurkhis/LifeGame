@@ -6,7 +6,6 @@
 //  Copyright © 2017 Arsonist (gmoximko@icloud.com). All rights reserved.
 //
 
-#include <string>
 #include <cassert>
 #include "Log.hpp"
 #include "GameField.hpp"
@@ -16,7 +15,7 @@ using namespace Network;
 using namespace Geometry;
 
 Peer::Peer(std::shared_ptr<GameField> gameField, std::shared_ptr<Network::SocketAddress> address) :
-    master(false),
+    masterPeer(new Connection(TCPSocket::Create())),
     playersCount(0),
     readyPlayers(0) {
     this->gameField = gameField;
@@ -24,7 +23,7 @@ Peer::Peer(std::shared_ptr<GameField> gameField, std::shared_ptr<Network::Socket
     this->address = address;
 }
 
-Peer::Peer(std::shared_ptr<GameField> gameField, int players) : master(true), playersCount(players), readyPlayers(0) {
+Peer::Peer(std::shared_ptr<GameField> gameField, int players) : playersCount(players), readyPlayers(0) {
     this->gameField = gameField;
     gameField->peer = std::shared_ptr<Peer>(this);
     address = SocketAddress::CreateIPv4("localhost");
@@ -32,8 +31,7 @@ Peer::Peer(std::shared_ptr<GameField> gameField, int players) : master(true), pl
 }
 
 void Peer::Init() {
-    if (master) return;
-    ConnectionPtr masterPeer = std::make_shared<Connection>(TCPSocket::Create());
+    if (IsMaster()) return;
     masterPeer->socket->Connect(*address);
     AddConnection(masterPeer);
     Listen();
@@ -85,24 +83,31 @@ void Peer::AcceptNewPlayer(const ConnectionPtr connection) {
     Send(connection);
 }
 
-void Peer::BroadcastNewPlayer(uint32_t host, uint16_t port, int id) {
-    NewPlayerMessage msg(id, host, port);
+void Peer::BroadcastNewPlayer(const std::string &listenerAddress, int id) {
+    NewPlayerMessage msg(id, listenerAddress);
     for (const auto it : ids) {
         msg.Write(this, it.first);
         Send(it.first);
     }
 }
 
-void Peer::ConnectNewPlayer(uint32_t host, uint16_t port, int32_t id) {
-    SocketAddress address(host, port);
-    Log::Warning("Peer ", gameField->player, " connects to other peer ", id, " ", address);
+void Peer::ConnectNewPlayer(const std::string &listenerAddress, int32_t id) {
+    auto address = SocketAddress::CreateIPv4(listenerAddress);
+    Log::Warning("Peer ", gameField->player, " connects to other peer ", id, " ", *address);
     TCPSocketPtr socket = TCPSocket::Create();
-    socket->Connect(address);
+    socket->Connect(*address);
     ConnectionPtr newPlayer = std::make_shared<Connection>(socket);
     AddConnection(newPlayer);
     AddPlayer(static_cast<int>(id), newPlayer);
     ConnectNewPlayerMessage().Write(this, newPlayer);
     Send(newPlayer);
+}
+
+void Peer::CheckReadyForGame() {
+    if (players.size() == playersCount - 1) {
+        ReadyForGameMessage().Write(this, masterPeer);
+        Send(masterPeer);
+    }
 }
 
 
@@ -142,28 +147,54 @@ void Peer::Message::Write(Peer *peer, const ConnectionPtr connection) {
 }
 
 void Peer::NewPlayerMessage::OnRead(Peer *peer, const ConnectionPtr connection) {
-    if (peer->master) {
+    if (peer->IsMaster()) {
         SocketAddress address;
         connection->socket->Addr(address, true);
-        uint16_t listenerPort;
-        connection->input >> listenerPort;
+        std::string remoteAddress = address.ToString();
+        std::string listenerAddress;
+        ReadAddress(connection->input, listenerAddress);
+        std::string host;
+        std::string port;
+        host = remoteAddress.substr(0, remoteAddress.find_last_of(':'));
+        port = listenerAddress.substr(listenerAddress.find_last_of(':'));
+        std::string listenerRemoteAddress = host + port;
         int id = static_cast<int>(peer->players.size() + 1);
-        peer->BroadcastNewPlayer(address.GetHost(), listenerPort, id);
+        peer->BroadcastNewPlayer(listenerRemoteAddress, id);
         peer->AddPlayer(id, connection);
         peer->AcceptNewPlayer(connection);
     } else {
-        uint32_t host, port;
         int32_t id;
-        connection->input >> host >> port >> id;
-        peer->ConnectNewPlayer(host, port, id);
+        std::string listenerAddress;
+        ReadAddress(connection->input, listenerAddress);
+        connection->input >> id;
+        peer->ConnectNewPlayer(listenerAddress, id);
     }
 }
 
 void Peer::NewPlayerMessage::OnWrite(Peer *peer, const ConnectionPtr connection) {
-    if (peer->master) {
-        connection->output << host << port << static_cast<int32_t>(id);
+    if (peer->IsMaster()) {
+        WriteAddress(connection->output, listenerAddress);
+        connection->output << static_cast<int32_t>(id);
     } else {
-        connection->output << peer->ListenerPort();
+        WriteAddress(connection->output, peer->ListenerAddress());
+    }
+}
+
+void Peer::NewPlayerMessage::ReadAddress(InputMemoryStream &stream, std::string &address) {
+    uint32_t size;
+    stream >> size;
+    address.resize(size);
+    for (int i = 0; i < size; i++) {
+        uint8_t symbol;
+        stream >> symbol;
+        address[i] = static_cast<char>(symbol);
+    }
+}
+
+void Peer::NewPlayerMessage::WriteAddress(OutputMemoryStream &stream, const std::string &address) {
+    stream << static_cast<uint32_t>(address.size());
+    for (int i = 0; i < address.size(); i++) {
+        stream << static_cast<uint8_t>(address[i]);
     }
 }
 
@@ -196,20 +227,22 @@ void Peer::ConnectNewPlayerMessage::OnRead(Peer *peer, const ConnectionPtr conne
     int32_t id;
     connection->input >> id;
     peer->AddPlayer(static_cast<int>(id), connection);
+    peer->CheckReadyForGame();
 }
 
 void Peer::ConnectNewPlayerMessage::OnWrite(Peer *peer, const ConnectionPtr connection) {
     connection->output << static_cast<int32_t>(peer->gameField->player);
+    peer->CheckReadyForGame();
 }
 
 void Peer::ReadyForGameMessage::OnRead(Peer *peer, const ConnectionPtr connection) {
-    
+    assert(peer->IsMaster());
+    peer->readyPlayers++;
+    if (peer->readyPlayers == peer->playersCount - 1) {
+        Log::Warning("Ready!");
+    }
 }
 
 void Peer::ReadyForGameMessage::OnWrite(Peer *peer, const ConnectionPtr connection) {
-    assert(peer->master);
-    peer->readyPlayers++;
-    if (peer->readyPlayers == peer->playersCount) {
-        Log::Warning("Ready!");
-    }
+    assert(connection == peer->masterPeer);
 }

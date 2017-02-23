@@ -9,6 +9,7 @@
 #ifndef Peer_hpp
 #define Peer_hpp
 
+#include <string>
 #include <queue>
 #include <unordered_map>
 #include "Messenger.hpp"
@@ -25,9 +26,9 @@ class Peer : public Messenger {
     typedef std::shared_ptr<Command> CommandPtr;
     typedef std::queue<CommandPtr> CommandsQueue;
     
-    bool master;
     int readyPlayers;
     int playersCount;
+    ConnectionPtr masterPeer;
     std::unordered_map<int, CommandsQueue> players;
     std::unordered_map<ConnectionPtr, int> ids;
     std::shared_ptr<GameField> gameField;
@@ -49,10 +50,13 @@ protected:
     virtual void OnDestroy() override;
     
 private:
+    bool IsMaster() { return masterPeer == nullptr; }
+    
     void AddPlayer(int id, const ConnectionPtr connection);
     void AcceptNewPlayer(const ConnectionPtr connection);
-    void BroadcastNewPlayer(uint32_t host, uint16_t port, int id);
-    void ConnectNewPlayer(uint32_t host, uint16_t port, int32_t id);
+    void BroadcastNewPlayer(const std::string &listenerAddress, int id);
+    void ConnectNewPlayer(const std::string &listenerAddress, int32_t id);
+    void CheckReadyForGame();
     
     struct Message {
         static std::shared_ptr<Message> Parse(Network::InputMemoryStream &stream);
@@ -71,12 +75,11 @@ private:
     struct NewPlayerMessage : public Message {
     private:
         int id;
-        uint32_t host;
-        uint16_t port;
+        std::string listenerAddress;
         
     public:
         NewPlayerMessage() {}
-        NewPlayerMessage(int id, uint32_t host, uint16_t port) : id(id), host(host), port(port) {}
+        NewPlayerMessage(int id, std::string listenerAddress) : id(id), listenerAddress(listenerAddress) {}
         
         virtual ~NewPlayerMessage() override {}
         virtual Msg Type() override { return Msg::NewPlayer; }
@@ -84,6 +87,8 @@ private:
     private:
         virtual void OnWrite(Peer *peer, const ConnectionPtr connection) override;
         virtual void OnRead(Peer *peer, const ConnectionPtr connection) override;
+        void ReadAddress(Network::InputMemoryStream &stream, std::string &address);
+        void WriteAddress(Network::OutputMemoryStream &stream, const std::string &address);
     };
     
     struct AcceptPlayerMessage : public Message {

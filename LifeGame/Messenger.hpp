@@ -38,7 +38,7 @@ protected:
     void AddConnection(const ConnectionPtr connection);
     void Send(const ConnectionPtr connection);
     void CloseConnection(const ConnectionPtr connection);
-    uint16_t ListenerPort();
+    std::string ListenerAddress();
     
 private:
     void Read(const std::vector<Network::TCPSocketPtr> &outRead);
