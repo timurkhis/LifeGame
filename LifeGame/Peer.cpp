@@ -11,6 +11,7 @@
 #include "GameField.hpp"
 #include "Peer.hpp"
 
+using namespace Messaging;
 using namespace Network;
 using namespace Geometry;
 
@@ -19,13 +20,13 @@ Peer::Peer(std::shared_ptr<GameField> gameField, std::shared_ptr<SocketAddress> 
     playersCount(0),
     readyPlayers(0) {
     this->gameField = gameField;
-    gameField->peer = std::shared_ptr<Peer>(this);
+    gameField->peer = this;
     this->address = address;
 }
 
 Peer::Peer(std::shared_ptr<GameField> gameField, int players) : playersCount(players), readyPlayers(1) {
     this->gameField = gameField;
-    gameField->peer = std::shared_ptr<Peer>(this);
+    gameField->peer = this;
     address = SocketAddress::CreateIPv4("localhost");
     Listen(address);
 }
@@ -46,9 +47,23 @@ void Peer::Init() {
     assert(gameField->player >= 0 && gameField->size.x > 0 && gameField->size.y > 0);
 }
 
-void Peer::Turn() {}
+void Peer::Turn() {
+    for (auto player : players) {
+        ApplyCommand(player.second);
+    }
+    ApplyCommand(selfCommands);
+    gameField->ProcessUnits();
+    CommandPtr command = std::make_shared<AddUnitsCommand>(gameField->player, std::move(addedUnits));
+    selfCommands.push(command);
+}
 
-void Peer::AddUnit(const Vector vector) {}
+void Peer::AddUnit(const Vector vector) {
+    addedUnits.push_back(vector);
+}
+
+void Peer::AddUnit(Geometry::Vector pos, int id) {
+    gameField->AddUnit(pos, id);
+}
 
 void Peer::OnMessageRecv(const ConnectionPtr connection) {
     std::shared_ptr<Message> msg = Message::Parse(connection->input);
@@ -97,6 +112,19 @@ void Peer::OnDestroy() {
     }
 }
 
+bool Peer::Pause() {
+    size_t count = -1;
+    for (const auto player : players) {
+        if (player.second.size() == 0) return true;
+        if (count == -1) {
+            count = player.second.size();
+        } else if (count != player.second.size()) {
+            return true;
+        }
+    }
+    return false;
+}
+
 void Peer::AddPlayer(int id, const ConnectionPtr connection) {
     players.emplace(id, CommandsQueue());
     ids.emplace(connection, id);
@@ -132,6 +160,11 @@ void Peer::CheckReadyForGame() {
         ReadyForGameMessage().Write(this, masterPeer);
         Send(masterPeer);
     }
+}
+
+void Peer::ApplyCommand(CommandsQueue &queue) {
+    queue.front()->Apply(this);
+    queue.pop();
 }
 
 
@@ -290,4 +323,16 @@ void Peer::ReadyForGameMessage::OnWrite(Peer *peer, const ConnectionPtr connecti
     if (!peer->IsMaster()) {
         assert(connection == peer->masterPeer);
     }
+}
+
+void Peer::CommandMessage::OnRead(Peer *peer, const Messaging::ConnectionPtr connection) {
+    int32_t id;
+    connection->input >> id;
+    CommandPtr command = Command::Parse(connection->input);
+    peer->players[static_cast<int>(id)].push(command);
+}
+
+void Peer::CommandMessage::OnWrite(Peer *peer, const Messaging::ConnectionPtr connection) {
+    connection->output << static_cast<int32_t>(peer->gameField->player);
+    peer->selfCommands.back()->Write(connection->output);
 }

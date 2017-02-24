@@ -11,8 +11,6 @@
 #include <stdexcept>
 #include "MemoryStream.hpp"
 
-using namespace Geometry;
-
 namespace Network {
     
     MemoryStream::MemoryStream(uint32_t capacity) : size(0), capacity(capacity) {

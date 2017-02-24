@@ -9,43 +9,47 @@
 #include "Connection.hpp"
 
 using namespace Network;
+
+namespace Messaging {
+
+    Connection::Connection(TCPSocketPtr socket) :
+        canRead(true),
+        canWrite(true),
+        input(1024),
+        output(1024),
+        recvData(0),
+        allRecvData(0),
+        sendData(0),
+        socket(socket) {
+        socket->NagleAlgorithm(false);
+    }
+
+    int Connection::Recv() {
+        uint32_t dataSize = socket->DataSize();
+        if (input.Capacity() - recvData < dataSize) {
+            input.Realloc(std::max(input.Capacity() * 2, dataSize));
+        }
+        int result = socket->Recv(input.Data(recvData), input.Capacity() - recvData);
+        recvData += result;
+        if (allRecvData == 0) {
+            input.Read(allRecvData, 0);
+        }
+        canRead = recvData == allRecvData;
+        if (canRead) {
+            recvData = 0;
+            allRecvData = 0;
+        }
+        return result;
+    }
+
+    int Connection::Send() {
+        int result = socket->Send(output.Data(sendData), output.Size() - sendData);
+        sendData += result;
+        canWrite = sendData == output.Size();
+        if (canWrite) {
+            sendData = 0;
+        }
+        return result;
+    }
     
-Connection::Connection(TCPSocketPtr socket) :
-    canRead(true),
-    canWrite(true),
-    input(1024),
-    output(1024),
-    recvData(0),
-    allRecvData(0),
-    sendData(0),
-    socket(socket) {
-    socket->NagleAlgorithm(false);
-}
-
-int Connection::Recv() {
-    uint32_t dataSize = socket->DataSize();
-    if (input.Capacity() - recvData < dataSize) {
-        input.Realloc(std::max(input.Capacity() * 2, dataSize));
-    }
-    int result = socket->Recv(input.Data(recvData), input.Capacity() - recvData);
-    recvData += result;
-    if (allRecvData == 0) {
-        input.Read(allRecvData, 0);
-    }
-    canRead = recvData == allRecvData;
-    if (canRead) {
-        recvData = 0;
-        allRecvData = 0;
-    }
-    return result;
-}
-
-int Connection::Send() {
-    int result = socket->Send(output.Data(sendData), output.Size() - sendData);
-    sendData += result;
-    canWrite = sendData == output.Size();
-    if (canWrite) {
-        sendData = 0;
-    }
-    return result;
 }

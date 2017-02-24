@@ -12,111 +12,115 @@
 
 using namespace Network;
 
-Messenger::~Messenger() {}
+namespace Messaging {
+    
+    Messenger::~Messenger() {}
 
-void Messenger::Destroy() {
-    OnDestroy();
-    listener.reset();
-    recvList.clear();
-    sendList.clear();
-    exceptList.clear();
-    connections.clear();
-}
+    void Messenger::Destroy() {
+        OnDestroy();
+        listener.reset();
+        recvList.clear();
+        sendList.clear();
+        exceptList.clear();
+        connections.clear();
+    }
 
-void Messenger::Update(bool block) {
-    std::vector<TCPSocketPtr> outRead;
-    std::vector<TCPSocketPtr> outWrite;
-    std::vector<TCPSocketPtr> outExcept;
-    SocketSelector::Select(&recvList, &outRead, &sendList, &outWrite, &exceptList, &outExcept, block);
-    Read(outRead);
-    Write(outWrite);
-    Except(outExcept);
-}
+    void Messenger::Update(bool block) {
+        std::vector<TCPSocketPtr> outRead;
+        std::vector<TCPSocketPtr> outWrite;
+        std::vector<TCPSocketPtr> outExcept;
+        SocketSelector::Select(&recvList, &outRead, &sendList, &outWrite, &exceptList, &outExcept, block);
+        Read(outRead);
+        Write(outWrite);
+        Except(outExcept);
+    }
 
-void Messenger::Read(const std::vector<TCPSocketPtr> &outRead) {
-    NewConnection(outRead);
-    for (TCPSocketPtr socket : outRead) {
-        auto iter = std::find_if(connections.begin(), connections.end(), [socket](ConnectionPtr c){ return socket == c->socket; });
-        if (iter == connections.end()) continue;
-        ConnectionPtr connection = *iter;
-        if (connection->Recv() == 0) {
-            CloseConnection(connection, true);
-        } else if (connection->CanRead()) {
-            OnMessageRecv(connection);
+    void Messenger::Read(const std::vector<TCPSocketPtr> &outRead) {
+        NewConnection(outRead);
+        for (TCPSocketPtr socket : outRead) {
+            auto iter = std::find_if(connections.begin(), connections.end(), [socket](ConnectionPtr c){ return socket == c->socket; });
+            if (iter == connections.end()) continue;
+            ConnectionPtr connection = *iter;
+            if (connection->Recv() == 0) {
+                CloseConnection(connection, true);
+            } else if (connection->CanRead()) {
+                OnMessageRecv(connection);
+            }
         }
     }
-}
 
-void Messenger::Write(const std::vector<TCPSocketPtr> &outWrite) {
-    for (TCPSocketPtr socket : outWrite) {
-        auto iter = std::find_if(connections.begin(), connections.end(), [socket](ConnectionPtr c){ return socket == c->socket; });
-        if (iter == connections.end()) continue;
-        ConnectionPtr connection = *iter;
-        connection->Send();
-        if (connection->CanWrite()) {
-            Remove(connection->socket, sendList);
-            OnMessageSend(connection);
+    void Messenger::Write(const std::vector<TCPSocketPtr> &outWrite) {
+        for (TCPSocketPtr socket : outWrite) {
+            auto iter = std::find_if(connections.begin(), connections.end(), [socket](ConnectionPtr c){ return socket == c->socket; });
+            if (iter == connections.end()) continue;
+            ConnectionPtr connection = *iter;
+            connection->Send();
+            if (connection->CanWrite()) {
+                Remove(connection->socket, sendList);
+                OnMessageSend(connection);
+            }
         }
     }
-}
 
-void Messenger::Except(const std::vector<TCPSocketPtr> &outExcept) {}
+    void Messenger::Except(const std::vector<TCPSocketPtr> &outExcept) {}
 
-void Messenger::NewConnection(const std::vector<TCPSocketPtr> &outRead) {
-    if (listener == nullptr || std::find(outRead.begin(), outRead.end(), listener) == outRead.end()) return;
-    TCPSocketPtr socket = listener->Accept(*address);
-    ConnectionPtr connection = std::make_shared<Connection>(socket);
-    OnNewConnection(connection);
-}
-
-void Messenger::CloseConnection(const ConnectionPtr connection, bool callback) {
-    if (callback) {
-        OnCloseConnection(connection);
+    void Messenger::NewConnection(const std::vector<TCPSocketPtr> &outRead) {
+        if (listener == nullptr || std::find(outRead.begin(), outRead.end(), listener) == outRead.end()) return;
+        TCPSocketPtr socket = listener->Accept(*address);
+        ConnectionPtr connection = std::make_shared<Connection>(socket);
+        OnNewConnection(connection);
     }
-    Remove(connection->socket, recvList);
-    Remove(connection->socket, sendList);
-    Remove(connection->socket, exceptList);
-    auto iter = std::find(connections.begin(), connections.end(), connection);
-    if (iter != connections.end()) {
-        connections.erase(iter);
+
+    void Messenger::CloseConnection(const ConnectionPtr connection, bool callback) {
+        if (callback) {
+            OnCloseConnection(connection);
+        }
+        Remove(connection->socket, recvList);
+        Remove(connection->socket, sendList);
+        Remove(connection->socket, exceptList);
+        auto iter = std::find(connections.begin(), connections.end(), connection);
+        if (iter != connections.end()) {
+            connections.erase(iter);
+        }
     }
-}
 
-void Messenger::Remove(TCPSocketPtr socket, std::vector<TCPSocketPtr> &from) {
-    auto iter = std::find(from.begin(), from.end(), socket);
-    if (iter != from.end()) {
-        from.erase(iter);
+    void Messenger::Remove(TCPSocketPtr socket, std::vector<TCPSocketPtr> &from) {
+        auto iter = std::find(from.begin(), from.end(), socket);
+        if (iter != from.end()) {
+            from.erase(iter);
+        }
     }
-}
 
-void Messenger::Listen(std::shared_ptr<Network::SocketAddress> address) {
-    std::shared_ptr<SocketAddress> addr = address != nullptr ? address : SocketAddress::CreateIPv4("localhost");
-    listener = TCPSocket::Create();
-    listener->Bind(*addr);
-    listener->Listen();
-    listener->Addr(*addr);
-    recvList.push_back(listener);
-}
-
-void Messenger::AddConnection(const ConnectionPtr connection) {
-    connections.push_back(connection);
-    recvList.push_back(connection->socket);
-}
-
-void Messenger::Send(const ConnectionPtr connection) {
-    assert(connection->CanWrite());
-    sendList.push_back(connection->socket);
-}
-
-void Messenger::CloseConnection(const ConnectionPtr connection) {
-    CloseConnection(connection, false);
-}
-
-std::string Messenger::ListenerAddress() {
-    if (listener == nullptr) {
-        throw std::runtime_error("Listener is nullptr!");
+    void Messenger::Listen(std::shared_ptr<Network::SocketAddress> address) {
+        std::shared_ptr<SocketAddress> addr = address != nullptr ? address : SocketAddress::CreateIPv4("localhost");
+        listener = TCPSocket::Create();
+        listener->Bind(*addr);
+        listener->Listen();
+        listener->Addr(*addr);
+        recvList.push_back(listener);
     }
-    SocketAddress address;
-    listener->Addr(address);
-    return address.ToString();
+
+    void Messenger::AddConnection(const ConnectionPtr connection) {
+        connections.push_back(connection);
+        recvList.push_back(connection->socket);
+    }
+
+    void Messenger::Send(const ConnectionPtr connection) {
+        assert(connection->CanWrite());
+        sendList.push_back(connection->socket);
+    }
+
+    void Messenger::CloseConnection(const ConnectionPtr connection) {
+        CloseConnection(connection, false);
+    }
+
+    std::string Messenger::ListenerAddress() {
+        if (listener == nullptr) {
+            throw std::runtime_error("Listener is nullptr!");
+        }
+        SocketAddress address;
+        listener->Addr(address);
+        return address.ToString();
+    }
+
 }

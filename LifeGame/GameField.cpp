@@ -23,8 +23,7 @@ GameField::GameField(Geometry::Vector size, unsigned turnTime, int player) :
 
 void GameField::AddUnit(Vector unit) {
     if (turn) return;
-    auto inserted = units->emplace(player, unit);
-    if (inserted.second) {
+    if (AddUnit(unit, player)) {
         peer->AddUnit(unit);
     }
 }
@@ -37,6 +36,7 @@ void GameField::ClampVector(Vector &vec) const {
 }
 
 void GameField::ProcessUnits() {
+    turn = false;
     std::unordered_map<Unit, int> processCells;
     for (const auto &unit : *units) {
         ProcessUnit(unit, processCells);
@@ -74,6 +74,10 @@ void GameField::ProcessUnit(const Unit &unit, std::unordered_map<Unit, int> &pro
             }
         }
     }
+}
+
+bool GameField::AddUnit(Geometry::Vector unit, int id) {
+    return units->emplace(id, unit).second;
 }
 
 void GameField::Turn() {

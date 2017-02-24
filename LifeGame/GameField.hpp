@@ -33,8 +33,8 @@ struct std::hash<Unit> {
 
 class GameField {
     friend class Peer;
+    class Peer *peer;
     std::shared_ptr<std::unordered_set<Unit>> units;
-    std::shared_ptr<class Peer> peer;
     Geometry::Vector size;
     int player;
     unsigned turnTime;
@@ -57,6 +57,7 @@ public:
     
 private:
     void ProcessUnit(const Unit &unit, std::unordered_map<Unit, int> &processCells);
+    bool AddUnit(Geometry::Vector unit, int id);
 };
 
 #endif /* GameField_hpp */

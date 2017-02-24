@@ -13,7 +13,6 @@
 #include <netdb.h>
 #include <type_traits>
 #include <stdint.h>
-#include "Vector.hpp"
 
 namespace Network {
     
