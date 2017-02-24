@@ -71,10 +71,20 @@ void Parse(int argc, char **argv) {
             args.presetPath = argv[++i];
         }
         if (std::strcmp("turn", argv[i]) == 0) {
-            args.turnTime = atoi(argv[++i]);
+            unsigned turnTime = atoi(argv[++i]);
+            if (turnTime > 10) {
+                turnTime = 10;
+            }
+            args.turnTime = turnTime > 0 ? 1000 / turnTime : 0;
         }
         if (std::strcmp("players", argv[i]) == 0) {
-            args.players = atoi(argv[++i]);
+            int players = atoi(argv[++i]);
+            if (players > 0) {
+                if (players > 8) {
+                    players = 8;
+                }
+                args.players = players;
+            }
         }
     }
 }

@@ -11,6 +11,11 @@
 
 namespace Geometry {
     
+    const Vector Vector::zero = Vector();
+    const Vector Vector::one = Vector(1, 1);
+    const Vector Vector::right = Vector(1, 0);
+    const Vector Vector::up = Vector(0, 1);
+    
     int Vector::Dot(const Vector &lhs, const Vector &rhs) {
         return lhs.x * rhs.x + lhs.y * rhs.y;
     }
@@ -75,4 +80,5 @@ namespace Geometry {
         lhs << rhs.x << ' ' << rhs.y;
         return lhs;
     }
+    
 }

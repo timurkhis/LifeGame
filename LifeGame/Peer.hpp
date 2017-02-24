@@ -29,6 +29,7 @@ class Peer : public Messenger {
     int readyPlayers;
     int playersCount;
     ConnectionPtr masterPeer;
+    CommandsQueue selfCommands;
     std::unordered_map<int, CommandsQueue> players;
     std::unordered_map<ConnectionPtr, int> ids;
     std::shared_ptr<GameField> gameField;
@@ -58,6 +59,16 @@ private:
     void BroadcastNewPlayer(const std::string &listenerAddress, int id);
     void ConnectNewPlayer(const std::string &listenerAddress, int id);
     void CheckReadyForGame();
+    
+    #ifndef MESSAGE
+    #define MESSAGE(newMsg, msgType) struct newMsg##Message : public Message {    \
+        virtual ~newMsg##Message() override {}                                    \
+        virtual Msg Type() override { return msgType; }                           \
+    private:                                                                      \
+        virtual void OnWrite(Peer *peer, const ConnectionPtr connection) override;\
+        virtual void OnRead(Peer *peer, const ConnectionPtr connection) override; \
+    };
+    #endif
     
     struct Message {
         static std::shared_ptr<Message> Parse(Network::InputMemoryStream &stream);
@@ -92,32 +103,9 @@ private:
         void WriteAddress(Network::OutputMemoryStream &stream, const std::string &address);
     };
     
-    struct AcceptPlayerMessage : public Message {
-        virtual ~AcceptPlayerMessage() override {}
-        virtual Msg Type() override { return Msg::AcceptPlayer; }
-        
-    private:
-        virtual void OnWrite(Peer *peer, const ConnectionPtr connection) override;
-        virtual void OnRead(Peer *peer, const ConnectionPtr connection) override;
-    };
-    
-    struct ConnectNewPlayerMessage : public Message {
-        virtual ~ConnectNewPlayerMessage() override {}
-        virtual Msg Type() override { return Msg::ConnectPlayer; }
-        
-    private:
-        virtual void OnWrite(Peer *peer, const ConnectionPtr connection) override;
-        virtual void OnRead(Peer *peer, const ConnectionPtr connection) override;
-    };
-    
-    struct ReadyForGameMessage : public Message {
-        virtual ~ReadyForGameMessage() override {}
-        virtual Msg Type() override { return Msg::ReadyForGame; }
-        
-    private:
-        virtual void OnWrite(Peer *peer, const ConnectionPtr connection) override;
-        virtual void OnRead(Peer *peer, const ConnectionPtr connection) override;
-    };
+    MESSAGE(AcceptPlayer, Msg::AcceptPlayer)
+    MESSAGE(ConnectPlayer, Msg::ConnectPlayer)
+    MESSAGE(ReadyForGame, Msg::ReadyForGame)
 };
 
 #endif /* Peer_hpp */

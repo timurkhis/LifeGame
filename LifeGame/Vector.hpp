@@ -18,14 +18,15 @@ namespace Geometry {
         int y;
     
     public:
+        static const Vector zero;
+        static const Vector one;
+        static const Vector right;
+        static const Vector up;
+        
+        static int Dot(const Vector &lhs, const Vector &rhs);
+        
         explicit Vector() : x(0), y(0) {}
         explicit Vector(int x, int y) : x(x), y(y) {}
-    
-        static int Dot(const Vector &lhs, const Vector &rhs);
-        static Vector Zero() { return Vector(); }
-        static Vector One() { return Vector(1, 1); }
-        static Vector Right() { return Vector(1, 0); }
-        static Vector Up() { return Vector(0, 1); }
         
         friend const Vector operator - (const Vector &lhs, const Vector &rhs);
         friend const Vector operator + (const Vector &lhs, const Vector &rhs);

@@ -75,18 +75,18 @@ void Peer::OnCloseConnection(const ConnectionPtr connection) {
         return;
     }
     const int id = ids[connection];
-    if (connection == masterPeer) {
-        if (gameField->player - id == 1) {
-            masterPeer.reset();
-        } else {
-            typedef std::unordered_map<ConnectionPtr, int>::value_type iterator;
-            auto newMaster = std::find_if(ids.begin(), ids.end(), [id](const iterator &it){ return it.second - id == 1; });
-            assert(newMaster->second);
-            masterPeer = newMaster->first;
-        }
-    }
     ids.erase(connection);
     players.erase(id);
+    
+    if (connection == masterPeer) {
+        typedef const std::unordered_map<ConnectionPtr, int>::value_type value;
+        auto min = std::min_element(ids.begin(), ids.end(), [](value v1, value v2){ return v1.second < v2.second; });
+        if (min == ids.end() || min->second == gameField->player) {
+            masterPeer.reset();
+        } else {
+            masterPeer = min->first;
+        }
+    }
     Log::Warning("Peer", id, "closed connection. Master is", IsMaster() ? gameField->player : ids[masterPeer]);
 }
 
@@ -123,7 +123,7 @@ void Peer::ConnectNewPlayer(const std::string &listenerAddress, int id) {
     ConnectionPtr newPlayer = std::make_shared<Connection>(socket);
     AddConnection(newPlayer);
     AddPlayer(id, newPlayer);
-    ConnectNewPlayerMessage().Write(this, newPlayer);
+    ConnectPlayerMessage().Write(this, newPlayer);
     Send(newPlayer);
 }
 
@@ -144,7 +144,7 @@ std::shared_ptr<Peer::Message> Peer::Message::Parse(InputMemoryStream &stream) {
     switch (static_cast<Msg>(type)) {
         case Msg::NewPlayer:     return std::make_shared<NewPlayerMessage>();
         case Msg::AcceptPlayer:  return std::make_shared<AcceptPlayerMessage>();
-        case Msg::ConnectPlayer: return std::make_shared<ConnectNewPlayerMessage>();
+        case Msg::ConnectPlayer: return std::make_shared<ConnectPlayerMessage>();
         case Msg::ReadyForGame:  return std::make_shared<ReadyForGameMessage>();
         default:                 return nullptr;
     }
@@ -245,14 +245,14 @@ void Peer::AcceptPlayerMessage::OnWrite(Peer *peer, const ConnectionPtr connecti
     << static_cast<uint32_t>(peer->gameField->turnTime);
 }
 
-void Peer::ConnectNewPlayerMessage::OnRead(Peer *peer, const ConnectionPtr connection) {
+void Peer::ConnectPlayerMessage::OnRead(Peer *peer, const ConnectionPtr connection) {
     int32_t id;
     connection->input >> id;
     peer->AddPlayer(static_cast<int>(id), connection);
     peer->CheckReadyForGame();
 }
 
-void Peer::ConnectNewPlayerMessage::OnWrite(Peer *peer, const ConnectionPtr connection) {
+void Peer::ConnectPlayerMessage::OnWrite(Peer *peer, const ConnectionPtr connection) {
     connection->output << static_cast<int32_t>(peer->gameField->player);
     peer->CheckReadyForGame();
 }

@@ -404,8 +404,8 @@ void Window::CalulateSelectedCells() const {
         max.y = tempY;
     }
     const Rect screentRect(min, max - min);
-    Vector cellMin = Vector::One() * std::numeric_limits<int>::max();
-    Vector cellMax = Vector::One() * std::numeric_limits<int>::min();
+    Vector cellMin = Vector::one * std::numeric_limits<int>::max();
+    Vector cellMax = Vector::one * std::numeric_limits<int>::min();
     for (const auto &unit : *gameField->GetUnits()) {
         Vector screenUnit = CellToScreen(unit.position);
         if (screentRect.Contains(screenUnit)) {
