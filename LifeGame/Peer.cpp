@@ -53,8 +53,8 @@ void Peer::Turn() {
     }
     ApplyCommand(selfCommands);
     gameField->ProcessUnits();
-    CommandPtr command = std::make_shared<AddUnitsCommand>(gameField->player, std::move(addedUnits));
-    selfCommands.push(command);
+//    CommandPtr command = std::make_shared<AddUnitsCommand>(gameField->player, std::move(addedUnits));
+//    selfCommands.push(command);
 }
 
 void Peer::AddUnit(const Vector vector) {
@@ -163,6 +163,7 @@ void Peer::CheckReadyForGame() {
 }
 
 void Peer::ApplyCommand(CommandsQueue &queue) {
+    if (queue.size() == 0) return;
     queue.front()->Apply(this);
     queue.pop();
 }
