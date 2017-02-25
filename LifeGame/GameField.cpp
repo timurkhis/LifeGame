@@ -15,15 +15,15 @@ using namespace Geometry;
 GameField::GameField() : GameField(Vector(), 0, -1) {}
 
 GameField::GameField(Geometry::Vector size, unsigned turnTime, int player) :
-    turn(false),
     player(player),
     turnTime(turnTime),
     size(size),
     units(new std::unordered_set<Unit>()) {}
 
 void GameField::AddUnit(Vector unit) {
-    if (turn) return;
-    if (AddUnit(unit, player)) {
+    if (IsGameStopped()) return;
+    const Unit key(player, unit);
+    if (units->find(key) == units->end()) {
         peer->AddUnit(unit);
     }
 }
@@ -36,7 +36,6 @@ void GameField::ClampVector(Vector &vec) const {
 }
 
 void GameField::ProcessUnits() {
-    turn = false;
     std::unordered_map<Unit, int> processCells;
     for (const auto &unit : *units) {
         ProcessUnit(unit, processCells);
@@ -80,9 +79,12 @@ bool GameField::AddUnit(Geometry::Vector unit, int id) {
     return units->emplace(id, unit).second;
 }
 
+bool GameField::IsGameStopped() const {
+    return !peer->IsGameStarted() || peer->IsPause();
+}
+
 void GameField::Turn() {
-    if (turn) return;
-    turn = true;
+    if (IsGameStopped()) return;
     peer->Turn();
 }
 

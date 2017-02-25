@@ -13,6 +13,7 @@
 #include <memory>
 
 enum class Cmd {
+    Empty,
     AddUnits
 };
 
@@ -30,6 +31,17 @@ public:
 private:
     virtual void OnRead(Network::InputMemoryStream &stream) = 0;
     virtual void OnWrite(Network::OutputMemoryStream &stream) = 0;
+};
+
+class EmptyCommand : public Command {
+public:
+    virtual ~EmptyCommand() override {}
+    virtual Cmd Type() override { return Cmd::Empty; }
+    virtual void Apply(class Peer *peer) override {}
+    
+private:
+    virtual void OnRead(Network::InputMemoryStream &stream) override {}
+    virtual void OnWrite(Network::OutputMemoryStream &stream) override {}
 };
 
 class AddUnitsCommand : public Command {

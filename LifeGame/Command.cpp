@@ -20,6 +20,9 @@ std::shared_ptr<Command> Command::Parse(InputMemoryStream &stream) {
     stream.Read(cmd, stream.Size());
     std::shared_ptr<Command> result;
     switch (static_cast<Cmd>(cmd)) {
+        case Cmd::Empty:
+            result = std::make_shared<EmptyCommand>();
+            break;
         case Cmd::AddUnits:
             result = std::make_shared<AddUnitsCommand>();
             break;

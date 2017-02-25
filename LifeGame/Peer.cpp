@@ -18,15 +18,21 @@ using namespace Geometry;
 Peer::Peer(std::shared_ptr<GameField> gameField, std::shared_ptr<SocketAddress> address) :
     masterPeer(new Connection(TCPSocket::Create())),
     playersCount(0),
-    readyPlayers(0) {
+    readyPlayers(0),
+    futureTurns(3),
+    selfCommands(new CommandsQueue()) {
     this->gameField = gameField;
-    gameField->peer = this;
+    gameField->SetPeer(this);
     this->address = address;
 }
 
-Peer::Peer(std::shared_ptr<GameField> gameField, int players) : playersCount(players), readyPlayers(1) {
+Peer::Peer(std::shared_ptr<GameField> gameField, int players) :
+    playersCount(players),
+    readyPlayers(1),
+    futureTurns(3),
+    selfCommands(new CommandsQueue()) {
     this->gameField = gameField;
-    gameField->peer = this;
+    gameField->SetPeer(this);
     address = SocketAddress::CreateIPv4("localhost");
     Listen(address);
 }
@@ -44,7 +50,7 @@ void Peer::Init() {
     do {
         Update(true);
     } while (!masterPeer->CanRead());
-    assert(gameField->player >= 0 && gameField->size.x > 0 && gameField->size.y > 0);
+    assert(gameField->IsInitialized());
 }
 
 void Peer::Turn() {
@@ -53,8 +59,18 @@ void Peer::Turn() {
     }
     ApplyCommand(selfCommands);
     gameField->ProcessUnits();
-//    CommandPtr command = std::make_shared<AddUnitsCommand>(gameField->player, std::move(addedUnits));
-//    selfCommands.push(command);
+    CommandPtr command;
+    if (addedUnits.size() > 0) {
+        command = std::make_shared<AddUnitsCommand>(gameField->Player(), std::move(addedUnits));
+    } else {
+        command = std::make_shared<EmptyCommand>();
+    }
+    selfCommands->push(command);
+    CommandMessage message;
+    for (auto id : ids) {
+        message.Write(this, id.first);
+        Send(id.first);
+    }
 }
 
 void Peer::AddUnit(const Vector vector) {
@@ -63,6 +79,17 @@ void Peer::AddUnit(const Vector vector) {
 
 void Peer::AddUnit(Geometry::Vector pos, int id) {
     gameField->AddUnit(pos, id);
+}
+
+bool Peer::IsPause() const {
+    typedef const std::unordered_map<int, CommandsQueuePtr>::value_type &value;
+    const auto emptyQueue = std::find_if(players.begin(), players.end(), [](value v){ return v.second->size() == 0; });
+    
+    if (emptyQueue != players.end()) {
+        Log::Warning("Peer", gameField->Player(), "has not recieved command from", emptyQueue->first);
+        return true;
+    }
+    return false;
 }
 
 void Peer::OnMessageRecv(const ConnectionPtr connection) {
@@ -94,15 +121,15 @@ void Peer::OnCloseConnection(const ConnectionPtr connection) {
     players.erase(id);
     
     if (connection == masterPeer) {
-        typedef const std::unordered_map<ConnectionPtr, int>::value_type value;
+        typedef const std::unordered_map<ConnectionPtr, int>::value_type &value;
         auto min = std::min_element(ids.begin(), ids.end(), [](value v1, value v2){ return v1.second < v2.second; });
-        if (min == ids.end() || min->second == gameField->player) {
+        if (min == ids.end() || min->second == gameField->Player()) {
             masterPeer.reset();
         } else {
             masterPeer = min->first;
         }
     }
-    Log::Warning("Peer", id, "closed connection. Master is", IsMaster() ? gameField->player : ids[masterPeer]);
+    Log::Warning("Peer", id, "closed connection. Master is", IsMaster() ? gameField->Player() : ids[masterPeer]);
 }
 
 void Peer::OnDestroy() {
@@ -112,21 +139,8 @@ void Peer::OnDestroy() {
     }
 }
 
-bool Peer::Pause() {
-    size_t count = -1;
-    for (const auto player : players) {
-        if (player.second.size() == 0) return true;
-        if (count == -1) {
-            count = player.second.size();
-        } else if (count != player.second.size()) {
-            return true;
-        }
-    }
-    return false;
-}
-
 void Peer::AddPlayer(int id, const ConnectionPtr connection) {
-    players.emplace(id, CommandsQueue());
+    players.emplace(id, std::make_shared<CommandsQueue>());
     ids.emplace(connection, id);
 }
 
@@ -145,7 +159,7 @@ void Peer::BroadcastNewPlayer(const std::string &listenerAddress, int id) {
 
 void Peer::ConnectNewPlayer(const std::string &listenerAddress, int id) {
     auto address = SocketAddress::CreateIPv4(listenerAddress);
-    Log::Warning("Peer", gameField->player, "connects to other peer", id, *address);
+    Log::Warning("Peer", gameField->Player(), "connects to other peer", id, *address);
     TCPSocketPtr socket = TCPSocket::Create();
     socket->Connect(*address);
     ConnectionPtr newPlayer = std::make_shared<Connection>(socket);
@@ -162,10 +176,23 @@ void Peer::CheckReadyForGame() {
     }
 }
 
-void Peer::ApplyCommand(CommandsQueue &queue) {
-    if (queue.size() == 0) return;
-    queue.front()->Apply(this);
-    queue.pop();
+void Peer::ApplyCommand(CommandsQueuePtr queue) {
+    if (queue->size() == 0) return;
+    assert(queue->size() <= futureTurns + 1);
+    queue->front()->Apply(this);
+    queue->pop();
+}
+
+void Peer::StartGame() {
+    for (auto player : players) {
+        for (int i = 0; i < futureTurns; i++) {
+            player.second->push(std::make_shared<EmptyCommand>());
+        }
+    }
+    for (int i = 0; i < futureTurns; i++) {
+        selfCommands->push(std::make_shared<EmptyCommand>());
+    }
+    assert(!IsPause());
 }
 
 
@@ -180,6 +207,7 @@ std::shared_ptr<Peer::Message> Peer::Message::Parse(InputMemoryStream &stream) {
         case Msg::AcceptPlayer:  return std::make_shared<AcceptPlayerMessage>();
         case Msg::ConnectPlayer: return std::make_shared<ConnectPlayerMessage>();
         case Msg::ReadyForGame:  return std::make_shared<ReadyForGameMessage>();
+        case Msg::Command:       return std::make_shared<CommandMessage>();
         default:                 return nullptr;
     }
 }
@@ -191,12 +219,12 @@ void Peer::Message::Read(Peer *peer, const ConnectionPtr connection) {
     if (static_cast<Msg>(type) != Type()) {
         Log::Error("Messages types are not the same!");
     }
-    Log::Warning("Peer", peer->gameField->player, "reads message of type", type);
+    Log::Warning("Peer", peer->gameField->Player(), "reads message of type", type);
     OnRead(peer, connection);
 }
 
 void Peer::Message::Write(Peer *peer, const ConnectionPtr connection) {
-    Log::Warning("Peer", peer->gameField->player, "writes message of type", static_cast<int32_t>(Type()));
+    Log::Warning("Peer", peer->gameField->Player(), "writes message of type", static_cast<int32_t>(Type()));
     uint32_t msgSize;
     connection->output << msgSize << static_cast<int32_t>(Type());
     OnWrite(peer, connection);
@@ -263,20 +291,21 @@ void Peer::AcceptPlayerMessage::OnRead(Peer *peer, const ConnectionPtr connectio
     connection->input >> playersCount >> x >> y >> id >> masterId >> turnTime;
     peer->playersCount = static_cast<int>(playersCount);
     
-    peer->gameField->size = Vector(static_cast<int>(x), static_cast<int>(y));
-    peer->gameField->player = static_cast<int>(id);
-    peer->gameField->turnTime = static_cast<unsigned>(turnTime);
+    peer->gameField->SetSize(Vector(static_cast<int>(x), static_cast<int>(y)));
+    peer->gameField->SetPlayer(static_cast<int>(id));
+    peer->gameField->SetTurnTime(static_cast<unsigned>(turnTime));
     peer->AddPlayer(static_cast<int>(masterId), connection);
+    assert(peer->gameField->Player() >= 0 && peer->gameField->Player() < peer->playersCount);
 }
 
 void Peer::AcceptPlayerMessage::OnWrite(Peer *peer, const ConnectionPtr connection) {
     connection->output
     << static_cast<int32_t>(peer->playersCount)
-    << static_cast<int32_t>(peer->gameField->size.x)
-    << static_cast<int32_t>(peer->gameField->size.y)
+    << static_cast<int32_t>(peer->gameField->GetSize().x)
+    << static_cast<int32_t>(peer->gameField->GetSize().y)
     << static_cast<int32_t>(peer->players.size())
-    << static_cast<int32_t>(peer->gameField->player)
-    << static_cast<uint32_t>(peer->gameField->turnTime);
+    << static_cast<int32_t>(peer->gameField->Player())
+    << static_cast<uint32_t>(peer->gameField->TurnTime());
 }
 
 void Peer::ConnectPlayerMessage::OnRead(Peer *peer, const ConnectionPtr connection) {
@@ -287,7 +316,7 @@ void Peer::ConnectPlayerMessage::OnRead(Peer *peer, const ConnectionPtr connecti
 }
 
 void Peer::ConnectPlayerMessage::OnWrite(Peer *peer, const ConnectionPtr connection) {
-    connection->output << static_cast<int32_t>(peer->gameField->player);
+    connection->output << static_cast<int32_t>(peer->gameField->Player());
     peer->CheckReadyForGame();
 }
 
@@ -306,10 +335,12 @@ void Peer::ReadyForGameMessage::OnRead(Peer *peer, const ConnectionPtr connectio
                 msg.Write(peer, it.first);
                 peer->Send(it.first);
             }
+            peer->StartGame();
         }
     } else {
         assert(peer->readyPlayers == 0);
         peer->readyPlayers = readyPlayers;
+        peer->StartGame();
         assert(peer->playersCount == peer->readyPlayers);
     }
 }
@@ -330,10 +361,12 @@ void Peer::CommandMessage::OnRead(Peer *peer, const Messaging::ConnectionPtr con
     int32_t id;
     connection->input >> id;
     CommandPtr command = Command::Parse(connection->input);
-    peer->players[static_cast<int>(id)].push(command);
+    if (command != nullptr) {
+        peer->players.at(static_cast<int>(id))->push(command);
+    }
 }
 
 void Peer::CommandMessage::OnWrite(Peer *peer, const Messaging::ConnectionPtr connection) {
-    connection->output << static_cast<int32_t>(peer->gameField->player);
-    peer->selfCommands.back()->Write(connection->output);
+    connection->output << static_cast<int32_t>(peer->gameField->Player());
+    peer->selfCommands->back()->Write(connection->output);
 }

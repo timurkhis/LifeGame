@@ -32,13 +32,11 @@ struct std::hash<Unit> {
 };
 
 class GameField {
-    friend class Peer;
     class Peer *peer;
     std::shared_ptr<std::unordered_set<Unit>> units;
     Geometry::Vector size;
     int player;
     unsigned turnTime;
-    bool turn;
     
 public:
     explicit GameField();
@@ -46,10 +44,19 @@ public:
     
     int Player() const { return player; }
     unsigned TurnTime() const { return turnTime; }
-    void ClampVector(Geometry::Vector &vec) const;
     Geometry::Vector GetSize() const { return size; }
+    bool IsInitialized() const { return player >= 0 && size.x > 0 && size.y > 0; }
+    
+    void SetPeer(Peer *peer) { this->peer = peer; }
+    void SetTurnTime(unsigned turnTime) { this->turnTime = turnTime; }
+    void SetSize(Geometry::Vector size) { this->size = size; }
+    void SetPlayer(int player) { this->player = player; }
+    
     const std::shared_ptr<std::unordered_set<Unit>> GetUnits() const { return units; }
+    void ClampVector(Geometry::Vector &vec) const;
     void AddUnit(Geometry::Vector unit);
+    bool AddUnit(Geometry::Vector unit, int id);
+    
     void Turn();
     void Update();
     void ProcessUnits();
@@ -57,7 +64,7 @@ public:
     
 private:
     void ProcessUnit(const Unit &unit, std::unordered_map<Unit, int> &processCells);
-    bool AddUnit(Geometry::Vector unit, int id);
+    bool IsGameStopped() const;
 };
 
 #endif /* GameField_hpp */

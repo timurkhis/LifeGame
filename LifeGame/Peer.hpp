@@ -27,12 +27,14 @@ enum class Msg {
 class Peer : public Messaging::Messenger {
     typedef std::shared_ptr<Command> CommandPtr;
     typedef std::queue<CommandPtr> CommandsQueue;
+    typedef std::shared_ptr<CommandsQueue> CommandsQueuePtr;
     
     int readyPlayers;
     int playersCount;
+    const int futureTurns;
     Messaging::ConnectionPtr masterPeer;
-    CommandsQueue selfCommands;
-    std::unordered_map<int, CommandsQueue> players;
+    CommandsQueuePtr selfCommands;
+    std::unordered_map<int, CommandsQueuePtr> players;
     std::unordered_map<Messaging::ConnectionPtr, int> ids;
     std::shared_ptr<class GameField> gameField;
     std::vector<Geometry::Vector> addedUnits;
@@ -46,6 +48,8 @@ public:
     void Turn();
     void AddUnit(const Geometry::Vector vector);
     void AddUnit(Geometry::Vector pos, int id);
+    bool IsPause() const;
+    bool IsGameStarted() const { return playersCount == readyPlayers; }
     
 protected:
     virtual void OnMessageRecv(const Messaging::ConnectionPtr connection) override;
@@ -56,15 +60,14 @@ protected:
     
 private:
     bool IsMaster() const { return masterPeer == nullptr; }
-    bool IsGameStarted() const { return playersCount == readyPlayers; }
-    bool Pause();
     
     void AddPlayer(int id, const Messaging::ConnectionPtr connection);
     void AcceptNewPlayer(const Messaging::ConnectionPtr connection);
     void BroadcastNewPlayer(const std::string &listenerAddress, int id);
     void ConnectNewPlayer(const std::string &listenerAddress, int id);
     void CheckReadyForGame();
-    void ApplyCommand(CommandsQueue &queue);
+    void ApplyCommand(CommandsQueuePtr queue);
+    void StartGame();
     
     
     
