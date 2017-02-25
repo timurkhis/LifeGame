@@ -134,6 +134,7 @@ void Peer::OnCloseConnection(const ConnectionPtr connection) {
 
 void Peer::OnDestroy() {
     players.clear();
+    ids.clear();
     if (!IsMaster()) {
         masterPeer.reset();
     }
@@ -178,7 +179,9 @@ void Peer::CheckReadyForGame() {
 
 void Peer::ApplyCommand(CommandsQueuePtr queue) {
     if (queue->size() == 0) return;
-    assert(queue->size() <= futureTurns + 1);
+    if (queue->size() > futureTurns + 1) {
+        Log::Warning("Peer", gameField->Player(), "has too much commands:", queue->size());
+    }
     queue->front()->Apply(this);
     queue->pop();
 }
