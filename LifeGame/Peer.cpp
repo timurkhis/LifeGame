@@ -59,18 +59,7 @@ void Peer::Turn() {
     }
     ApplyCommand(selfCommands);
     gameField->ProcessUnits();
-    CommandPtr command;
-    if (addedUnits.size() > 0) {
-        command = std::make_shared<AddUnitsCommand>(gameField->Player(), std::move(addedUnits));
-    } else {
-        command = std::make_shared<EmptyCommand>();
-    }
-    selfCommands->push(command);
-    CommandMessage message;
-    for (auto id : ids) {
-        message.Write(this, id.first);
-        Send(id.first);
-    }
+    PrepareCommands();
 }
 
 void Peer::AddUnit(const Vector vector) {
@@ -196,6 +185,20 @@ void Peer::StartGame() {
         selfCommands->push(std::make_shared<EmptyCommand>());
     }
     assert(!IsPause());
+}
+
+void Peer::PrepareCommands() {
+    std::vector<CommandPtr> commands;
+    if (addedUnits.size() > 0) {
+        commands.emplace_back(std::make_shared<AddUnitsCommand>(gameField->Player(), std::move(addedUnits)));
+    }
+    CommandPtr command = std::make_shared<ComplexCommand>(std::move(commands));
+    selfCommands->push(command);
+    CommandMessage message;
+    for (auto id : ids) {
+        message.Write(this, id.first);
+        Send(id.first);
+    }
 }
 
 

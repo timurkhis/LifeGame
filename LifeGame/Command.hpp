@@ -12,13 +12,14 @@
 #include <vector>
 #include <memory>
 
-enum class Cmd {
-    Empty,
-    AddUnits
-};
-
 class Command {
 public:
+    enum class Cmd {
+        Empty,
+        AddUnits,
+        Complex
+    };
+    
     static std::shared_ptr<Command> Parse(Network::InputMemoryStream &stream);
     
     virtual ~Command() = 0;
@@ -50,9 +51,24 @@ class AddUnitsCommand : public Command {
     
 public:
     AddUnitsCommand() : id(-1) {}
-    AddUnitsCommand(int id, std::vector<Geometry::Vector> units) : id(id), units(units) {}
+    AddUnitsCommand(int id, std::vector<Geometry::Vector> units) : id(id), units(std::move(units)) {}
     virtual ~AddUnitsCommand() override {}
     virtual Cmd Type() override { return Cmd::AddUnits; }
+    virtual void Apply(class Peer *peer) override;
+    
+private:
+    virtual void OnRead(Network::InputMemoryStream &stream) override;
+    virtual void OnWrite(Network::OutputMemoryStream &stream) override;
+};
+
+class ComplexCommand : public Command {
+    std::vector<std::shared_ptr<Command>> commands;
+    
+public:
+    ComplexCommand() {}
+    ComplexCommand(std::vector<std::shared_ptr<Command>> commands) : commands(std::move(commands)) {}
+    virtual ~ComplexCommand() override {}
+    virtual Cmd Type() override { return Cmd::Complex; }
     virtual void Apply(class Peer *peer) override;
     
 private:

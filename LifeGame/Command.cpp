@@ -26,6 +26,9 @@ std::shared_ptr<Command> Command::Parse(InputMemoryStream &stream) {
         case Cmd::AddUnits:
             result = std::make_shared<AddUnitsCommand>();
             break;
+        case Cmd::Complex:
+            result = std::make_shared<ComplexCommand>();
+            break;
         default:
             return nullptr;
     }
@@ -68,5 +71,31 @@ void AddUnitsCommand::OnWrite(Network::OutputMemoryStream &stream) {
     stream << static_cast<int32_t>(id) << static_cast<int32_t>(units.size());
     for (int i = 0; i < units.size(); i++) {
         stream << static_cast<int32_t>(units[i].x) << static_cast<int32_t>(units[i].y);
+    }
+}
+
+void ComplexCommand::Apply(Peer *peer) {
+    for (int i = 0; i < commands.size(); i++) {
+        commands[i]->Apply(peer);
+    }
+}
+
+void ComplexCommand::OnRead(Network::InputMemoryStream &stream) {
+    int32_t size;
+    stream >> size;
+    for (int32_t i = 0; i < size; i++) {
+        std::shared_ptr<Command> command = Command::Parse(stream);
+        if (command == nullptr) {
+            Log::Error("Unknown command has been recieved!");
+        } else {
+            commands.push_back(command);
+        }
+    }
+}
+
+void ComplexCommand::OnWrite(Network::OutputMemoryStream &stream) {
+    stream << static_cast<int32_t>(commands.size());
+    for (int i = 0; i < commands.size(); i++) {
+        commands[i]->Write(stream);
     }
 }

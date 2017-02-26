@@ -16,14 +16,6 @@
 #include "Messenger.hpp"
 #include "Command.hpp"
 
-enum class Msg {
-    NewPlayer,
-    AcceptPlayer,
-    ConnectPlayer,
-    ReadyForGame,
-    Command
-};
-
 class Peer : public Messaging::Messenger {
     typedef std::shared_ptr<Command> CommandPtr;
     typedef std::queue<CommandPtr> CommandsQueue;
@@ -68,6 +60,7 @@ private:
     void CheckReadyForGame();
     void ApplyCommand(CommandsQueuePtr queue);
     void StartGame();
+    void PrepareCommands();
     
     
     
@@ -82,6 +75,14 @@ private:
     #endif
     
     struct Message {
+        enum class Msg {
+            NewPlayer,
+            AcceptPlayer,
+            ConnectPlayer,
+            ReadyForGame,
+            Command
+        };
+        
         static std::shared_ptr<Message> Parse(Network::InputMemoryStream &stream);
         
         virtual ~Message() = 0;
