@@ -11,6 +11,7 @@
 
 #include <unordered_map>
 #include <unordered_set>
+#include <vector>
 #include "Geometry.h"
 
 struct Unit {
@@ -33,14 +34,16 @@ struct std::hash<Unit> {
 
 class GameField {
     class Peer *peer;
+    std::shared_ptr<class Presets> presets;
     std::shared_ptr<std::unordered_set<Unit>> units;
     Geometry::Vector size;
     int player;
     unsigned turnTime;
+    unsigned char currentPreset;
     
 public:
-    explicit GameField();
-    explicit GameField(Geometry::Vector size, unsigned turnTime, int player);
+    explicit GameField(std::shared_ptr<class Presets> presets);
+    explicit GameField(std::shared_ptr<class Presets> presets, Geometry::Vector size, unsigned turnTime, int player);
     
     int Player() const { return player; }
     unsigned TurnTime() const { return turnTime; }
@@ -54,8 +57,13 @@ public:
     
     const std::shared_ptr<std::unordered_set<Unit>> GetUnits() const { return units; }
     void ClampVector(Geometry::Vector &vec) const;
+    void AddPreset(const Geometry::Matrix3x3 &matrix);
+    void AddPreset(const Geometry::Matrix3x3 &matrix, int id, unsigned char preset);
     void AddUnit(Geometry::Vector unit);
     bool AddUnit(Geometry::Vector unit, int id);
+    
+    void SavePreset(unsigned char preset, const std::shared_ptr<std::vector<Geometry::Vector>> cells);
+    const std::shared_ptr<std::vector<Geometry::Vector>> LoadPreset(unsigned char preset);
     
     void Turn();
     void Update();

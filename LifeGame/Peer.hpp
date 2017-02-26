@@ -17,17 +17,20 @@
 #include "Command.hpp"
 
 class Peer : public Messaging::Messenger {
-    typedef std::shared_ptr<Command> CommandPtr;
+    typedef std::shared_ptr<Messaging::Command> CommandPtr;
     typedef std::queue<CommandPtr> CommandsQueue;
     typedef std::shared_ptr<CommandsQueue> CommandsQueuePtr;
     
     int readyPlayers;
     int playersCount;
     const int futureTurns;
+    
     Messaging::ConnectionPtr masterPeer;
-    CommandsQueuePtr selfCommands;
     std::unordered_map<int, CommandsQueuePtr> players;
     std::unordered_map<Messaging::ConnectionPtr, int> ids;
+    
+    std::vector<CommandPtr> commands;
+    CommandsQueuePtr selfCommands;
     std::shared_ptr<class GameField> gameField;
     std::vector<Geometry::Vector> addedUnits;
     
@@ -39,7 +42,7 @@ public:
     void Init();
     void Turn();
     void AddUnit(const Geometry::Vector vector);
-    void AddUnit(Geometry::Vector pos, int id);
+    void AddPreset(const Geometry::Matrix3x3 &matrix, unsigned char preset);
     bool IsPause() const;
     bool IsGameStarted() const { return playersCount == readyPlayers; }
     

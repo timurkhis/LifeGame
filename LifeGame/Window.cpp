@@ -22,7 +22,6 @@
 #include <stdlib.h>
 #include "Window.hpp"
 #include "GameField.hpp"
-#include "Presets.hpp"
 
 using namespace Geometry;
 
@@ -42,7 +41,6 @@ Window::Window() :
     cellSize(0.0f),
     deltaTime(1000 / 30),
     gameField(nullptr),
-    presets(nullptr),
     loadedUnits(nullptr),
     loadedUnitsTRS(Matrix3x3::Identity()),
     rightButtonPressed(false),
@@ -59,7 +57,7 @@ Window &Window::Instance() {
 }
 
 void Window::MainLoop(int &argc, char **argv, const std::string &label, Vector size) {
-    if (gameField == nullptr || presets == nullptr) throw std::invalid_argument("GameField or Presets does not exist!");
+    if (gameField == nullptr) throw std::invalid_argument("GameField does not exist!");
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA);
     glutInitWindowSize(size.x, size.y);
@@ -272,11 +270,7 @@ void Window::LeftMouseHandle(Vector mousePos, bool pressed) {
         if (cameraScrolled) {
             cameraScrolled = false;
         } else if (loadedUnits != nullptr) {
-            for (int i = 0; i < loadedUnits->size(); i++) {
-                Vector pos = loadedUnitsTRS * loadedUnits->at(i);
-                gameField->ClampVector(pos);
-                gameField->AddUnit(pos);
-            }
+            gameField->AddPreset(loadedUnitsTRS);
             loadedUnits = nullptr;
             cellSelected = false;
         } else {
@@ -314,7 +308,6 @@ void Window::RightMouseHandle(Vector mousePos, bool pressed) {
 
 void Window::KeyboardHandle(unsigned char key, Vector mousePos) {
     if (key == KeyEscape) {
-        presets->SaveOnDisk();
         gameField->Destroy();
     } else if (key == KeySpace && gameField->TurnTime() == 0) {
         gameField->Turn();
@@ -340,10 +333,10 @@ void Window::KeyboardHandle(unsigned char key, Vector mousePos) {
 void Window::NumbersHandle(unsigned char key, Vector mousePos) {
     const auto cells = GetSelectedCells();
     if (!cells->empty()) {
-        presets->Save(key, cells);
+        gameField->SavePreset(key, cells);
         return;
     }
-    const auto newLoadedUnits = presets->Load(key);
+    const auto newLoadedUnits = gameField->LoadPreset(key);
     if (cellSelected && loadedUnits != newLoadedUnits) {
         loadedUnits = newLoadedUnits;
     } else {
@@ -434,9 +427,8 @@ const std::shared_ptr<std::vector<Vector>> Window::GetSelectedCells() const {
     return selectedCells;
 }
 
-void Window::Init(std::shared_ptr<GameField> gameField, std::shared_ptr<Presets> presets) {
+void Window::Init(std::shared_ptr<GameField> gameField) {
     this->gameField = gameField;
-    this->presets = presets;
 }
 
 void Window::Refresh() const {

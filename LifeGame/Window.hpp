@@ -41,16 +41,16 @@ class Window {
     const unsigned deltaTime;
     
     std::shared_ptr<class GameField> gameField;
-    std::shared_ptr<class Presets> presets;
     std::shared_ptr<std::vector<Geometry::Vector>> loadedUnits;
     
 public:
     static Window &Instance();
     
     void MainLoop(int &argc, char **argv, const std::string &label, Geometry::Vector size);
-    void Init(std::shared_ptr<class GameField> gameField, std::shared_ptr<class Presets> presets);
+    void Init(std::shared_ptr<class GameField> gameField);
     void Refresh() const;
     Geometry::Vector GetCellUnderMouse() const;
+    const std::shared_ptr<std::vector<Geometry::Vector>> GetSelectedCells() const;
     
 private:
     static void Reshape(int w, int h);
@@ -81,7 +81,6 @@ private:
     Geometry::Vector CellToScreen(int x, int y) const;
     Geometry::Vector CellToScreen(Geometry::Vector vec) const;
     void CalulateSelectedCells() const;
-    const std::shared_ptr<std::vector<Geometry::Vector>> GetSelectedCells() const;
     
     explicit Window();
     ~Window();

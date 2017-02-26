@@ -22,7 +22,7 @@ struct {
     std::string label = "LifeGame";
     bool master = true;
     unsigned turnTime = 100;
-    int players = 4;
+    int players = 2;
 } args;
 
 void Parse(int argc, char **argv);
@@ -35,18 +35,18 @@ int main(int argc, char **argv) {
     
     std::stringstream label;
     if (args.master) {
-        gameField = std::make_shared<GameField>(args.field, args.turnTime, 0);
+        gameField = std::make_shared<GameField>(presets, args.field, args.turnTime, 0);
         peer = std::make_shared<Peer>(gameField, args.players);
         args.address = peer->Address();
         label << "Master ";
     } else {
-        gameField = std::make_shared<GameField>();
+        gameField = std::make_shared<GameField>(presets);
         peer = std::make_shared<Peer>(gameField, args.address);
         label << "Slave ";
     }
     peer->Init();
     Window &instance = Window::Instance();
-    instance.Init(gameField, presets);
+    instance.Init(gameField);
     label << args.label << " " << *args.address;
     instance.MainLoop(argc, argv, label.str(), args.window);
     return 0;

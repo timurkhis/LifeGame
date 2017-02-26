@@ -66,8 +66,9 @@ void Peer::AddUnit(const Vector vector) {
     addedUnits.push_back(vector);
 }
 
-void Peer::AddUnit(Geometry::Vector pos, int id) {
-    gameField->AddUnit(pos, id);
+void Peer::AddPreset(const Geometry::Matrix3x3 &matrix, unsigned char preset) {
+    CommandPtr command = std::make_shared<AddPresetCommand>(matrix, preset, gameField->Player());
+    commands.push_back(command);
 }
 
 bool Peer::IsPause() const {
@@ -160,6 +161,7 @@ void Peer::ConnectNewPlayer(const std::string &listenerAddress, int id) {
 }
 
 void Peer::CheckReadyForGame() {
+    if (IsGameStarted()) return;
     if (players.size() == playersCount - 1) {
         ReadyForGameMessage().Write(this, masterPeer);
         Send(masterPeer);
@@ -171,7 +173,7 @@ void Peer::ApplyCommand(CommandsQueuePtr queue) {
     if (queue->size() > futureTurns + 1) {
         Log::Warning("Peer", gameField->Player(), "has too much commands:", queue->size());
     }
-    queue->front()->Apply(this);
+    queue->front()->Apply(gameField.get());
     queue->pop();
 }
 
@@ -188,7 +190,6 @@ void Peer::StartGame() {
 }
 
 void Peer::PrepareCommands() {
-    std::vector<CommandPtr> commands;
     if (addedUnits.size() > 0) {
         commands.emplace_back(std::make_shared<AddUnitsCommand>(gameField->Player(), std::move(addedUnits)));
     }
@@ -301,6 +302,7 @@ void Peer::AcceptPlayerMessage::OnRead(Peer *peer, const ConnectionPtr connectio
     peer->gameField->SetPlayer(static_cast<int>(id));
     peer->gameField->SetTurnTime(static_cast<unsigned>(turnTime));
     peer->AddPlayer(static_cast<int>(masterId), connection);
+    peer->CheckReadyForGame();
     assert(peer->gameField->Player() >= 0 && peer->gameField->Player() < peer->playersCount);
 }
 

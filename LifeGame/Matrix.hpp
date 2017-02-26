@@ -33,6 +33,8 @@ namespace Geometry {
         };
         
     public:
+        constexpr static int Size() { return size; }
+        
         static Matrix3x3 Identity();
         static Matrix3x3 Translation(Vector position);
         static Matrix3x3 Scale(Vector scale);
@@ -40,6 +42,7 @@ namespace Geometry {
         
         explicit Matrix3x3();
         
+        float &operator [] (int index);
         friend const Matrix3x3 operator * (const Matrix3x3 &lhs, const Matrix3x3 &rhs);
         friend const Vector operator * (const Matrix3x3 &lhs, const Vector &rhs);
         friend std::ostream &operator << (std::ostream &lhs, const Matrix3x3 &rhs);

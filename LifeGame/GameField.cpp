@@ -9,24 +9,19 @@
 #include <cstdlib>
 #include "GameField.hpp"
 #include "Peer.hpp"
+#include "Presets.hpp"
 
 using namespace Geometry;
 
-GameField::GameField() : GameField(Vector(), 0, -1) {}
+GameField::GameField(std::shared_ptr<Presets> presets) : GameField(presets, Vector(), 0, -1) {}
 
-GameField::GameField(Geometry::Vector size, unsigned turnTime, int player) :
+GameField::GameField(std::shared_ptr<Presets> presets, Geometry::Vector size, unsigned turnTime, int player) :
+    presets(presets),
     player(player),
     turnTime(turnTime),
+    currentPreset(-1),
     size(size),
     units(new std::unordered_set<Unit>()) {}
-
-void GameField::AddUnit(Vector unit) {
-    if (IsGameStopped()) return;
-    const Unit key(player, unit);
-    if (units->find(key) == units->end()) {
-        peer->AddUnit(unit);
-    }
-}
 
 void GameField::ClampVector(Vector &vec) const {
     vec.x %= size.x;
@@ -75,8 +70,38 @@ void GameField::ProcessUnit(const Unit &unit, std::unordered_map<Unit, int> &pro
     }
 }
 
+void GameField::AddPreset(const Geometry::Matrix3x3 &matrix) {
+    peer->AddPreset(matrix, currentPreset);
+}
+
+void GameField::AddPreset(const Geometry::Matrix3x3 &matrix, int id, unsigned char preset) {
+    std::shared_ptr<std::vector<Vector>> loadedUnits = presets->Load(preset);
+    for (int i = 0; i < loadedUnits->size(); i++) {
+        Vector pos = matrix * loadedUnits->at(i);
+        ClampVector(pos);
+        AddUnit(pos, id);
+    }
+}
+
+void GameField::AddUnit(Vector unit) {
+    if (IsGameStopped()) return;
+    const Unit key(player, unit);
+    if (units->find(key) == units->end()) {
+        peer->AddUnit(unit);
+    }
+}
+
 bool GameField::AddUnit(Geometry::Vector unit, int id) {
     return units->emplace(id, unit).second;
+}
+
+void GameField::SavePreset(unsigned char preset, const std::shared_ptr<std::vector<Vector>> cells) {
+    presets->Save(preset, cells);
+}
+
+const std::shared_ptr<std::vector<Vector>> GameField::LoadPreset(unsigned char preset) {
+    currentPreset = preset;
+    return presets->Load(preset);
 }
 
 bool GameField::IsGameStopped() const {
@@ -93,6 +118,7 @@ void GameField::Update() {
 }
 
 void GameField::Destroy() {
+    presets->SaveOnDisk();
     peer->Destroy();
     std::exit(EXIT_SUCCESS);
 }

@@ -49,6 +49,10 @@ namespace Geometry {
         }
     }
     
+    float &Matrix3x3::operator [] (int index) {
+        return array[index];
+    }
+    
     const Matrix3x3 operator * (const Matrix3x3 &lhs, const Matrix3x3 &rhs) {
         Matrix3x3 result;
         for (int i = 0; i < Matrix3x3::size; i++) {

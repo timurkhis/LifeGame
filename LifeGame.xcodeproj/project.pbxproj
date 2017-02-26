@@ -157,10 +157,10 @@
 				ECD81F3D1E507E2E00FCBB74 /* Connection.hpp */,
 				ECD81F331E507E0600FCBB74 /* Messenger.cpp */,
 				ECD81F341E507E0600FCBB74 /* Messenger.hpp */,
-				EC42B8811E55EFFC0030210F /* Peer.cpp */,
-				EC42B8821E55EFFC0030210F /* Peer.hpp */,
 				EC89B9091E6009C7008DA411 /* Command.cpp */,
 				EC89B90A1E6009C7008DA411 /* Command.hpp */,
+				EC42B8811E55EFFC0030210F /* Peer.cpp */,
+				EC42B8821E55EFFC0030210F /* Peer.hpp */,
 			);
 			name = Messaging;
 			sourceTree = "<group>";
