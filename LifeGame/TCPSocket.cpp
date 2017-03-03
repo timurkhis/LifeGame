@@ -80,8 +80,13 @@ namespace Network {
     
     int TCPSocket::Recv(void *buffer, size_t len, bool peek) {
         int result = static_cast<int>(recv(sock, buffer, len, peek ? MSG_PEEK : 0));
-        if (result < 0) {
-            Log::Error("TCPSocket::Recv failed!");
+        if (result < 0) {//TODO: add error handler
+            if (errno == ECONNRESET) {
+                Log::Warning("TCPSocket::Recv connection reset!");
+                result = 0;
+            } else {
+                Log::Error("TCPSocket::Recv failed!");
+            }
         }
         return result;
     }

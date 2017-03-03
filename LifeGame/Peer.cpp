@@ -15,24 +15,24 @@ using namespace Messaging;
 using namespace Network;
 using namespace Geometry;
 
-Peer::Peer(std::shared_ptr<GameField> gameField, std::shared_ptr<SocketAddress> address) :
-    masterPeer(new Connection(TCPSocket::Create())),
-    playersCount(0),
-    readyPlayers(0),
+Peer::Peer(std::shared_ptr<GameField> gameField, Connection *masterPeer, int readyPlayers, int playersCount) :
+    gameField(gameField),
+    masterPeer(masterPeer),
+    readyPlayers(readyPlayers),
+    playersCount(playersCount),
     futureTurns(3),
+    pauseOnLastTurn(false),
     selfCommands(new CommandsQueue()) {
-    this->gameField = gameField;
     gameField->SetPeer(this);
+}
+
+Peer::Peer(std::shared_ptr<GameField> gameField, std::shared_ptr<SocketAddress> address) :
+    Peer(gameField, new Connection(TCPSocket::Create()), 0, 0) {
     this->address = address;
 }
 
 Peer::Peer(std::shared_ptr<GameField> gameField, int players) :
-    playersCount(players),
-    readyPlayers(1),
-    futureTurns(3),
-    selfCommands(new CommandsQueue()) {
-    this->gameField = gameField;
-    gameField->SetPeer(this);
+    Peer(gameField, nullptr, 1, players) {
     address = SocketAddress::CreateIPv4("localhost");
     Listen(address);
 }
@@ -74,12 +74,15 @@ void Peer::AddPreset(const Geometry::Matrix3x3 &matrix, unsigned char preset) {
 bool Peer::IsPause() const {
     typedef const std::unordered_map<int, CommandsQueuePtr>::value_type &value;
     const auto emptyQueue = std::find_if(players.begin(), players.end(), [](value v){ return v.second->size() == 0; });
+    const bool pause = emptyQueue != players.end();
     
-    if (emptyQueue != players.end()) {
+    if (pause && !pauseOnLastTurn) {
         Log::Warning("Peer", gameField->Player(), "has not recieved command from", emptyQueue->first);
-        return true;
+    } else if (!pause && pauseOnLastTurn) {
+        Log::Warning("Peer", gameField->Player(), "has recievd all commands!");
     }
-    return false;
+    pauseOnLastTurn = pause;
+    return pause;
 }
 
 void Peer::OnMessageRecv(const ConnectionPtr connection) {
@@ -226,12 +229,12 @@ void Peer::Message::Read(Peer *peer, const ConnectionPtr connection) {
     if (static_cast<Msg>(type) != Type()) {
         Log::Error("Messages types are not the same!");
     }
-    Log::Warning("Peer", peer->gameField->Player(), "reads message of type", type);
+//    Log::Warning("Peer", peer->gameField->Player(), "reads message of type", type);
     OnRead(peer, connection);
 }
 
 void Peer::Message::Write(Peer *peer, const ConnectionPtr connection) {
-    Log::Warning("Peer", peer->gameField->Player(), "writes message of type", static_cast<int32_t>(Type()));
+//    Log::Warning("Peer", peer->gameField->Player(), "writes message of type", static_cast<int32_t>(Type()));
     uint32_t msgSize;
     connection->output << msgSize << static_cast<int32_t>(Type());
     OnWrite(peer, connection);

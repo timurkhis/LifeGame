@@ -23,6 +23,7 @@ class Peer : public Messaging::Messenger {
     
     int readyPlayers;
     int playersCount;
+    mutable bool pauseOnLastTurn;
     const int futureTurns;
     
     Messaging::ConnectionPtr masterPeer;
@@ -54,6 +55,7 @@ protected:
     virtual void OnDestroy() override;
     
 private:
+    explicit Peer(std::shared_ptr<GameField> gameField, Messaging::Connection *masterPeer, int readyPlayers, int playersCount);
     bool IsMaster() const { return masterPeer == nullptr; }
     
     void AddPlayer(int id, const Messaging::ConnectionPtr connection);
