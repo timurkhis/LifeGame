@@ -71,6 +71,7 @@ void GameField::ProcessUnit(const Unit &unit, std::unordered_map<Unit, int> &pro
 }
 
 void GameField::AddPreset(const Geometry::Matrix3x3 &matrix) {
+    if (IsGameStopped()) return;
     peer->AddPreset(matrix, currentPreset);
 }
 

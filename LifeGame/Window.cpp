@@ -40,8 +40,6 @@ Window::Window() :
     cellSizeRatio(0.05f),
     cellSize(0.0f),
     deltaTime(1000 / 30),
-    gameField(nullptr),
-    loadedUnits(nullptr),
     loadedUnitsTRS(Matrix3x3::Identity()),
     rightButtonPressed(false),
     leftButtonPressed(false),

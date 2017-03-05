@@ -87,7 +87,7 @@ namespace Network {
         uint32_t Capacity() const { return capacity; }
         uint32_t Size() const { return size; }
         bool Empty() const { return size == 0; }
-        void *Data(uint32_t offset = 0) { return buffer + offset; }
+        void *Data(uint32_t offset = 0) const { return buffer + offset; }
         void Clear() { size = 0; }
         void Resize(uint32_t newSize);
         void Realloc(uint32_t size);

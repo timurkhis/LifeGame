@@ -86,11 +86,14 @@ bool Peer::IsPause() const {
 }
 
 void Peer::OnMessageRecv(const ConnectionPtr connection) {
-    std::shared_ptr<Message> msg = Message::Parse(connection->input);
-    if (msg == nullptr) {
-        CloseConnection(connection);
-    } else {
-        msg->Read(this, connection);
+    for (int i = 0; i < connection->RecvMessages(); i++) {
+        std::shared_ptr<Message> msg = Message::Parse(connection->input);
+        if (msg == nullptr) {
+            CloseConnection(connection);
+            break;
+        } else {
+            msg->Read(this, connection);
+        }
     }
     connection->input.Clear();
 }
@@ -172,10 +175,7 @@ void Peer::CheckReadyForGame() {
 }
 
 void Peer::ApplyCommand(CommandsQueuePtr queue) {
-    if (queue->size() == 0) return;
-    if (queue->size() > futureTurns + 1) {
-        Log::Warning("Peer", gameField->Player(), "has too much commands:", queue->size());
-    }
+    assert(queue->size() > 0);
     queue->front()->Apply(gameField.get());
     queue->pop();
 }

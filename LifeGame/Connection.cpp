@@ -17,6 +17,7 @@ namespace Messaging {
         canWrite(true),
         input(1024),
         output(1024),
+        recvMessages(0),
         recvData(0),
         allRecvData(0),
         sendData(0),
@@ -31,9 +32,14 @@ namespace Messaging {
         }
         int result = socket->Recv(input.Data(recvData), input.Capacity() - recvData);
         recvData += result;
-        if (allRecvData == 0) {
-            input.Read(allRecvData, 0);
+        
+        while (allRecvData < recvData) {
+            uint32_t msgSize;
+            input.Read(msgSize, allRecvData);
+            allRecvData += msgSize;
+            recvMessages++;
         }
+        
         canRead = recvData == allRecvData;
         if (canRead) {
             recvData = 0;

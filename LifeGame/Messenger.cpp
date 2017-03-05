@@ -45,6 +45,7 @@ namespace Messaging {
                 CloseConnection(connection, true);
             } else if (connection->CanRead()) {
                 OnMessageRecv(connection);
+                connection->Clear();
             }
         }
     }
