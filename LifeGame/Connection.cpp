@@ -33,9 +33,6 @@ namespace Messaging {
         int result = socket->Recv(input.Data(recvData), input.Capacity() - recvData);
         recvData += result;
         
-        if (allRecvData > 0 && allRecvData < recvData) {
-            allRecvData = 0;
-        }
         while (allRecvData < recvData) {
             uint32_t msgSize;
             input.Read(msgSize, allRecvData);
