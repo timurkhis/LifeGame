@@ -23,6 +23,7 @@ class Peer : public Messaging::Messenger {
     
     int readyPlayers;
     int playersCount;
+    bool pause;
     mutable bool pauseOnLastTurn;
     const int futureTurns;
     
@@ -42,6 +43,7 @@ public:
     
     void Init();
     void Turn();
+    void Pause();
     void AddUnit(const Geometry::Vector vector);
     void AddPreset(const Geometry::Matrix3x3 &matrix, unsigned char preset);
     bool IsPause() const;
@@ -58,9 +60,11 @@ private:
     explicit Peer(std::shared_ptr<GameField> gameField, Messaging::Connection *masterPeer, int readyPlayers, int playersCount);
     bool IsMaster() const { return masterPeer == nullptr; }
     
+    struct Message;
+    
     void AddPlayer(int id, const Messaging::ConnectionPtr connection);
     void AcceptNewPlayer(const Messaging::ConnectionPtr connection);
-    void BroadcastNewPlayer(const std::string &listenerAddress, int id);
+    void BroadcastMessage(Message &message);
     void ConnectNewPlayer(const std::string &listenerAddress, int id);
     void CheckReadyForGame();
     void ApplyCommand(CommandsQueuePtr queue);
@@ -85,7 +89,8 @@ private:
             AcceptPlayer,
             ConnectPlayer,
             ReadyForGame,
-            Command
+            Command,
+            Pause
         };
         
         static std::shared_ptr<Message> Parse(Network::InputMemoryStream &stream);
@@ -124,6 +129,7 @@ private:
     MESSAGE(ConnectPlayer, Msg::ConnectPlayer)
     MESSAGE(ReadyForGame, Msg::ReadyForGame)
     MESSAGE(Command, Msg::Command)
+    MESSAGE(Pause, Msg::Pause)
 };
 
 #endif /* Peer_hpp */

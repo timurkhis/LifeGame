@@ -36,6 +36,7 @@ namespace Messaging {
                 result = std::make_shared<ComplexCommand>();
                 break;
             default:
+                Log::Warning("Unknown command has been received!");
                 return nullptr;
         }
         result->Read(stream);

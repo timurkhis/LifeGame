@@ -66,6 +66,7 @@ public:
     const std::shared_ptr<std::vector<Geometry::Vector>> LoadPreset(unsigned char preset);
     
     void Turn();
+    void Pause();
     void Update();
     void ProcessUnits();
     void Destroy();

@@ -307,8 +307,12 @@ void Window::RightMouseHandle(Vector mousePos, bool pressed) {
 void Window::KeyboardHandle(unsigned char key, Vector mousePos) {
     if (key == KeyEscape) {
         gameField->Destroy();
-    } else if (key == KeySpace && gameField->TurnTime() == 0) {
-        gameField->Turn();
+    } else if (key == KeySpace) {
+        if (gameField->TurnTime() == 0) {
+            gameField->Turn();
+        } else {
+            gameField->Pause();
+        }
     } else if (key == KeyMinus) {
         Zoom(-cellSizeRatioStep);
     } else if (key == KeyPlus) {

@@ -22,6 +22,7 @@ Peer::Peer(std::shared_ptr<GameField> gameField, Connection *masterPeer, int rea
     playersCount(playersCount),
     futureTurns(3),
     pauseOnLastTurn(false),
+    pause(false),
     selfCommands(new CommandsQueue()) {
     gameField->SetPeer(this);
 }
@@ -62,6 +63,12 @@ void Peer::Turn() {
     PrepareCommands();
 }
 
+void Peer::Pause() {
+    pause = !pause;
+    PauseMessage msg;
+    BroadcastMessage(msg);
+}
+
 void Peer::AddUnit(const Vector vector) {
     addedUnits.push_back(vector);
 }
@@ -72,6 +79,7 @@ void Peer::AddPreset(const Geometry::Matrix3x3 &matrix, unsigned char preset) {
 }
 
 bool Peer::IsPause() const {
+    if (pause) return true;
     typedef const std::unordered_map<int, CommandsQueuePtr>::value_type &value;
     const auto emptyQueue = std::find_if(players.begin(), players.end(), [](value v){ return v.second->size() == 0; });
     const bool pause = emptyQueue != players.end();
@@ -146,10 +154,9 @@ void Peer::AcceptNewPlayer(const ConnectionPtr connection) {
     Send(connection);
 }
 
-void Peer::BroadcastNewPlayer(const std::string &listenerAddress, int id) {
-    NewPlayerMessage msg(id, listenerAddress);
-    for (const auto it : ids) {
-        msg.Write(this, it.first);
+void Peer::BroadcastMessage(Message &message) {
+    for (const auto &it : ids) {
+        message.Write(this, it.first);
         Send(it.first);
     }
 }
@@ -198,11 +205,8 @@ void Peer::PrepareCommands() {
     }
     CommandPtr command = std::make_shared<ComplexCommand>(std::move(commands));
     selfCommands->push(command);
-    CommandMessage message;
-    for (auto id : ids) {
-        message.Write(this, id.first);
-        Send(id.first);
-    }
+    CommandMessage msg;
+    BroadcastMessage(msg);
 }
 
 
@@ -218,7 +222,10 @@ std::shared_ptr<Peer::Message> Peer::Message::Parse(InputMemoryStream &stream) {
         case Msg::ConnectPlayer: return std::make_shared<ConnectPlayerMessage>();
         case Msg::ReadyForGame:  return std::make_shared<ReadyForGameMessage>();
         case Msg::Command:       return std::make_shared<CommandMessage>();
-        default:                 return nullptr;
+        case Msg::Pause:         return std::make_shared<PauseMessage>();
+        default:
+            Log::Warning("Unknown message has been received!");
+            return nullptr;
     }
 }
 
@@ -255,7 +262,8 @@ void Peer::NewPlayerMessage::OnRead(Peer *peer, const ConnectionPtr connection) 
         port = listenerAddress.substr(listenerAddress.find_last_of(':'));
         std::string listenerRemoteAddress = host + port;
         int id = static_cast<int>(peer->players.size() + 1);
-        peer->BroadcastNewPlayer(listenerRemoteAddress, id);
+        NewPlayerMessage msg(id, listenerRemoteAddress);
+        peer->BroadcastMessage(msg);
         peer->AddPlayer(id, connection);
         peer->AcceptNewPlayer(connection);
     } else {
@@ -380,4 +388,14 @@ void Peer::CommandMessage::OnRead(Peer *peer, const Messaging::ConnectionPtr con
 void Peer::CommandMessage::OnWrite(Peer *peer, const Messaging::ConnectionPtr connection) {
     connection->output << static_cast<int32_t>(peer->gameField->Player());
     peer->selfCommands->back()->Write(connection->output);
+}
+
+void Peer::PauseMessage::OnRead(Peer *peer, const Messaging::ConnectionPtr connection) {
+    bool pause;
+    connection->input >> pause;
+    peer->pause = pause;
+}
+
+void Peer::PauseMessage::OnWrite(Peer *peer, const Messaging::ConnectionPtr connection) {
+    connection->output << peer->pause;
 }

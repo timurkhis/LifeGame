@@ -114,6 +114,10 @@ void GameField::Turn() {
     peer->Turn();
 }
 
+void GameField::Pause() {
+    peer->Pause();
+}
+
 void GameField::Update() {
     peer->Update();
 }
