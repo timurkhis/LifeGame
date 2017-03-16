@@ -6,6 +6,7 @@
 //  Copyright © 2017 Arsonist (gmoximko@icloud.com). All rights reserved.
 //
 
+#include <algorithm>
 #include "Connection.hpp"
 
 using namespace Network;

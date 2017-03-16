@@ -25,7 +25,12 @@ public:
     template <typename ...Args>
     static void Error(Args... args) {
         std::stringstream stream;
-        Message(stream, args..., errno);
+#if defined(_WIN32)
+		int error = WSAGetLastError();
+#else
+		int error = errno;
+#endif
+		Message(stream, args..., error);
         throw std::runtime_error(stream.str());
     }
     

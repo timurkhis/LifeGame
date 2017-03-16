@@ -9,14 +9,18 @@
 #ifndef TCPSocket_hpp
 #define TCPSocket_hpp
 
+#if !defined(_WIN32)
+typedef int SOCKET;
+#endif
+
 #include "SocketAddress.hpp"
 
 namespace Network {
     
     class TCPSocket {
         friend class SocketSelector;
-        int sock;
-        
+		SOCKET sock;
+
     public:
         static std::shared_ptr<TCPSocket> Create();
         
@@ -32,7 +36,7 @@ namespace Network {
         std::shared_ptr<TCPSocket> Accept(SocketAddress address);
         
     private:
-        explicit TCPSocket(int socket) : sock(socket) {}
+        explicit TCPSocket(SOCKET socket) : sock(socket) {}
     };
 
     typedef std::shared_ptr<TCPSocket> TCPSocketPtr;

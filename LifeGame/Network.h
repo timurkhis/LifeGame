@@ -9,6 +9,11 @@
 #ifndef Network_h
 #define Network_h
 
+#if defined(_WIN32)
+#pragma comment(lib, "ws2_32.lib")
+#define WIN32_LEAN_AND_MEAN
+#endif
+
 #include "SocketAddress.hpp"
 #include "TCPSocket.hpp"
 #include "MemoryStream.hpp"

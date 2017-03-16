@@ -15,9 +15,8 @@ using namespace Messaging;
 using namespace Network;
 using namespace Geometry;
 
-Peer::Peer(std::shared_ptr<GameField> gameField, Connection *masterPeer, int readyPlayers, int playersCount) :
+Peer::Peer(std::shared_ptr<GameField> gameField, int readyPlayers, int playersCount) :
     gameField(gameField),
-    masterPeer(masterPeer),
     readyPlayers(readyPlayers),
     playersCount(playersCount),
     futureTurns(3),
@@ -27,13 +26,14 @@ Peer::Peer(std::shared_ptr<GameField> gameField, Connection *masterPeer, int rea
     gameField->SetPeer(this);
 }
 
-Peer::Peer(std::shared_ptr<GameField> gameField, std::shared_ptr<SocketAddress> address) :
-    Peer(gameField, new Connection(TCPSocket::Create()), 0, 0) {
-    this->address = address;
+Peer::Peer(std::shared_ptr<GameField> gameField, const std::string &address) :
+    Peer(gameField, 0, 0) {
+	this->masterPeer = std::make_shared<Connection>(TCPSocket::Create());
+    this->address = SocketAddress::CreateIPv4(address);
 }
 
 Peer::Peer(std::shared_ptr<GameField> gameField, int players) :
-    Peer(gameField, nullptr, 1, players) {
+    Peer(gameField, 1, players) {
     address = SocketAddress::CreateIPv4("localhost");
     Listen(address);
 }
@@ -242,7 +242,7 @@ void Peer::Message::Read(Peer *peer, const ConnectionPtr connection) {
 
 void Peer::Message::Write(Peer *peer, const ConnectionPtr connection) {
 //    Log::Warning("Peer", peer->gameField->Player(), "writes message of type", static_cast<int32_t>(Type()));
-    uint32_t msgSize;
+    uint32_t msgSize = 0;
     connection->output << msgSize << static_cast<int32_t>(Type());
     OnWrite(peer, connection);
     msgSize = connection->output.Size();

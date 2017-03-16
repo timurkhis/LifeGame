@@ -9,11 +9,18 @@
 #ifndef SocketAddress_hpp
 #define SocketAddress_hpp
 
+#if defined(_WIN32)
+#define NOMINMAX
+#include <WinSock2.h>
+#include <WS2tcpip.h>
+#else
 #include <sys/socket.h>
-#include <stdint.h>
-#include <memory>
-
 struct sockaddr_in;
+#endif
+
+#include <memory>
+#include <string>
+#include <stdint.h>
 
 namespace Network {
     
@@ -28,7 +35,7 @@ namespace Network {
         explicit SocketAddress(const sockaddr &addr);
         SocketAddress(const SocketAddress &other);
         
-        constexpr socklen_t Size() const { return sizeof(addr); }
+        socklen_t Size() const { return sizeof(addr); }
         
         uint32_t GetHost();
         uint16_t GetPort();
@@ -36,8 +43,8 @@ namespace Network {
         sockaddr *AsSockAddr() { return &addr; }
         sockaddr_in *AsSockAddrIn() { return reinterpret_cast<sockaddr_in *>(&addr); }
         
-        std::string ToString() const;
-        friend std::ostream &operator << (std::ostream &stream, const SocketAddress &address);
+        std::string ToString();
+        friend std::ostream &operator << (std::ostream &stream, SocketAddress &address);
     };
     
 }

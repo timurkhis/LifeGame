@@ -9,6 +9,7 @@
 #ifndef Window_hpp
 #define Window_hpp
 
+#include <memory>
 #include <vector>
 #include "Geometry.h"
 

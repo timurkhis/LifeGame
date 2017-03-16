@@ -1,0 +1,107 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{430BA37D-FA74-4E76-9323-7F83997FC386}</ProjectGuid>
+    <RootNamespace>LifeGame</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup />
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <SDLCheck>true</SDLCheck>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>opengl32.lib;glut32.lib;glu32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\LifeGame\Command.cpp" />
+    <ClCompile Include="..\..\LifeGame\Connection.cpp" />
+    <ClCompile Include="..\..\LifeGame\GameField.cpp" />
+    <ClCompile Include="..\..\LifeGame\Log.cpp" />
+    <ClCompile Include="..\..\LifeGame\main.cpp" />
+    <ClCompile Include="..\..\LifeGame\Matrix.cpp" />
+    <ClCompile Include="..\..\LifeGame\MemoryStream.cpp" />
+    <ClCompile Include="..\..\LifeGame\Messenger.cpp" />
+    <ClCompile Include="..\..\LifeGame\Peer.cpp" />
+    <ClCompile Include="..\..\LifeGame\Presets.cpp" />
+    <ClCompile Include="..\..\LifeGame\Rect.cpp" />
+    <ClCompile Include="..\..\LifeGame\SocketAddress.cpp" />
+    <ClCompile Include="..\..\LifeGame\SocketSelector.cpp" />
+    <ClCompile Include="..\..\LifeGame\TCPSocket.cpp" />
+    <ClCompile Include="..\..\LifeGame\Vector.cpp" />
+    <ClCompile Include="..\..\LifeGame\Window.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\LifeGame\Command.hpp" />
+    <ClInclude Include="..\..\LifeGame\Connection.hpp" />
+    <ClInclude Include="..\..\LifeGame\GameField.hpp" />
+    <ClInclude Include="..\..\LifeGame\Geometry.h" />
+    <ClInclude Include="..\..\LifeGame\Log.hpp" />
+    <ClInclude Include="..\..\LifeGame\Matrix.hpp" />
+    <ClInclude Include="..\..\LifeGame\MemoryStream.hpp" />
+    <ClInclude Include="..\..\LifeGame\Messenger.hpp" />
+    <ClInclude Include="..\..\LifeGame\Network.h" />
+    <ClInclude Include="..\..\LifeGame\Peer.hpp" />
+    <ClInclude Include="..\..\LifeGame\Presets.hpp" />
+    <ClInclude Include="..\..\LifeGame\Rect.hpp" />
+    <ClInclude Include="..\..\LifeGame\SocketAddress.hpp" />
+    <ClInclude Include="..\..\LifeGame\SocketSelector.hpp" />
+    <ClInclude Include="..\..\LifeGame\TCPSocket.hpp" />
+    <ClInclude Include="..\..\LifeGame\Vector.hpp" />
+    <ClInclude Include="..\..\LifeGame\Window.hpp" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

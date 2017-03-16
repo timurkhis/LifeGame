@@ -6,7 +6,10 @@
 //  Copyright © 2017 Arsonist (gmoximko@icloud.com). All rights reserved.
 //
 
+#if !defined(_WIN32)
 #include <sys/select.h>
+#endif
+
 #include "SocketSelector.hpp"
 #include "Log.hpp"
 
@@ -59,7 +62,9 @@ namespace Network {
         FD_ZERO(set);
         for (int i = 0; i < sockets->size(); i++) {
             TCPSocketPtr socket = sockets->at(i);
+#if !defined(_WIN32)
             *maxSocket = std::max(socket->sock, *maxSocket);
+#endif
             FD_SET(socket->sock, set);
         }
         return set;

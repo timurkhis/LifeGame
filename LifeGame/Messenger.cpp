@@ -8,13 +8,32 @@
 
 #include <cassert>
 #include <string>
+#include <algorithm>
 #include "Messenger.hpp"
+
+#if defined(_WIN32)
+#include "Log.hpp"
+#endif
 
 using namespace Network;
 
 namespace Messaging {
     
-    Messenger::~Messenger() {}
+	Messenger::Messenger() : destroyed(false) {
+#if defined(_WIN32)
+		WSADATA data;
+		int result = WSAStartup(MAKEWORD(2, 2), &data);
+		if (result != 0) {
+			Log::Error("WSAStartup failed!");
+		}
+#endif
+	}
+
+    Messenger::~Messenger() {
+		if (!destroyed) {
+			Destroy();
+		}
+	}
 
     void Messenger::Destroy() {
         OnDestroy();
@@ -23,6 +42,10 @@ namespace Messaging {
         sendList.clear();
         exceptList.clear();
         connections.clear();
+#if defined(_WIN32)
+		WSACleanup();
+#endif
+		destroyed = true;
     }
 
     void Messenger::Update(bool block) {

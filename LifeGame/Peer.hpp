@@ -37,7 +37,7 @@ class Peer : public Messaging::Messenger {
     std::vector<Geometry::Vector> addedUnits;
     
 public:
-    explicit Peer(std::shared_ptr<GameField> gameField, std::shared_ptr<Network::SocketAddress> address);
+    explicit Peer(std::shared_ptr<GameField> gameField, const std::string &address);
     explicit Peer(std::shared_ptr<GameField> gameField, int players);
     virtual ~Peer() override {}
     
@@ -57,7 +57,7 @@ protected:
     virtual void OnDestroy() override;
     
 private:
-    explicit Peer(std::shared_ptr<GameField> gameField, Messaging::Connection *masterPeer, int readyPlayers, int playersCount);
+    explicit Peer(std::shared_ptr<GameField> gameField, int readyPlayers, int playersCount);
     bool IsMaster() const { return masterPeer == nullptr; }
     
     struct Message;

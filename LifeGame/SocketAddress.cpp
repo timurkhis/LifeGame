@@ -6,11 +6,14 @@
 //  Copyright © 2017 Arsonist (gmoximko@icloud.com). All rights reserved.
 //
 
+#if !defined(_WIN32)
 #include <netdb.h>
 #include <unistd.h>
+#include <arpa/inet.h>
+#endif
+
 #include <string>
 #include <iostream>
-#include <arpa/inet.h>
 #include "SocketAddress.hpp"
 #include "Log.hpp"
 
@@ -58,7 +61,7 @@ namespace Network {
         std::memset(&info, 0, sizeof(addrinfo));
         info.ai_family = AF_INET;
         
-        addrinfo *result;
+        addrinfo *result = nullptr;
         int error = getaddrinfo(host.c_str(), service.c_str(), &info, &result);
         if (error != 0) {
             if (result != nullptr) {
@@ -78,16 +81,16 @@ namespace Network {
         return address;
     }
     
-    std::string SocketAddress::ToString() const {
+    std::string SocketAddress::ToString() {
         std::stringstream stream;
         stream << *this;
         return stream.str();
     }
     
-    std::ostream &operator << (std::ostream &stream, const SocketAddress &address) {
-        const sockaddr_in *addrIn = reinterpret_cast<const sockaddr_in *>(&address.addr);
+    std::ostream &operator << (std::ostream &stream, SocketAddress &address) {
+        sockaddr_in *addrIn = reinterpret_cast<sockaddr_in *>(&address.addr);
         char addr[INET_ADDRSTRLEN];
-        inet_ntop(AF_INET, &addrIn->sin_addr.s_addr, addr, INET_ADDRSTRLEN);
+		inet_ntop(AF_INET, &addrIn->sin_addr.s_addr, addr, INET_ADDRSTRLEN);
         stream << addr << ':' << addrIn->sin_port;
         return stream;
     }

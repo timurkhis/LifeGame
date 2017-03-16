@@ -9,8 +9,10 @@
 #ifndef MemoryStream_hpp
 #define MemoryStream_hpp
 
-#include <vector>
+#if !defined(_WIN32)
 #include <netdb.h>
+#endif
+#include <vector>
 #include <type_traits>
 #include <stdint.h>
 
@@ -25,7 +27,7 @@ namespace Network {
         
     public:
         TypeAliaser(From from) : from(from) {}
-        constexpr To &Get() const { return to; }
+        constexpr To Get() const { return to; }
     };
     
     template <typename T, size_t size>
