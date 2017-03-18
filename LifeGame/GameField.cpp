@@ -18,6 +18,7 @@ GameField::GameField(std::shared_ptr<Presets> presets) : GameField(presets, Vect
 GameField::GameField(std::shared_ptr<Presets> presets, Geometry::Vector size, unsigned turnTime, int player) :
     presets(presets),
     player(player),
+    exit(false),
     turnTime(turnTime),
     currentPreset(-1),
     size(size),
@@ -120,10 +121,14 @@ void GameField::Pause() {
 
 void GameField::Update() {
     peer->Update();
+    if (peer->Destroyed()) {
+        std::exit(EXIT_SUCCESS);
+    }
 }
 
 void GameField::Destroy() {
+    if (exit) return;
+    exit = true;
     presets->SaveOnDisk();
     peer->Destroy();
-    std::exit(EXIT_SUCCESS);
 }

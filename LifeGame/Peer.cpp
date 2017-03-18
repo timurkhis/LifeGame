@@ -381,7 +381,11 @@ void Peer::CommandMessage::OnRead(Peer *peer, const Messaging::ConnectionPtr con
     connection->input >> id;
     CommandPtr command = Command::Parse(connection->input);
     if (command != nullptr) {
-        peer->players.at(static_cast<int>(id))->push(command);
+        const int key = static_cast<int>(id);
+        auto player = peer->players.find(key);
+        if (player != peer->players.end()) {
+            player->second->push(command);
+        }
     }
 }
 

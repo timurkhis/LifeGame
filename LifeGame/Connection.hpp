@@ -32,6 +32,7 @@ namespace Messaging {
         bool CanRead() const { return canRead; }
         bool CanWrite() const { return canWrite; }
         void Clear() { recvMessages = 0; }
+        void Close() { socket->Shutdown(); }
         
         int Recv();
         int Send();

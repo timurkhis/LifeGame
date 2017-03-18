@@ -9,9 +9,6 @@
 #ifndef MemoryStream_hpp
 #define MemoryStream_hpp
 
-#if !defined(_WIN32)
-#include <netdb.h>
-#endif
 #include <vector>
 #include <type_traits>
 #include <stdint.h>

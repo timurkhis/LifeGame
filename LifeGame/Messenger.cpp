@@ -32,20 +32,25 @@ namespace Messaging {
     Messenger::~Messenger() {
 		if (!destroyed) {
 			Destroy();
+            Close();
 		}
 	}
 
     void Messenger::Destroy() {
         OnDestroy();
+        Remove(listener, recvList);
         listener.reset();
-        recvList.clear();
+        
         sendList.clear();
         exceptList.clear();
-        connections.clear();
-#if defined(_WIN32)
-		WSACleanup();
-#endif
-		destroyed = true;
+        
+        if (connections.size() > 0) {
+            for (auto &connection : connections) {
+                connection->Close();
+            }
+        } else {
+            Close();
+        }
     }
 
     void Messenger::Update(bool block) {
@@ -106,8 +111,11 @@ namespace Messaging {
         if (iter != connections.end()) {
             connections.erase(iter);
         }
+        if (connections.size() == 0 && listener == nullptr) {
+            Close();
+        }
     }
-
+    
     void Messenger::Remove(TCPSocketPtr socket, std::vector<TCPSocketPtr> &from) {
         auto iter = std::find(from.begin(), from.end(), socket);
         if (iter != from.end()) {
@@ -115,6 +123,17 @@ namespace Messaging {
         }
     }
 
+    void Messenger::Close() {
+#if defined(_WIN32)
+        WSACleanup();
+#endif
+        assert(recvList.size() == 0);
+        assert(sendList.size() == 0);
+        assert(exceptList.size() == 0);
+        assert(connections.size() == 0);
+        destroyed = true;
+    }
+    
     void Messenger::Listen(std::shared_ptr<Network::SocketAddress> address) {
         std::shared_ptr<SocketAddress> addr = address != nullptr ? address : SocketAddress::CreateIPv4("localhost");
         listener = TCPSocket::Create();

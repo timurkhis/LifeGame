@@ -33,10 +33,13 @@ namespace Network {
     
     TCPSocket::~TCPSocket() {
 #if defined(_WIN32)
-		closesocket(sock);
+		int result = closesocket(sock);
 #else
-		close(sock);
+		int result = close(sock);
 #endif
+        if (result < 0) {
+            Log::Error("TCPSocket::Close failed!");
+        }
     }
     
     void TCPSocket::NagleAlgorithm(bool enable) {
@@ -82,6 +85,17 @@ namespace Network {
         int result = listen(sock, backLog);
         if (result < 0) {
             Log::Error("TCPSocket::Listen failed!");
+        }
+    }
+    
+    void TCPSocket::Shutdown() {
+#if defined(_WIN32)
+        int result = shutdown(sock, SD_SEND);
+#else
+        int result = shutdown(sock, SHUT_WR);
+#endif
+        if (result < 0) {
+            Log::Error("TCPSocket::Shutdown failed!");
         }
     }
     

@@ -27,7 +27,7 @@ struct {
     std::string label = "LifeGame";
     bool master = true;
     unsigned turnTime = 100;
-    int players = 4;
+    int players = 2;
 } args;
 
 void Parse(int argc, char **argv);
@@ -49,7 +49,7 @@ int main(int argc, char **argv) {
     peer->Init();
     Window &instance = Window::Instance();
     instance.Init(gameField);
-	args.label += std::string(args.master ? "Master " : "Slave ") + args.address;
+	args.label += std::string(args.master ? " Master " : " Slave ") + args.address;
     instance.MainLoop(argc, argv, args.label, args.window);
     return 0;
 }

@@ -39,6 +39,7 @@ class GameField {
     std::shared_ptr<std::unordered_set<Unit>> units;
     Geometry::Vector size;
     int player;
+    bool exit;
     unsigned turnTime;
     unsigned char currentPreset;
     

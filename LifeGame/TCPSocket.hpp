@@ -30,6 +30,7 @@ namespace Network {
         void Connect(SocketAddress &address);
         void Bind(SocketAddress &address);
         void Listen(int backLog = SOMAXCONN);
+        void Shutdown();
         int Send(void *buffer, size_t len);
         int Recv(void *buffer, size_t len, bool peek = false);
         int DataSize() const;

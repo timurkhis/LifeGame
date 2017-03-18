@@ -30,6 +30,7 @@ namespace Messaging {
         virtual ~Messenger() = 0;
         void Destroy();
         void Update(bool block = false);
+        bool Destroyed() const { return destroyed; }
         std::string Address() const { return address->ToString(); }
         
     protected:
@@ -51,6 +52,7 @@ namespace Messaging {
         void NewConnection(const std::vector<Network::TCPSocketPtr> &outRead);
         void CloseConnection(const ConnectionPtr connection, bool callback);
         void Remove(Network::TCPSocketPtr socket, std::vector<Network::TCPSocketPtr> &from);
+        void Close();
     };
     
 }
