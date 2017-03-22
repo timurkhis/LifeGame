@@ -34,7 +34,7 @@ Peer::Peer(std::shared_ptr<GameField> gameField, const std::string &address) :
 
 Peer::Peer(std::shared_ptr<GameField> gameField, int players) :
     Peer(gameField, 1, players) {
-    address = SocketAddress::CreateIPv4("localhost");
+    address = std::make_shared<SocketAddress>();
     Listen(address);
 }
 

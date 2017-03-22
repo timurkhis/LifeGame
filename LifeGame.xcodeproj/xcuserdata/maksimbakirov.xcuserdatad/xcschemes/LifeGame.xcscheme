@@ -63,7 +63,11 @@
       </BuildableProductRunnable>
       <CommandLineArguments>
          <CommandLineArgument
-            argument = "server 127.0.0.1:5348"
+            argument = "server 192.168.1.40:48095"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "server 127.0.0.1:10441"
             isEnabled = "YES">
          </CommandLineArgument>
       </CommandLineArguments>

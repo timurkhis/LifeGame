@@ -54,6 +54,7 @@ namespace Messaging {
     }
 
     void Messenger::Update(bool block) {
+        if (recvList.size() == 0 && sendList.size() == 0 && exceptList.size() == 0) return;
         std::vector<TCPSocketPtr> outRead;
         std::vector<TCPSocketPtr> outWrite;
         std::vector<TCPSocketPtr> outExcept;
@@ -135,7 +136,7 @@ namespace Messaging {
     }
     
     void Messenger::Listen(std::shared_ptr<Network::SocketAddress> address) {
-        std::shared_ptr<SocketAddress> addr = address != nullptr ? address : SocketAddress::CreateIPv4("localhost");
+        std::shared_ptr<SocketAddress> addr = address != nullptr ? address : std::make_shared<SocketAddress>();
         listener = TCPSocket::Create();
         listener->Bind(*addr);
         listener->Listen();
