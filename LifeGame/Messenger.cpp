@@ -77,6 +77,9 @@ namespace Messaging {
                 connection->Clear();
             }
         }
+        if (connections.size() == 0 && listener == nullptr) {
+            Close();
+        }
     }
 
     void Messenger::Write(const std::vector<TCPSocketPtr> &outWrite) {
@@ -111,9 +114,6 @@ namespace Messaging {
         auto iter = std::find(connections.begin(), connections.end(), connection);
         if (iter != connections.end()) {
             connections.erase(iter);
-        }
-        if (connections.size() == 0 && listener == nullptr) {
-            Close();
         }
     }
     
