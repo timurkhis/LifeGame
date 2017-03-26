@@ -122,6 +122,7 @@ void GameField::Pause() {
 void GameField::Update() {
     peer->Update();
     if (peer->Destroyed()) {
+		peer->Cleanup();
         std::exit(EXIT_SUCCESS);
     }
 }

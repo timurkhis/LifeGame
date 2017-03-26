@@ -19,18 +19,18 @@ namespace Messaging {
         std::vector<Network::TCPSocketPtr> sendList;
         std::vector<Network::TCPSocketPtr> exceptList;
         Network::TCPSocketPtr listener;
-		bool destroyed;
 
     protected:
         std::vector<ConnectionPtr> connections;
         std::shared_ptr<Network::SocketAddress> address;
         
     public:
-		Messenger();
+		explicit Messenger();
         virtual ~Messenger() = 0;
         void Destroy();
+		void Cleanup();
         void Update(bool block = false);
-        bool Destroyed() const { return destroyed; }
+        bool Destroyed() const { return connections.size() == 0 && listener == nullptr; }
         std::string Address() const { return address->ToString(); }
         
     protected:
@@ -52,7 +52,6 @@ namespace Messaging {
         void NewConnection(const std::vector<Network::TCPSocketPtr> &outRead);
         void CloseConnection(const ConnectionPtr connection, bool callback);
         void Remove(Network::TCPSocketPtr socket, std::vector<Network::TCPSocketPtr> &from);
-        void Close();
     };
     
 }

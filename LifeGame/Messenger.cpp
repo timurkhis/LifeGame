@@ -19,7 +19,7 @@ using namespace Network;
 
 namespace Messaging {
     
-	Messenger::Messenger() : destroyed(false) {
+	Messenger::Messenger() {
 #if defined(_WIN32)
 		WSADATA data;
 		int result = WSAStartup(MAKEWORD(2, 2), &data);
@@ -30,9 +30,9 @@ namespace Messaging {
 	}
 
     Messenger::~Messenger() {
-		if (!destroyed) {
+		if (!Destroyed()) {
 			Destroy();
-            Close();
+			Cleanup();
 		}
 	}
 
@@ -43,15 +43,27 @@ namespace Messaging {
         
         sendList.clear();
         exceptList.clear();
-        
-        if (connections.size() > 0) {
+		
+        if (!Destroyed()) {
             for (auto &connection : connections) {
                 connection->Close();
             }
-        } else {
-            Close();
         }
     }
+
+	void Messenger::Cleanup() {
+#if defined(_WIN32)
+		int result = WSACleanup();
+		if (result != 0) {
+			Log::Error("WSACleanup failed!");
+		}
+#endif
+		assert(recvList.size() == 0);
+		assert(sendList.size() == 0);
+		assert(exceptList.size() == 0);
+		assert(connections.size() == 0);
+		assert(Destroyed());
+	}
 
     void Messenger::Update(bool block) {
         if (recvList.size() == 0 && sendList.size() == 0 && exceptList.size() == 0) return;
@@ -112,9 +124,6 @@ namespace Messaging {
         if (iter != connections.end()) {
             connections.erase(iter);
         }
-        if (connections.size() == 0 && listener == nullptr) {
-            Close();
-        }
     }
     
     void Messenger::Remove(TCPSocketPtr socket, std::vector<TCPSocketPtr> &from) {
@@ -122,17 +131,6 @@ namespace Messaging {
         if (iter != from.end()) {
             from.erase(iter);
         }
-    }
-
-    void Messenger::Close() {
-#if defined(_WIN32)
-        WSACleanup();
-#endif
-        assert(recvList.size() == 0);
-        assert(sendList.size() == 0);
-        assert(exceptList.size() == 0);
-        assert(connections.size() == 0);
-        destroyed = true;
     }
     
     void Messenger::Listen(std::shared_ptr<Network::SocketAddress> address) {
