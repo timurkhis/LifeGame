@@ -11,10 +11,13 @@
 
 #include <vector>
 #include <memory>
+#include "Utils.hpp"
 
 namespace Messaging {
 
     class Command {
+        int32_t turnStep;
+        
     public:
         enum class Cmd {
             Empty,
@@ -25,12 +28,14 @@ namespace Messaging {
         
         static std::shared_ptr<Command> Parse(Network::InputMemoryStream &stream);
         
+        explicit Command(int32_t turnStep = 0) : turnStep(turnStep) {}
         virtual ~Command() = 0;
         virtual Cmd Type() = 0;
         virtual void Apply(class GameField *gameField) = 0;
         
         void Read(Network::InputMemoryStream &stream);
         void Write(Network::OutputMemoryStream &stream);
+        int32_t TurnStep() const { return turnStep; }
         
     private:
         virtual void OnRead(Network::InputMemoryStream &stream) = 0;
@@ -53,8 +58,8 @@ namespace Messaging {
         std::vector<Geometry::Vector> units;
         
     public:
-        AddUnitsCommand() : id(-1) {}
-        AddUnitsCommand(int id, std::vector<Geometry::Vector> units) : id(id), units(std::move(units)) {}
+        explicit AddUnitsCommand() : id(-1) {}
+        explicit AddUnitsCommand(int id, std::vector<Geometry::Vector> units) : id(id), units(std::move(units)) {}
         virtual ~AddUnitsCommand() override {}
         virtual Cmd Type() override { return Cmd::AddUnits; }
         virtual void Apply(class GameField *gameField) override;
@@ -70,8 +75,8 @@ namespace Messaging {
         int id;
         
     public:
-        AddPresetCommand() {}
-        AddPresetCommand(Geometry::Matrix3x3 trs, unsigned char preset, int id) : trs(trs), preset(preset), id(id) {}
+        explicit AddPresetCommand() {}
+        explicit AddPresetCommand(Geometry::Matrix3x3 trs, unsigned char preset, int id) : trs(trs), preset(preset), id(id) {}
         virtual ~AddPresetCommand() override {}
         virtual Cmd Type() override { return Cmd::AddPreset; }
         virtual void Apply(class GameField *gameField) override;
@@ -85,8 +90,8 @@ namespace Messaging {
         std::vector<std::shared_ptr<Command>> commands;
         
     public:
-        ComplexCommand() {}
-        ComplexCommand(std::vector<std::shared_ptr<Command>> commands) : commands(std::move(commands)) {}
+        explicit ComplexCommand() : Command(Random::Next()) {}
+        explicit ComplexCommand(std::vector<std::shared_ptr<Command>> commands) : commands(std::move(commands)) {}
         virtual ~ComplexCommand() override {}
         virtual Cmd Type() override { return Cmd::Complex; }
         virtual void Apply(class GameField *gameField) override;

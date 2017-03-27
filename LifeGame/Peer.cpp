@@ -7,7 +7,7 @@
 //
 
 #include <cassert>
-#include "Log.hpp"
+#include "Utils.hpp"
 #include "GameField.hpp"
 #include "Peer.hpp"
 
@@ -20,6 +20,7 @@ Peer::Peer(std::shared_ptr<GameField> gameField, int readyPlayers, int playersCo
     readyPlayers(readyPlayers),
     playersCount(playersCount),
     futureTurns(3),
+    seed(0),
     pauseOnLastTurn(false),
     pause(false),
     selfCommands(new CommandsQueue()) {
@@ -36,6 +37,7 @@ Peer::Peer(std::shared_ptr<GameField> gameField, int players) :
     Peer(gameField, 1, players) {
     address = std::make_shared<SocketAddress>();
     Listen(address);
+    SetSeed(Random::NextUInt());
 }
 
 void Peer::Init() {
@@ -55,12 +57,17 @@ void Peer::Init() {
 }
 
 void Peer::Turn() {
-    for (auto player : players) {
-        ApplyCommand(player.second);
+    if (CheckSync()) {
+        for (auto player : players) {
+            ApplyCommand(player.second);
+        }
+        ApplyCommand(selfCommands);
+        gameField->ProcessUnits();
+        PrepareCommands();
+    } else {
+        Log::Warning("Game instances are out of sync!");
+        gameField->Destroy();
     }
-    ApplyCommand(selfCommands);
-    gameField->ProcessUnits();
-    PrepareCommands();
 }
 
 void Peer::Pause() {
@@ -209,6 +216,17 @@ void Peer::PrepareCommands() {
     BroadcastMessage(msg);
 }
 
+void Peer::SetSeed(uint32_t seed) {
+    this->seed = seed;
+    Random::Seed(seed);
+}
+
+bool Peer::CheckSync() {
+    const int32_t random = selfCommands->front()->TurnStep();
+    typedef const std::unordered_map<int, CommandsQueuePtr>::value_type &value;
+    return std::all_of(players.cbegin(), players.cend(), [random](value v1){ return random == v1.second->front()->TurnStep(); });
+}
+
 
 
 Peer::Message::~Message() {}
@@ -305,8 +323,8 @@ void Peer::NewPlayerMessage::WriteAddress(OutputMemoryStream &stream, const std:
 
 void Peer::AcceptPlayerMessage::OnRead(Peer *peer, const ConnectionPtr connection) {
     int32_t playersCount, x, y, id, masterId;
-    uint32_t turnTime;
-    connection->input >> playersCount >> x >> y >> id >> masterId >> turnTime;
+    uint32_t turnTime, seed;
+    connection->input >> playersCount >> x >> y >> id >> masterId >> turnTime >> seed;
     peer->playersCount = static_cast<int>(playersCount);
     
     peer->gameField->SetSize(Vector(static_cast<int>(x), static_cast<int>(y)));
@@ -314,6 +332,7 @@ void Peer::AcceptPlayerMessage::OnRead(Peer *peer, const ConnectionPtr connectio
     peer->gameField->SetTurnTime(static_cast<unsigned>(turnTime));
     peer->AddPlayer(static_cast<int>(masterId), connection);
     peer->CheckReadyForGame();
+    peer->SetSeed(seed);
     assert(peer->gameField->Player() >= 0 && peer->gameField->Player() < peer->playersCount);
 }
 
@@ -324,7 +343,8 @@ void Peer::AcceptPlayerMessage::OnWrite(Peer *peer, const ConnectionPtr connecti
     << static_cast<int32_t>(peer->gameField->GetSize().y)
     << static_cast<int32_t>(peer->players.size())
     << static_cast<int32_t>(peer->gameField->Player())
-    << static_cast<uint32_t>(peer->gameField->TurnTime());
+    << static_cast<uint32_t>(peer->gameField->TurnTime())
+    << peer->seed;
 }
 
 void Peer::ConnectPlayerMessage::OnRead(Peer *peer, const ConnectionPtr connection) {

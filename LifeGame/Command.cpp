@@ -7,7 +7,7 @@
 //
 
 #include "GameField.hpp"
-#include "Log.hpp"
+#include "Utils.hpp"
 #include "Network.h"
 #include "Command.hpp"
 
@@ -45,7 +45,7 @@ namespace Messaging {
 
     void Command::Read(InputMemoryStream &stream) {
         int32_t cmd;
-        stream >> cmd;
+        stream >> cmd >> turnStep;
         if (static_cast<Cmd>(cmd) != Type()) {
             Log::Error("Commands types are not the same!");
         }
@@ -53,7 +53,7 @@ namespace Messaging {
     }
 
     void Command::Write(OutputMemoryStream &stream) {
-        stream << static_cast<int32_t>(Type());
+        stream << static_cast<int32_t>(Type()) << turnStep;
         OnWrite(stream);
     }
 

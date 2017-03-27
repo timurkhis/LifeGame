@@ -8,7 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		EC0CB9461E059456009E443E /* GameField.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EC0CB9441E059456009E443E /* GameField.cpp */; };
-		EC1C108A1E34F774004F6BC2 /* Log.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EC1C10881E34F774004F6BC2 /* Log.cpp */; };
+		EC1C108A1E34F774004F6BC2 /* Utils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EC1C10881E34F774004F6BC2 /* Utils.cpp */; };
 		EC42B8831E55EFFC0030210F /* Peer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EC42B8811E55EFFC0030210F /* Peer.cpp */; };
 		EC562E3B1E06E64F0002F643 /* Rect.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EC562E391E06E64F0002F643 /* Rect.cpp */; };
 		EC5936751E0828BA00075699 /* Presets.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EC5936731E0828BA00075699 /* Presets.cpp */; };
@@ -42,8 +42,8 @@
 /* Begin PBXFileReference section */
 		EC0CB9441E059456009E443E /* GameField.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GameField.cpp; sourceTree = "<group>"; };
 		EC0CB9451E059456009E443E /* GameField.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = GameField.hpp; sourceTree = "<group>"; };
-		EC1C10881E34F774004F6BC2 /* Log.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Log.cpp; sourceTree = "<group>"; };
-		EC1C10891E34F774004F6BC2 /* Log.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Log.hpp; sourceTree = "<group>"; };
+		EC1C10881E34F774004F6BC2 /* Utils.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Utils.cpp; sourceTree = "<group>"; };
+		EC1C10891E34F774004F6BC2 /* Utils.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Utils.hpp; sourceTree = "<group>"; };
 		EC42B8811E55EFFC0030210F /* Peer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Peer.cpp; sourceTree = "<group>"; };
 		EC42B8821E55EFFC0030210F /* Peer.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Peer.hpp; sourceTree = "<group>"; };
 		EC562E391E06E64F0002F643 /* Rect.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Rect.cpp; sourceTree = "<group>"; };
@@ -118,8 +118,8 @@
 				EC0CB9451E059456009E443E /* GameField.hpp */,
 				EC5936731E0828BA00075699 /* Presets.cpp */,
 				EC5936741E0828BA00075699 /* Presets.hpp */,
-				EC1C10881E34F774004F6BC2 /* Log.cpp */,
-				EC1C10891E34F774004F6BC2 /* Log.hpp */,
+				EC1C10881E34F774004F6BC2 /* Utils.cpp */,
+				EC1C10891E34F774004F6BC2 /* Utils.hpp */,
 				EC81246D1E0F8933002A339E /* Geometry */,
 				ECFAFB7F1E194F2D009C4962 /* Network */,
 				ECD81F321E507DB900FCBB74 /* Messaging */,
@@ -244,7 +244,7 @@
 				ECFAFB821E194F73009C4962 /* SocketAddress.cpp in Sources */,
 				ECDDBA641E2B379B00F74A73 /* SocketSelector.cpp in Sources */,
 				EC0CB9461E059456009E443E /* GameField.cpp in Sources */,
-				EC1C108A1E34F774004F6BC2 /* Log.cpp in Sources */,
+				EC1C108A1E34F774004F6BC2 /* Utils.cpp in Sources */,
 				EC69E6001DFB1ED500C2AF7E /* main.cpp in Sources */,
 				ECA3CD301E1A25940034815A /* TCPSocket.cpp in Sources */,
 				ECB682201E26F828009D9C3C /* MemoryStream.cpp in Sources */,

@@ -12,7 +12,7 @@
 #include "Messenger.hpp"
 
 #if defined(_WIN32)
-#include "Log.hpp"
+#include "Utils.hpp"
 #endif
 
 using namespace Network;

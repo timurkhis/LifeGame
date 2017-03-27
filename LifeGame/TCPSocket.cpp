@@ -14,7 +14,7 @@
 #include <unistd.h>
 #endif
 
-#include "Log.hpp"
+#include "Utils.hpp"
 #include "TCPSocket.hpp"
 
 namespace Network {

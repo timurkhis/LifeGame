@@ -1,5 +1,5 @@
 //
-//  Log.hpp
+//  Utils.hpp
 //  LifeGame
 //
 //  Created by Максим Бакиров on 22.01.17.
@@ -11,7 +11,20 @@
 
 #include <iostream>
 #include <sstream>
+#include <random>
 #include <errno.h>
+
+class Random {
+    static std::mt19937 generator;
+    
+public:
+    static int32_t Next();
+    static int32_t Next(int32_t max);
+    static int32_t Next(int32_t min, int32_t max);
+    static uint32_t NextUInt();
+    static float NextFloat();
+    static void Seed(uint32_t seed);
+};
 
 class Log {
 public:
@@ -32,13 +45,6 @@ public:
 #endif
 		Message(stream, args..., error);
         throw std::runtime_error(stream.str());
-    }
-    
-    template <class Exception, typename ...Args>
-    static void Error(Args... args) {
-        std::stringstream stream;
-        Message(stream, args...);
-        throw Exception(stream.str());
     }
     
 private:

@@ -21,6 +21,7 @@ class Peer : public Messaging::Messenger {
     typedef std::queue<CommandPtr> CommandsQueue;
     typedef std::shared_ptr<CommandsQueue> CommandsQueuePtr;
     
+    uint32_t seed;
     int readyPlayers;
     int playersCount;
     bool pause;
@@ -70,6 +71,8 @@ private:
     void ApplyCommand(CommandsQueuePtr queue);
     void StartGame();
     void PrepareCommands();
+    void SetSeed(uint32_t seed);
+    bool CheckSync();
     
     
     
