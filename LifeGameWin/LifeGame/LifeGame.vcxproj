@@ -68,7 +68,6 @@
     <ClCompile Include="..\..\LifeGame\Command.cpp" />
     <ClCompile Include="..\..\LifeGame\Connection.cpp" />
     <ClCompile Include="..\..\LifeGame\GameField.cpp" />
-    <ClCompile Include="..\..\LifeGame\Log.cpp" />
     <ClCompile Include="..\..\LifeGame\main.cpp" />
     <ClCompile Include="..\..\LifeGame\Matrix.cpp" />
     <ClCompile Include="..\..\LifeGame\MemoryStream.cpp" />
@@ -79,6 +78,7 @@
     <ClCompile Include="..\..\LifeGame\SocketAddress.cpp" />
     <ClCompile Include="..\..\LifeGame\SocketSelector.cpp" />
     <ClCompile Include="..\..\LifeGame\TCPSocket.cpp" />
+    <ClCompile Include="..\..\LifeGame\Utils.cpp" />
     <ClCompile Include="..\..\LifeGame\Vector.cpp" />
     <ClCompile Include="..\..\LifeGame\Window.cpp" />
   </ItemGroup>
@@ -87,7 +87,6 @@
     <ClInclude Include="..\..\LifeGame\Connection.hpp" />
     <ClInclude Include="..\..\LifeGame\GameField.hpp" />
     <ClInclude Include="..\..\LifeGame\Geometry.h" />
-    <ClInclude Include="..\..\LifeGame\Log.hpp" />
     <ClInclude Include="..\..\LifeGame\Matrix.hpp" />
     <ClInclude Include="..\..\LifeGame\MemoryStream.hpp" />
     <ClInclude Include="..\..\LifeGame\Messenger.hpp" />
@@ -98,6 +97,7 @@
     <ClInclude Include="..\..\LifeGame\SocketAddress.hpp" />
     <ClInclude Include="..\..\LifeGame\SocketSelector.hpp" />
     <ClInclude Include="..\..\LifeGame\TCPSocket.hpp" />
+    <ClInclude Include="..\..\LifeGame\Utils.hpp" />
     <ClInclude Include="..\..\LifeGame\Vector.hpp" />
     <ClInclude Include="..\..\LifeGame\Window.hpp" />
   </ItemGroup>
