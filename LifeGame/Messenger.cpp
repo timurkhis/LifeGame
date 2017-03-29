@@ -44,10 +44,8 @@ namespace Messaging {
         sendList.clear();
         exceptList.clear();
 		
-        if (!Destroyed()) {
-            for (auto &connection : connections) {
-                connection->Close();
-            }
+        for (auto &connection : connections) {
+            connection->Close();
         }
     }
 
@@ -148,8 +146,10 @@ namespace Messaging {
     }
 
     void Messenger::Send(const ConnectionPtr connection) {
-        assert(connection->CanWrite());
-        sendList.push_back(connection->socket);
+        if (connection->CanWrite()) {
+            assert(std::find(sendList.begin(), sendList.end(), connection->socket) == sendList.end());
+            sendList.push_back(connection->socket);
+        }
     }
 
     void Messenger::CloseConnection(const ConnectionPtr connection) {

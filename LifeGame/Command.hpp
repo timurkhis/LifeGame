@@ -90,8 +90,8 @@ namespace Messaging {
         std::vector<std::shared_ptr<Command>> commands;
         
     public:
-        explicit ComplexCommand() : Command(Random::Next()) {}
-        explicit ComplexCommand(std::vector<std::shared_ptr<Command>> commands) : commands(std::move(commands)) {}
+        explicit ComplexCommand() {}
+        explicit ComplexCommand(int32_t turnStep, std::vector<std::shared_ptr<Command>> commands) : Command(turnStep), commands(std::move(commands)) {}
         virtual ~ComplexCommand() override {}
         virtual Cmd Type() override { return Cmd::Complex; }
         virtual void Apply(class GameField *gameField) override;
