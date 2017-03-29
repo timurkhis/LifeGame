@@ -146,8 +146,7 @@ namespace Messaging {
     }
 
     void Messenger::Send(const ConnectionPtr connection) {
-        if (connection->CanWrite()) {
-            assert(std::find(sendList.begin(), sendList.end(), connection->socket) == sendList.end());
+        if (std::find(sendList.begin(), sendList.end(), connection->socket) == sendList.end()) {
             sendList.push_back(connection->socket);
         }
     }
