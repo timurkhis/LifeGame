@@ -241,7 +241,7 @@ Peer::Message::~Message() {}
 
 std::shared_ptr<Peer::Message> Peer::Message::Parse(InputMemoryStream &stream) {
     int32_t type;
-    stream.Read(type, sizeof(uint32_t));
+    stream.Read(type, stream.Size() + sizeof(uint32_t));
     switch (static_cast<Msg>(type)) {
         case Msg::NewPlayer:     return std::make_shared<NewPlayerMessage>();
         case Msg::AcceptPlayer:  return std::make_shared<AcceptPlayerMessage>();
@@ -269,11 +269,11 @@ void Peer::Message::Read(Peer *peer, const ConnectionPtr connection) {
 void Peer::Message::Write(Peer *peer, const ConnectionPtr connection) {
 //    Log::Warning("Peer", peer->gameField->Player(), "writes message of type", static_cast<int32_t>(Type()));
     uint32_t msgSize = 0;
-    uint32_t pos = connection->output.Size();
+    uint32_t oldSize = connection->output.Size();
     connection->output << msgSize << static_cast<int32_t>(Type());
     OnWrite(peer, connection);
-    msgSize = connection->output.Size();
-    connection->output.Write(msgSize, pos);
+    msgSize = connection->output.Size() - oldSize;
+    connection->output.Write(msgSize, oldSize);
 }
 
 void Peer::NewPlayerMessage::OnRead(Peer *peer, const ConnectionPtr connection) {
