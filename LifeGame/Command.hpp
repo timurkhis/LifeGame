@@ -17,6 +17,7 @@ namespace Messaging {
 
     class Command {
         int32_t turnStep;
+        uint64_t checksum;
         
     public:
         enum class Cmd {
@@ -28,7 +29,7 @@ namespace Messaging {
         
         static std::shared_ptr<Command> Parse(Network::InputMemoryStream &stream);
         
-        explicit Command(int32_t turnStep = 0) : turnStep(turnStep) {}
+        explicit Command(int32_t turnStep = 0, uint64_t checksum = 0) : turnStep(turnStep), checksum(checksum) {}
         virtual ~Command() = 0;
         virtual Cmd Type() = 0;
         virtual void Apply(class GameField *gameField) = 0;
@@ -36,6 +37,7 @@ namespace Messaging {
         void Read(Network::InputMemoryStream &stream);
         void Write(Network::OutputMemoryStream &stream);
         int32_t TurnStep() const { return turnStep; }
+        uint64_t Checksum() const { return checksum; }
         
     private:
         virtual void OnRead(Network::InputMemoryStream &stream) = 0;
@@ -91,7 +93,8 @@ namespace Messaging {
         
     public:
         explicit ComplexCommand() {}
-        explicit ComplexCommand(int32_t turnStep, std::vector<std::shared_ptr<Command>> commands) : Command(turnStep), commands(std::move(commands)) {}
+        explicit ComplexCommand(int32_t turnStep, uint64_t checksum, std::vector<std::shared_ptr<Command>> commands) :
+            Command(turnStep, checksum), commands(std::move(commands)) {}
         virtual ~ComplexCommand() override {}
         virtual Cmd Type() override { return Cmd::Complex; }
         virtual void Apply(class GameField *gameField) override;

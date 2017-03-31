@@ -213,7 +213,9 @@ void Peer::PrepareCommands() {
     if (addedUnits.size() > 0) {
         commands.emplace_back(std::make_shared<AddUnitsCommand>(gameField->Player(), std::move(addedUnits)));
     }
-    CommandPtr command = std::make_shared<ComplexCommand>(Random::Next(), std::move(commands));
+    const int32_t random = Random::Next();
+    const uint64_t checksum = CalculateChecksum();
+    CommandPtr command = std::make_shared<ComplexCommand>(random, checksum, std::move(commands));
     selfCommands->push(command);
     CommandMessage msg;
     BroadcastMessage(msg);
@@ -224,11 +226,22 @@ void Peer::SetSeed(uint32_t seed) {
     Random::Seed(seed);
 }
 
+uint64_t Peer::CalculateChecksum() const {
+    uint64_t result = 0;
+    const std::hash<Vector> hash;
+    for (const auto &unit : *gameField->GetUnits()) {
+        result = hash(unit.position) * (unit.player + 1);
+    }
+    return result;
+}
+
 bool Peer::CheckSync() {
     const int32_t random = selfCommands->front()->TurnStep();
+    const uint64_t checksum = selfCommands->front()->Checksum();
     for (const auto &it : players) {
         const int32_t playerRandom = it.second->front()->TurnStep();
-        if (playerRandom != random) {
+        const uint64_t playerChecksum = it.second->front()->Checksum();
+        if (playerRandom != random || playerChecksum != checksum) {
             return false;
         }
     }

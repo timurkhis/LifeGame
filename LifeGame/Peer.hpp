@@ -72,6 +72,7 @@ private:
     void StartGame();
     void PrepareCommands();
     void SetSeed(uint32_t seed);
+    uint64_t CalculateChecksum() const;
     bool CheckSync();
     
     

@@ -45,7 +45,7 @@ namespace Messaging {
 
     void Command::Read(InputMemoryStream &stream) {
         int32_t cmd;
-        stream >> cmd >> turnStep;
+        stream >> cmd >> turnStep >> checksum;
         if (static_cast<Cmd>(cmd) != Type()) {
             Log::Error("Commands types are not the same!");
         }
@@ -53,7 +53,7 @@ namespace Messaging {
     }
 
     void Command::Write(OutputMemoryStream &stream) {
-        stream << static_cast<int32_t>(Type()) << turnStep;
+        stream << static_cast<int32_t>(Type()) << turnStep << checksum;
         OnWrite(stream);
     }
 
