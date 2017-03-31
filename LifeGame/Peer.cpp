@@ -228,20 +228,22 @@ void Peer::SetSeed(uint32_t seed) {
 
 uint64_t Peer::CalculateChecksum() const {
     uint64_t result = 0;
-    const std::hash<Vector> hash;
     for (const auto &unit : *gameField->GetUnits()) {
-        result = hash(unit.position) * (unit.player + 1);
+		uint32_t x = static_cast<uint32_t>(unit.position.x);
+		uint32_t y = static_cast<uint32_t>(unit.position.y);
+		uint32_t size = static_cast<uint32_t>(gameField->GetSize().y);
+		uint32_t player = static_cast<uint32_t>(unit.player + 1);
+		result += x * size + player + y * player;
     }
     return result;
 }
 
 bool Peer::CheckSync() {
-    const int32_t random = selfCommands->front()->TurnStep();
-    const uint64_t checksum = selfCommands->front()->Checksum();
+	const CommandPtr command = selfCommands->front();
     for (const auto &it : players) {
-        const int32_t playerRandom = it.second->front()->TurnStep();
-        const uint64_t playerChecksum = it.second->front()->Checksum();
-        if (playerRandom != random || playerChecksum != checksum) {
+		const CommandPtr playerCommand = it.second->front();
+        if (command->TurnStep() != playerCommand->TurnStep() 
+			|| command->Checksum() != playerCommand->Checksum()) {
             return false;
         }
     }
