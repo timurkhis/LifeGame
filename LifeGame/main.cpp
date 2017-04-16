@@ -27,7 +27,7 @@ struct {
     std::string label = "LifeGame";
     bool master = true;
     unsigned turnTime = 100;
-    int players = 4;
+    int players = 1;
 } args;
 
 void Parse(int argc, char **argv);

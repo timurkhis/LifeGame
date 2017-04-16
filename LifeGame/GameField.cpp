@@ -15,7 +15,7 @@ using namespace Geometry;
 
 GameField::GameField(std::shared_ptr<Presets> presets) : GameField(presets, Vector(), 0, -1) {}
 
-GameField::GameField(std::shared_ptr<Presets> presets, Geometry::Vector size, unsigned turnTime, int player) :
+GameField::GameField(std::shared_ptr<Presets> presets, Vector size, unsigned turnTime, int player) :
     presets(presets),
     player(player),
     exit(false),
@@ -71,12 +71,12 @@ void GameField::ProcessUnit(const Unit &unit, std::unordered_map<Unit, int> &pro
     }
 }
 
-void GameField::AddPreset(const Geometry::Matrix3x3 &matrix) {
+void GameField::AddPreset(const Matrix3x3 &matrix) {
     if (IsGameStopped()) return;
     peer->AddPreset(matrix, currentPreset);
 }
 
-void GameField::AddPreset(const Geometry::Matrix3x3 &matrix, int id, unsigned char preset) {
+void GameField::AddPreset(const Matrix3x3 &matrix, int id, unsigned char preset) {
     std::shared_ptr<std::vector<Vector>> loadedUnits = presets->Load(preset);
     for (int i = 0; i < loadedUnits->size(); i++) {
         Vector pos = matrix * loadedUnits->at(i);
@@ -93,7 +93,7 @@ void GameField::AddUnit(Vector unit) {
     }
 }
 
-bool GameField::AddUnit(Geometry::Vector unit, int id) {
+bool GameField::AddUnit(Vector unit, int id) {
     return units->emplace(id, unit).second;
 }
 
