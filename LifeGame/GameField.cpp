@@ -34,9 +34,13 @@ void GameField::ClampVector(Vector &vec) const {
 
 void GameField::ProcessUnits() {
     std::unordered_map<Vector, uint32_t> processCells;
+    processCells.reserve(units->size() * 9);
+    const size_t bucketCount = processCells.bucket_count();
     for (const auto &unit : *units) {
         ProcessUnit(unit, processCells);
     }
+    assert(bucketCount == processCells.bucket_count());
+    
     units.reset(new std::unordered_set<Unit>());
     const uint32_t oneOneOne = 7;
     for (const auto &cell : processCells) {
@@ -44,10 +48,10 @@ void GameField::ProcessUnits() {
         uint32_t offset = 0;
         uint32_t maxNeighbours = 0;
         uint32_t self = 0;
-        for (int i = 0; i < 8; i++) {
+        for (int i = 0; i < maxPlayers; i++) {
             uint32_t neighbours = cellMask & (oneOneOne << 4 * i);
             neighbours >>= 4 * i;
-            if (neighbours > maxNeighbours) {
+            if (neighbours > maxNeighbours || (neighbours == maxNeighbours && Random::NextBool())) {
                 maxNeighbours = neighbours;
                 offset = i;
                 self = cellMask & (1 << (4 * (i + 1) - 1));

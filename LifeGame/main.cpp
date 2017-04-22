@@ -27,7 +27,7 @@ struct {
     std::string label = "LifeGame";
     bool master = true;
     unsigned turnTime = 100;
-    int players = 2;
+    int players = 1;
 } args;
 
 void Parse(int argc, char **argv);
@@ -81,8 +81,8 @@ void Parse(int argc, char **argv) {
         if (std::strcmp("players", argv[i]) == 0) {
             int players = atoi(argv[++i]);
             if (players > 0) {
-                if (players > 8) {
-                    players = 8;
+                if (players > GameField::maxPlayers) {
+                    players = GameField::maxPlayers;
                 }
                 args.players = players;
             }

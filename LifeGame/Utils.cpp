@@ -40,6 +40,10 @@ float Random::NextFloat() {
     return result;
 }
 
+bool Random::NextBool() {
+    return Next() % 2 == 0;
+}
+
 void Random::Seed(uint32_t seed) {
     Log::Warning("Seed", seed);
     generator.seed(seed);

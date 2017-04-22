@@ -24,6 +24,7 @@ public:
     static int32_t Next(int32_t min, int32_t max);
     static uint32_t NextUInt();
     static float NextFloat();
+    static bool NextBool();
     static void Seed(uint32_t seed);
 };
 

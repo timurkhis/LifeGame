@@ -47,6 +47,8 @@ public:
     explicit GameField(std::shared_ptr<class Presets> presets);
     explicit GameField(std::shared_ptr<class Presets> presets, Geometry::Vector size, unsigned turnTime, int player);
     
+    static const int maxPlayers = 8;
+    
     int Player() const { return player; }
     unsigned TurnTime() const { return turnTime; }
     Geometry::Vector GetSize() const { return size; }
