@@ -44,3 +44,36 @@ void Random::Seed(uint32_t seed) {
     Log::Warning("Seed", seed);
     generator.seed(seed);
 }
+
+std::unordered_map<std::string, double> Profile::results = std::unordered_map<std::string, double>();
+std::chrono::high_resolution_clock::time_point Profile::start = std::chrono::high_resolution_clock::now();
+std::string Profile::current = std::string("");
+
+void Profile::Start(const std::string &what) {
+    Clock::time_point end = Clock::now();
+    if (current.size() > 0 && what != current) {
+        auto pair = results.find(current);
+        double duration = Clock::duration(end - start).count();
+        if (pair == results.end()) {
+            results.emplace_hint(pair, current, duration);
+        } else {
+            results[current] += duration;
+        }
+    }
+    current = what;
+    start = end;
+}
+
+void Profile::End() {
+    Start("");
+}
+
+void Profile::Print() {
+    double total = 0.0;
+    for (const auto &pair : results) {
+        total += pair.second;
+    }
+    for (const auto &pair : results) {
+        std::cout << pair.first << ": " << pair.second << "ticks " << (pair.second / total) * 100 << "%" << std::endl;
+    }
+}

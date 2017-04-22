@@ -7,6 +7,7 @@
 //
 
 #include <cstdlib>
+#include <cassert>
 #include "GameField.hpp"
 #include "Peer.hpp"
 #include "Presets.hpp"
@@ -32,40 +33,55 @@ void GameField::ClampVector(Vector &vec) const {
 }
 
 void GameField::ProcessUnits() {
-    std::unordered_map<Unit, int> processCells;
+    std::unordered_map<Vector, uint32_t> processCells;
     for (const auto &unit : *units) {
         ProcessUnit(unit, processCells);
     }
+    units.reset(new std::unordered_set<Unit>());
+    const uint32_t oneOneOne = 7;
     for (const auto &cell : processCells) {
-        if (cell.second == 3) {
-            units->emplace(cell.first);
-        } else if (cell.second < 2 || cell.second > 3) {
-            auto contains = units->find(cell.first);
-            if (contains != units->end()) {
-                units->erase(contains);
+        const uint32_t cellMask = cell.second;
+        uint32_t offset = 0;
+        uint32_t maxNeighbours = 0;
+        uint32_t self = 0;
+        for (int i = 0; i < 8; i++) {
+            uint32_t neighbours = cellMask & (oneOneOne << 4 * i);
+            neighbours >>= 4 * i;
+            if (neighbours > maxNeighbours) {
+                maxNeighbours = neighbours;
+                offset = i;
+                self = cellMask & (1 << (4 * (i + 1) - 1));
             }
+        }
+        assert(offset >= 0 && offset <= 7);
+        assert(maxNeighbours >= 0 && maxNeighbours <= 7);
+        if (maxNeighbours == 3 || (maxNeighbours == 2 && self != 0)) {
+            units->emplace(offset, cell.first);
         }
     }
 }
 
-void GameField::ProcessUnit(const Unit &unit, std::unordered_map<Unit, int> &processCells) {
-    processCells.emplace(unit, 0);
+void GameField::ProcessUnit(const Unit &unit, std::unordered_map<Vector, uint32_t> &processCells) {
+    const uint32_t player = 1 << (4 * (unit.player + 1) - 1);
+    const uint32_t offset = 4 * unit.player;
+    const uint32_t oneOneOne = 7;
+    
     for (int x = -1; x <= 1; x++) {
         for (int y = -1; y <= 1; y++) {
-            if (x == 0 && y == 0) continue;
             Vector pos = unit.position + Vector(x, y);
             ClampVector(pos);
-            Unit newUnit(unit.player, pos);
-            const auto iter = processCells.emplace(newUnit, 1);
-            if (!iter.second) {
-                if (iter.first->second == 0) {
-                    processCells.erase(iter.first);
-                    processCells.emplace(newUnit, 1);
-                } else if (iter.first->first.player == unit.player) {
-                    iter.first->second++;
-                } else {
-                    iter.first->second--;
-                }
+            auto insertion = processCells.emplace(pos, 0);
+            
+            if (x == 0 && y == 0) {
+                insertion.first->second |= player;
+            } else {
+                uint32_t &cell = insertion.first->second;
+                uint32_t neighbours = cell & (oneOneOne << offset);
+                neighbours >>= offset;
+                neighbours = (neighbours + 1) & oneOneOne;
+                assert(neighbours >= 0 && neighbours <= 7);
+                cell &= ~(oneOneOne << offset);
+                cell |= neighbours << offset;
             }
         }
     }

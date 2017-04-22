@@ -74,7 +74,7 @@ public:
     void Destroy();
     
 private:
-    void ProcessUnit(const Unit &unit, std::unordered_map<Unit, int> &processCells);
+    void ProcessUnit(const Unit &unit, std::unordered_map<Geometry::Vector, uint32_t> &processCells);
     bool IsGameStopped() const;
 };
 
