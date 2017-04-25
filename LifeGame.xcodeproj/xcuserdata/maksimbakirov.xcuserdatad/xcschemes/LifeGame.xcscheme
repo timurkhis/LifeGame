@@ -68,10 +68,10 @@
          </CommandLineArgument>
          <CommandLineArgument
             argument = "server 192.168.1.183:2772"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "server 127.0.0.1:44491"
+            argument = "server 127.0.0.1:9415"
             isEnabled = "NO">
          </CommandLineArgument>
       </CommandLineArguments>

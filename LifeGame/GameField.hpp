@@ -34,6 +34,7 @@ struct std::hash<Unit> {
 };
 
 class GameField {
+    static const int distanceToEnemy = 4;
     class Peer *peer;
     std::shared_ptr<class Presets> presets;
     std::shared_ptr<std::unordered_set<Unit>> units;
@@ -78,6 +79,7 @@ public:
 private:
     void ProcessUnit(const Unit &unit, std::unordered_map<Geometry::Vector, uint32_t> &processCells);
     bool IsGameStopped() const;
+    bool CanInsert(const Geometry::Vector &unit) const;
 };
 
 #endif /* GameField_hpp */

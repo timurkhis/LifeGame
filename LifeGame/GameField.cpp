@@ -93,11 +93,19 @@ void GameField::ProcessUnit(const Unit &unit, std::unordered_map<Vector, uint32_
 
 void GameField::AddPreset(const Matrix3x3 &matrix) {
     if (IsGameStopped()) return;
+    const Matrix3x3 scale = matrix * Matrix3x3::Scale(Vector(distanceToEnemy, distanceToEnemy));
+    const std::shared_ptr<std::vector<Vector>> loadedUnits = presets->Load(currentPreset);
+    for (const auto &unit : *loadedUnits) {
+        Vector vec = scale * unit;
+        ClampVector(vec);
+        if (!CanInsert(vec)) return;
+    }
     peer->AddPreset(matrix, currentPreset);
 }
 
 void GameField::AddPreset(const Matrix3x3 &matrix, int id, unsigned char preset) {
     std::shared_ptr<std::vector<Vector>> loadedUnits = presets->Load(preset);
+    assert(loadedUnits != nullptr);
     for (int i = 0; i < loadedUnits->size(); i++) {
         Vector pos = matrix * loadedUnits->at(i);
         ClampVector(pos);
@@ -108,13 +116,26 @@ void GameField::AddPreset(const Matrix3x3 &matrix, int id, unsigned char preset)
 void GameField::AddUnit(Vector unit) {
     if (IsGameStopped()) return;
     const Unit key(player, unit);
-    if (units->find(key) == units->end()) {
+    if (units->find(key) == units->end() && CanInsert(unit)) {
         peer->AddUnit(unit);
     }
 }
 
 bool GameField::AddUnit(Vector unit, int id) {
     return units->emplace(id, unit).second;
+}
+
+bool GameField::CanInsert(const Vector &unit) const {
+    const int halfDistance = distanceToEnemy / 2;
+    for (int x = -halfDistance; x <= halfDistance; x++) {
+        for (int y = -halfDistance; y <= halfDistance; y++) {
+            Vector vec = unit + Vector(x, y);
+            ClampVector(vec);
+            const auto search = units->find(Unit(player, vec));
+            if (search != units->end() && search->player != player) return false;
+        }
+    }
+    return true;
 }
 
 void GameField::SavePreset(unsigned char preset, const std::shared_ptr<std::vector<Vector>> cells) {
