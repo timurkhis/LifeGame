@@ -41,7 +41,7 @@ void GameField::ProcessUnits() {
     }
     assert(bucketCount == processCells.bucket_count());
     
-    units.reset(new std::unordered_set<Unit>());
+    units->clear();
     const uint32_t oneOneOne = 7;
     for (const auto &cell : processCells) {
         const uint32_t cellMask = cell.second;
