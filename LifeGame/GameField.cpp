@@ -93,10 +93,9 @@ void GameField::ProcessUnit(const Unit &unit, std::unordered_map<Vector, uint32_
 
 void GameField::AddPreset(const Matrix3x3 &matrix) {
     if (IsGameStopped()) return;
-    const Matrix3x3 scale = matrix * Matrix3x3::Scale(Vector(distanceToEnemy, distanceToEnemy));
     const std::shared_ptr<std::vector<Vector>> loadedUnits = presets->Load(currentPreset);
     for (const auto &unit : *loadedUnits) {
-        Vector vec = scale * unit;
+        Vector vec = matrix * unit;
         ClampVector(vec);
         if (!CanInsert(vec)) return;
     }
@@ -126,7 +125,7 @@ bool GameField::AddUnit(Vector unit, int id) {
 }
 
 bool GameField::CanInsert(const Vector &unit) const {
-    const int halfDistance = distanceToEnemy / 2;
+    const int halfDistance = distanceToEnemy;
     for (int x = -halfDistance; x <= halfDistance; x++) {
         for (int y = -halfDistance; y <= halfDistance; y++) {
             Vector vec = unit + Vector(x, y);
