@@ -8,12 +8,12 @@
 
 #if defined(__APPLE__)
 #include <GLUT/GLUT.h>
-#include <OpenGL/gl.h>
-#include <OpenGL/glu.h>
+//#include <OpenGL/gl.h>
+//#include <OpenGL/glu.h>
 #else
 #include <GL/glut.h>
-#include <GL/gl.h>
-#include <GL/glu.h>
+//#include <GL/gl.h>
+//#include <GL/glu.h>
 #endif
 
 #include <cassert>
@@ -40,6 +40,7 @@ Window::Window() :
     cellSizeRatio(0.05f),
     cellSize(0.0f),
     deltaTime(1000 / 30),
+    window(0),
     loadedUnitsTRS(Matrix3x3::Identity()),
     rightButtonPressed(false),
     leftButtonPressed(false),
@@ -47,7 +48,11 @@ Window::Window() :
     cameraScrolled(false),
     selectedCells(new std::vector<Vector>()) {}
 
-Window::~Window() {}
+Window::~Window() {
+    if (window != 0) {
+        glutDestroyWindow(window);
+    }
+}
 
 Window &Window::Instance() {
     static Window window;
@@ -59,11 +64,12 @@ void Window::MainLoop(int &argc, char **argv, const std::string &label, Vector s
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA);
     glutInitWindowSize(size.x, size.y);
-    glutCreateWindow(label.c_str());
+    window = glutCreateWindow(label.c_str());
     glutReshapeFunc(Window::Reshape);
     glutDisplayFunc(Window::Display);
     glutMouseFunc(Window::MouseFunc);
     glutKeyboardFunc(Window::KeyboardFunc);
+    glutSpecialFunc(Window::SpecialFunc);
     glutMotionFunc(Window::MotionFunc);
     glutPassiveMotionFunc(Window::PassiveMotionFunc);
     glutTimerFunc(deltaTime, Window::Update, 0);
@@ -106,6 +112,10 @@ void Window::MouseFunc(int button, int state, int x, int y) {
 
 void Window::KeyboardFunc(unsigned char key, int x, int y) {
     Instance().KeyboardHandle(key, Vector(x, y));
+}
+
+void Window::SpecialFunc(int key, int x, int y) {
+    Instance().SpecialHandle(key, Vector(x, y));
 }
 
 void Window::MotionFunc(int x, int y) {
@@ -305,30 +315,41 @@ void Window::RightMouseHandle(Vector mousePos, bool pressed) {
 }
 
 void Window::KeyboardHandle(unsigned char key, Vector mousePos) {
-    if (key == KeyEscape) {
-        gameField->Destroy();
-    } else if (key == KeySpace) {
-        if (gameField->TurnTime() == 0) {
-            gameField->Turn();
-        } else {
-            gameField->Pause();
-        }
-    } else if (key == KeyMinus) {
-        Zoom(-cellSizeRatioStep);
-    } else if (key == KeyPlus) {
-        Zoom(+cellSizeRatioStep);
-    } else if (key >= '0' && key <= '9') {
-        NumbersHandle(key, mousePos);
-    } else if (loadedUnits != nullptr && (key == 'a' || key == 'd' || key == 'w' || key == 's')) {
-        switch (key) {
-            case 'a': loadedUnitsTRS = loadedUnitsTRS * Matrix3x3::Rotation(90.f);       break;
-            case 'd': loadedUnitsTRS = loadedUnitsTRS * Matrix3x3::Rotation(-90.f);      break;
-            case 'w': loadedUnitsTRS = loadedUnitsTRS * Matrix3x3::Scale(Vector(1, -1)); break;
-            case 's': loadedUnitsTRS = loadedUnitsTRS * Matrix3x3::Scale(Vector(-1, 1)); break;
-        }
-    } else {
-        cellSelected = false;
-        loadedUnits = nullptr;
+    switch (key) {
+        case KeyEscape:
+            gameField->Destroy();
+            break;
+        case KeySpace:
+            if (gameField->TurnTime() == 0) {
+                gameField->Turn();
+            } else {
+                gameField->Pause();
+            }
+            break;
+        case KeyMinus:
+            Zoom(-cellSizeRatioStep);
+            break;
+        case KeyPlus:
+            Zoom(+cellSizeRatioStep);
+            break;
+        default:
+            if (key >= '0' && key <= '9') {
+                NumbersHandle(key, mousePos);
+            } else {
+                cellSelected = false;
+                loadedUnits = nullptr;
+            }
+            break;
+    }
+}
+
+void Window::SpecialHandle(int key, Vector mousePos) {
+    if (loadedUnits == nullptr) return;
+    switch (key) {
+        case GLUT_KEY_LEFT:  loadedUnitsTRS = loadedUnitsTRS * Matrix3x3::Rotation(90.f);       break;
+        case GLUT_KEY_RIGHT: loadedUnitsTRS = loadedUnitsTRS * Matrix3x3::Rotation(-90.f);      break;
+        case GLUT_KEY_UP:    loadedUnitsTRS = loadedUnitsTRS * Matrix3x3::Scale(Vector(1, -1)); break;
+        case GLUT_KEY_DOWN:  loadedUnitsTRS = loadedUnitsTRS * Matrix3x3::Scale(Vector(-1, 1)); break;
     }
 }
 
