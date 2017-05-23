@@ -1,0 +1,155 @@
+﻿  pool.cpp
+c:\users\tim\desktop\hackaton\lifegame\lifegame\nana\include\nana\deploy.hpp(17): fatal error C1083: Cannot open include file: 'nana/include/nana/push_ignore_diagnostic': No such file or directory
+  platform.cpp
+c:\users\tim\desktop\hackaton\lifegame\lifegame\nana\include\nana\deploy.hpp(17): fatal error C1083: Cannot open include file: 'nana/include/nana/push_ignore_diagnostic': No such file or directory
+  dataexch.cpp
+c:\users\tim\desktop\hackaton\lifegame\lifegame\nana\include\nana\gui\basis.hpp(18): fatal error C1083: Cannot open include file: 'nana/include/nana/push_ignore_diagnostic': No such file or directory
+  text_renderer.cpp
+c:\users\tim\desktop\hackaton\lifegame\lifegame\nana\include\nana\gui\basis.hpp(18): fatal error C1083: Cannot open include file: 'nana/include/nana/push_ignore_diagnostic': No such file or directory
+  pixel_buffer.cpp
+c:\users\tim\desktop\hackaton\lifegame\lifegame\nana\include\nana\gui\basis.hpp(18): fatal error C1083: Cannot open include file: 'nana/include/nana/push_ignore_diagnostic': No such file or directory
+  image_process_selector.cpp
+c:\users\tim\desktop\hackaton\lifegame\lifegame\nana\include\nana\pat\cloneable.hpp(16): fatal error C1083: Cannot open include file: 'nana/include/nana/push_ignore_diagnostic': No such file or directory
+  image.cpp
+c:\users\tim\desktop\hackaton\lifegame\lifegame\nana\include\nana\gui\basis.hpp(18): fatal error C1083: Cannot open include file: 'nana/include/nana/push_ignore_diagnostic': No such file or directory
+  graphics.cpp
+c:\users\tim\desktop\hackaton\lifegame\lifegame\nana\include\nana\gui\basis.hpp(18): fatal error C1083: Cannot open include file: 'nana/include/nana/push_ignore_diagnostic': No such file or directory
+  native_paint_interface.cpp
+c:\users\tim\desktop\hackaton\lifegame\lifegame\nana\include\nana\gui\basis.hpp(18): fatal error C1083: Cannot open include file: 'nana/include/nana/push_ignore_diagnostic': No such file or directory
+  image_process_provider.cpp
+c:\users\tim\desktop\hackaton\lifegame\lifegame\nana\include\nana\pat\cloneable.hpp(16): fatal error C1083: Cannot open include file: 'nana/include/nana/push_ignore_diagnostic': No such file or directory
+  internationalization.cpp
+c:\users\tim\desktop\hackaton\lifegame\lifegame\nana\include\nana\internationalization.hpp(19): fatal error C1083: Cannot open include file: 'nana/include/nana/deploy.hpp': No such file or directory
+  wvl.cpp
+c:\users\tim\desktop\hackaton\lifegame\lifegame\nana\include\nana\gui\programming_interface.hpp(15): fatal error C1083: Cannot open include file: 'nana/include/nana/config.hpp': No such file or directory
+  widget.cpp
+c:\users\tim\desktop\hackaton\lifegame\lifegame\nana\include\nana\gui\widgets\widget.hpp(16): fatal error C1083: Cannot open include file: 'nana/include/nana/push_ignore_diagnostic': No such file or directory
+  treebox.cpp
+c:\users\tim\desktop\hackaton\lifegame\lifegame\nana\include\nana\gui\widgets\widget.hpp(16): fatal error C1083: Cannot open include file: 'nana/include/nana/push_ignore_diagnostic': No such file or directory
+  toolbar.cpp
+c:\users\tim\desktop\hackaton\lifegame\lifegame\nana\include\nana\gui\widgets\widget.hpp(16): fatal error C1083: Cannot open include file: 'nana/include/nana/push_ignore_diagnostic': No such file or directory
+  textbox.cpp
+c:\users\tim\desktop\hackaton\lifegame\lifegame\nana\include\nana\gui\widgets\widget.hpp(16): fatal error C1083: Cannot open include file: 'nana/include/nana/push_ignore_diagnostic': No such file or directory
+  tabbar.cpp
+c:\users\tim\desktop\hackaton\lifegame\lifegame\nana\include\nana\gui\widgets\widget.hpp(16): fatal error C1083: Cannot open include file: 'nana/include/nana/push_ignore_diagnostic': No such file or directory
+  spinbox.cpp
+c:\users\tim\desktop\hackaton\lifegame\lifegame\nana\include\nana\gui\widgets\widget.hpp(16): fatal error C1083: Cannot open include file: 'nana/include/nana/push_ignore_diagnostic': No such file or directory
+  slider.cpp
+c:\users\tim\desktop\hackaton\lifegame\lifegame\nana\include\nana\gui\widgets\widget.hpp(16): fatal error C1083: Cannot open include file: 'nana/include/nana/push_ignore_diagnostic': No such file or directory
+  text_editor.cpp
+c:\users\tim\desktop\hackaton\lifegame\lifegame\nana\include\nana\basic_types.hpp(16): fatal error C1083: Cannot open include file: 'nana/include/nana/deploy.hpp': No such file or directory
+  Generating Code...
+  Compiling...
+  content_view.cpp
+c:\users\tim\desktop\hackaton\lifegame\lifegame\nana\include\nana\gui\basis.hpp(18): fatal error C1083: Cannot open include file: 'nana/include/nana/push_ignore_diagnostic': No such file or directory
+  scroll.cpp
+c:\users\tim\desktop\hackaton\lifegame\lifegame\nana\include\nana\gui\widgets\widget.hpp(16): fatal error C1083: Cannot open include file: 'nana/include/nana/push_ignore_diagnostic': No such file or directory
+  progress.cpp
+c:\users\tim\desktop\hackaton\lifegame\lifegame\nana\include\nana\gui\widgets\widget.hpp(16): fatal error C1083: Cannot open include file: 'nana/include/nana/push_ignore_diagnostic': No such file or directory
+  picture.cpp
+c:\users\tim\desktop\hackaton\lifegame\lifegame\nana\include\nana\gui\widgets\widget.hpp(16): fatal error C1083: Cannot open include file: 'nana/include/nana/push_ignore_diagnostic': No such file or directory
+  panel.cpp
+c:\users\tim\desktop\hackaton\lifegame\lifegame\nana\include\nana\gui\widgets\widget.hpp(16): fatal error C1083: Cannot open include file: 'nana/include/nana/push_ignore_diagnostic': No such file or directory
+  menubar.cpp
+c:\users\tim\desktop\hackaton\lifegame\lifegame\nana\include\nana\gui\widgets\widget.hpp(16): fatal error C1083: Cannot open include file: 'nana/include/nana/push_ignore_diagnostic': No such file or directory
+  menu.cpp
+c:\users\tim\desktop\hackaton\lifegame\lifegame\nana\include\nana\gui\widgets\widget.hpp(16): fatal error C1083: Cannot open include file: 'nana/include/nana/push_ignore_diagnostic': No such file or directory
+  listbox.cpp
+c:\users\tim\desktop\hackaton\lifegame\lifegame\nana\include\nana\gui\widgets\widget.hpp(16): fatal error C1083: Cannot open include file: 'nana/include/nana/push_ignore_diagnostic': No such file or directory
+  label.cpp
+c:\users\tim\desktop\hackaton\lifegame\lifegame\nana\include\nana\gui\widgets\widget.hpp(16): fatal error C1083: Cannot open include file: 'nana/include/nana/push_ignore_diagnostic': No such file or directory
+  group.cpp
+c:\users\tim\desktop\hackaton\lifegame\lifegame\nana\include\nana\gui\place.hpp(18): fatal error C1083: Cannot open include file: 'nana/include/nana/push_ignore_diagnostic': No such file or directory
+  frame.cpp
+c:\users\tim\desktop\hackaton\lifegame\lifegame\nana\include\nana\gui\widgets\widget.hpp(16): fatal error C1083: Cannot open include file: 'nana/include/nana/push_ignore_diagnostic': No such file or directory
+  form.cpp
+c:\users\tim\desktop\hackaton\lifegame\lifegame\nana\include\nana\gui\widgets\widget.hpp(16): fatal error C1083: Cannot open include file: 'nana/include/nana/push_ignore_diagnostic': No such file or directory
+  float_listbox.cpp
+c:\users\tim\desktop\hackaton\lifegame\lifegame\nana\include\nana\gui\widgets\widget.hpp(16): fatal error C1083: Cannot open include file: 'nana/include/nana/push_ignore_diagnostic': No such file or directory
+  date_chooser.cpp
+c:\users\tim\desktop\hackaton\lifegame\lifegame\nana\include\nana\gui\widgets\widget.hpp(16): fatal error C1083: Cannot open include file: 'nana/include/nana/push_ignore_diagnostic': No such file or directory
+  combox.cpp
+c:\users\tim\desktop\hackaton\lifegame\lifegame\nana\include\nana\gui\programming_interface.hpp(15): fatal error C1083: Cannot open include file: 'nana/include/nana/config.hpp': No such file or directory
+  checkbox.cpp
+c:\users\tim\desktop\hackaton\lifegame\lifegame\nana\include\nana\gui\widgets\widget.hpp(16): fatal error C1083: Cannot open include file: 'nana/include/nana/push_ignore_diagnostic': No such file or directory
+  categorize.cpp
+c:\users\tim\desktop\hackaton\lifegame\lifegame\nana\include\nana\gui\programming_interface.hpp(15): fatal error C1083: Cannot open include file: 'nana/include/nana/config.hpp': No such file or directory
+  button.cpp
+c:\users\tim\desktop\hackaton\lifegame\lifegame\nana\include\nana\gui\widgets\widget.hpp(16): fatal error C1083: Cannot open include file: 'nana/include/nana/push_ignore_diagnostic': No such file or directory
+  tooltip.cpp
+c:\users\tim\desktop\hackaton\lifegame\lifegame\nana\include\nana\gui\widgets\widget.hpp(16): fatal error C1083: Cannot open include file: 'nana/include/nana/push_ignore_diagnostic': No such file or directory
+  timer.cpp
+c:\users\tim\desktop\hackaton\lifegame\lifegame\nana\include\nana\deploy.hpp(17): fatal error C1083: Cannot open include file: 'nana/include/nana/push_ignore_diagnostic': No such file or directory
+  Generating Code...
+  Compiling...
+  state_cursor.cpp
+c:\users\tim\desktop\hackaton\lifegame\lifegame\nana\include\nana\gui\basis.hpp(18): fatal error C1083: Cannot open include file: 'nana/include/nana/push_ignore_diagnostic': No such file or directory
+  screen.cpp
+c:\users\tim\desktop\hackaton\lifegame\lifegame\nana\include\nana\gui\basis.hpp(18): fatal error C1083: Cannot open include file: 'nana/include/nana/push_ignore_diagnostic': No such file or directory
+  programming_interface.cpp
+c:\users\tim\desktop\hackaton\lifegame\lifegame\nana\include\nana\gui\programming_interface.hpp(15): fatal error C1083: Cannot open include file: 'nana/include/nana/config.hpp': No such file or directory
+  place.cpp
+c:\users\tim\desktop\hackaton\lifegame\lifegame\nana\include\nana\deploy.hpp(17): fatal error C1083: Cannot open include file: 'nana/include/nana/push_ignore_diagnostic': No such file or directory
+  notifier.cpp
+c:\users\tim\desktop\hackaton\lifegame\lifegame\nana\include\nana\deploy.hpp(17): fatal error C1083: Cannot open include file: 'nana/include/nana/push_ignore_diagnostic': No such file or directory
+  msgbox.cpp
+c:\users\tim\desktop\hackaton\lifegame\lifegame\nana\include\nana\gui\programming_interface.hpp(15): fatal error C1083: Cannot open include file: 'nana/include/nana/config.hpp': No such file or directory
+  layout_utility.cpp
+c:\users\tim\desktop\hackaton\lifegame\lifegame\nana\include\nana\gui\basis.hpp(18): fatal error C1083: Cannot open include file: 'nana/include/nana/push_ignore_diagnostic': No such file or directory
+  filebox.cpp
+c:\users\tim\desktop\hackaton\lifegame\lifegame\nana\include\nana\gui\programming_interface.hpp(15): fatal error C1083: Cannot open include file: 'nana/include/nana/config.hpp': No such file or directory
+  element.cpp
+c:\users\tim\desktop\hackaton\lifegame\lifegame\nana\include\nana\gui\element.hpp(15): fatal error C1083: Cannot open include file: 'nana/include/nana/push_ignore_diagnostic': No such file or directory
+  effects.cpp
+c:\users\tim\desktop\hackaton\lifegame\lifegame\nana\include\nana\gui\effects.hpp(15): fatal error C1083: Cannot open include file: 'nana/include/nana/paint/graphics.hpp': No such file or directory
+  drawing.cpp
+c:\users\tim\desktop\hackaton\lifegame\lifegame\nana\include\nana\gui\drawing.hpp(15): fatal error C1083: Cannot open include file: 'nana/include/nana/push_ignore_diagnostic': No such file or directory
+  dragger.cpp
+c:\users\tim\desktop\hackaton\lifegame\lifegame\nana\include\nana\gui\basis.hpp(18): fatal error C1083: Cannot open include file: 'nana/include/nana/push_ignore_diagnostic': No such file or directory
+  window_manager.cpp
+c:\users\tim\desktop\hackaton\lifegame\lifegame\nana\include\nana\gui\detail\general_events.hpp(15): fatal error C1083: Cannot open include file: 'nana/include/nana/push_ignore_diagnostic': No such file or directory
+  window_layout.cpp
+c:\users\tim\desktop\hackaton\lifegame\lifegame\nana\include\nana\gui\basis.hpp(18): fatal error C1083: Cannot open include file: 'nana/include/nana/push_ignore_diagnostic': No such file or directory
+  native_window_interface.cpp
+c:\users\tim\desktop\hackaton\lifegame\lifegame\nana\include\nana\gui\basis.hpp(18): fatal error C1083: Cannot open include file: 'nana/include/nana/push_ignore_diagnostic': No such file or directory
+  events_operation.cpp
+c:\users\tim\desktop\hackaton\lifegame\lifegame\nana\include\nana\gui\detail\general_events.hpp(15): fatal error C1083: Cannot open include file: 'nana/include/nana/push_ignore_diagnostic': No such file or directory
+  element_store.cpp
+c:\users\tim\desktop\hackaton\lifegame\lifegame\nana\include\nana\gui\element.hpp(15): fatal error C1083: Cannot open include file: 'nana/include/nana/push_ignore_diagnostic': No such file or directory
+  drawer.cpp
+c:\users\tim\desktop\hackaton\lifegame\lifegame\nana\include\nana\gui\detail\general_events.hpp(15): fatal error C1083: Cannot open include file: 'nana/include/nana/push_ignore_diagnostic': No such file or directory
+  color_schemes.cpp
+c:\users\tim\desktop\hackaton\lifegame\lifegame\nana\include\nana\gui\detail\widget_geometrics.hpp(16): fatal error C1083: Cannot open include file: 'nana/include/nana/gui/basis.hpp': No such file or directory
+  bedrock_windows.cpp
+c:\users\tim\desktop\hackaton\lifegame\lifegame\nana\include\nana\gui\basis.hpp(18): fatal error C1083: Cannot open include file: 'nana/include/nana/push_ignore_diagnostic': No such file or directory
+  Generating Code...
+  Compiling...
+  bedrock_pi.cpp
+c:\users\tim\desktop\hackaton\lifegame\lifegame\nana\include\nana\gui\basis.hpp(18): fatal error C1083: Cannot open include file: 'nana/include/nana/push_ignore_diagnostic': No such file or directory
+  basic_window.cpp
+c:\users\tim\desktop\hackaton\lifegame\lifegame\nana\include\nana\gui\detail\drawer.hpp(16): fatal error C1083: Cannot open include file: 'nana/include/nana/push_ignore_diagnostic': No such file or directory
+  basis.cpp
+c:\users\tim\desktop\hackaton\lifegame\lifegame\nana\include\nana\gui\basis.hpp(18): fatal error C1083: Cannot open include file: 'nana/include/nana/push_ignore_diagnostic': No such file or directory
+  animation.cpp
+c:\users\tim\desktop\hackaton\lifegame\lifegame\nana\include\nana\basic_types.hpp(16): fatal error C1083: Cannot open include file: 'nana/include/nana/deploy.hpp': No such file or directory
+  filesystem.cpp
+c:\users\tim\desktop\hackaton\lifegame\lifegame\nana\include\nana\filesystem\filesystem.hpp(32): fatal error C1083: Cannot open include file: 'nana/include/nana/push_ignore_diagnostic': No such file or directory
+  platform_spec_windows.cpp
+c:\users\tim\desktop\hackaton\lifegame\lifegame\nana\include\nana\gui\basis.hpp(18): fatal error C1083: Cannot open include file: 'nana/include/nana/push_ignore_diagnostic': No such file or directory
+  platform_abstraction.cpp
+c:\users\tim\desktop\hackaton\lifegame\lifegame\nana\include\nana\filesystem\filesystem.hpp(32): fatal error C1083: Cannot open include file: 'nana/include/nana/push_ignore_diagnostic': No such file or directory
+  deploy.cpp
+c:\users\tim\desktop\hackaton\lifegame\lifegame\nana\include\nana\deploy.hpp(17): fatal error C1083: Cannot open include file: 'nana/include/nana/push_ignore_diagnostic': No such file or directory
+  charset.cpp
+c:\users\tim\desktop\hackaton\lifegame\lifegame\nana\include\nana\deploy.hpp(17): fatal error C1083: Cannot open include file: 'nana/include/nana/push_ignore_diagnostic': No such file or directory
+  basic_types.cpp
+c:\users\tim\desktop\hackaton\lifegame\lifegame\nana\include\nana\basic_types.hpp(16): fatal error C1083: Cannot open include file: 'nana/include/nana/deploy.hpp': No such file or directory
+  player.cpp
+c:\users\tim\desktop\hackaton\lifegame\lifegame\nana\include\nana\deploy.hpp(17): fatal error C1083: Cannot open include file: 'nana/include/nana/push_ignore_diagnostic': No such file or directory
+  buffer_preparation.cpp
+c:\users\tim\desktop\hackaton\lifegame\lifegame\nana\include\nana\deploy.hpp(17): fatal error C1083: Cannot open include file: 'nana/include/nana/push_ignore_diagnostic': No such file or directory
+  audio_stream.cpp
+c:\users\tim\desktop\hackaton\lifegame\lifegame\nana\include\nana\deploy.hpp(17): fatal error C1083: Cannot open include file: 'nana/include/nana/push_ignore_diagnostic': No such file or directory
+  audio_device.cpp
+c:\users\tim\desktop\hackaton\lifegame\lifegame\nana\include\nana\deploy.hpp(17): fatal error C1083: Cannot open include file: 'nana/include/nana/push_ignore_diagnostic': No such file or directory
+  Generating Code...

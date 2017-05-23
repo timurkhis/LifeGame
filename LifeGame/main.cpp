@@ -15,6 +15,10 @@
 #include "GameField.hpp"
 #include "Peer.hpp"
 
+#include "nana/include/nana/gui.hpp"
+#include "nana/include/nana/gui/widgets/label.hpp"
+#include "nana/include/nana/gui/widgets/button.hpp"
+
 struct {
     Geometry::Vector field = Geometry::Vector(1000, 1000);
     Geometry::Vector window = Geometry::Vector(800, 600);
@@ -33,7 +37,29 @@ struct {
 void Parse(int argc, char **argv);
 
 int main(int argc, char **argv) {
-    Parse(argc, argv);
+
+	using namespace nana;
+	//Define a form.
+	nana::form fm;
+	//Define a label and display a text.
+	nana::label lab{ fm, "Hello, <bold blue size=16>Nana C++ Library</>" };
+	lab.format(true);
+	//Define a button and answer the click event.
+	nana::button btn{ fm, "Quit" };
+	btn.events().click([&fm] {
+		fm.close();
+	});
+	//Layout management
+	fm.div("vert <><<><weight=80% text><>><><weight=24<><button><>><>");
+	fm["text"] << lab;
+	fm["button"] << btn;
+	fm.collocate();
+	//Show the form
+	fm.show();
+	//Start to event loop process, it blocks until the form is closed.
+	exec();
+
+  /*  Parse(argc, argv);
     std::shared_ptr<Peer> peer;
     std::shared_ptr<GameField> gameField;
     std::shared_ptr<Presets> presets = std::make_shared<Presets>(args.presetPath);
@@ -50,7 +76,7 @@ int main(int argc, char **argv) {
     Window &instance = Window::Instance();
     instance.Init(gameField);
 	args.label += std::string(args.master ? " Master " : " Slave ") + args.address;
-    instance.MainLoop(argc, argv, args.label, args.window);
+    instance.MainLoop(argc, argv, args.label, args.window);*/
     return 0;
 }
 
