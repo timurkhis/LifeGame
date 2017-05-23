@@ -12,6 +12,8 @@
 #include <iostream>
 #include <sstream>
 #include <random>
+#include <chrono>
+#include <unordered_map>
 #include <errno.h>
 
 class Random {
@@ -23,6 +25,7 @@ public:
     static int32_t Next(int32_t min, int32_t max);
     static uint32_t NextUInt();
     static float NextFloat();
+    static bool NextBool();
     static void Seed(uint32_t seed);
 };
 
@@ -58,6 +61,18 @@ private:
     static void Message(std::stringstream &stream, T t) {
         stream << t;
     }
+};
+
+class Profile {
+    using Clock = std::chrono::high_resolution_clock;
+    static std::unordered_map<std::string, double> results;
+    static std::string current;
+    static Clock::time_point start;
+    
+public:
+    static void Start(const std::string &what);
+    static void End();
+    static void Print();
 };
 
 #endif /* Log_hpp */

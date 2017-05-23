@@ -7,6 +7,7 @@
 //
 
 #include <cstdlib>
+#include <cassert>
 #include "GameField.hpp"
 #include "Peer.hpp"
 #include "Presets.hpp"
@@ -15,7 +16,7 @@ using namespace Geometry;
 
 GameField::GameField(std::shared_ptr<Presets> presets) : GameField(presets, Vector(), 0, -1) {}
 
-GameField::GameField(std::shared_ptr<Presets> presets, Geometry::Vector size, unsigned turnTime, int player) :
+GameField::GameField(std::shared_ptr<Presets> presets, Vector size, unsigned turnTime, int player) :
     presets(presets),
     player(player),
     exit(false),
@@ -32,52 +33,78 @@ void GameField::ClampVector(Vector &vec) const {
 }
 
 void GameField::ProcessUnits() {
-    std::unordered_map<Unit, int> processCells;
+    std::unordered_map<Vector, uint32_t> processCells;
+    processCells.reserve(units->size() * 9);
+    const size_t bucketCount = processCells.bucket_count();
     for (const auto &unit : *units) {
         ProcessUnit(unit, processCells);
     }
+    assert(bucketCount == processCells.bucket_count());
+    
+    units->clear();
+    const uint32_t oneOneOne = 7;
     for (const auto &cell : processCells) {
-        if (cell.second == 3) {
-            units->emplace(cell.first);
-        } else if (cell.second < 2 || cell.second > 3) {
-            auto contains = units->find(cell.first);
-            if (contains != units->end()) {
-                units->erase(contains);
+        const uint32_t cellMask = cell.second;
+        uint32_t offset = 0;
+        uint32_t maxNeighbours = 0;
+        uint32_t self = 0;
+        for (int i = 0; i < maxPlayers; i++) {
+            uint32_t neighbours = cellMask & (oneOneOne << 4 * i);
+            neighbours >>= 4 * i;
+            if (neighbours > maxNeighbours || (neighbours == maxNeighbours && Random::NextBool())) {
+                maxNeighbours = neighbours;
+                offset = i;
+                self = cellMask & (1 << (4 * (i + 1) - 1));
             }
+        }
+        assert(offset >= 0 && offset <= 7);
+        assert(maxNeighbours >= 0 && maxNeighbours <= 7);
+        if (maxNeighbours == 3 || (maxNeighbours == 2 && self != 0)) {
+            units->emplace(offset, cell.first);
         }
     }
 }
 
-void GameField::ProcessUnit(const Unit &unit, std::unordered_map<Unit, int> &processCells) {
-    processCells.emplace(unit, 0);
+void GameField::ProcessUnit(const Unit &unit, std::unordered_map<Vector, uint32_t> &processCells) {
+    const uint32_t player = 1 << (4 * (unit.player + 1) - 1);
+    const uint32_t offset = 4 * unit.player;
+    const uint32_t oneOneOne = 7;
+    
     for (int x = -1; x <= 1; x++) {
         for (int y = -1; y <= 1; y++) {
-            if (x == 0 && y == 0) continue;
             Vector pos = unit.position + Vector(x, y);
             ClampVector(pos);
-            Unit newUnit(unit.player, pos);
-            const auto iter = processCells.emplace(newUnit, 1);
-            if (!iter.second) {
-                if (iter.first->second == 0) {
-                    processCells.erase(iter.first);
-                    processCells.emplace(newUnit, 1);
-                } else if (iter.first->first.player == unit.player) {
-                    iter.first->second++;
-                } else {
-                    iter.first->second--;
-                }
+            auto insertion = processCells.emplace(pos, 0);
+            
+            if (x == 0 && y == 0) {
+                insertion.first->second |= player;
+            } else {
+                uint32_t &cell = insertion.first->second;
+                uint32_t neighbours = cell & (oneOneOne << offset);
+                neighbours >>= offset;
+                neighbours = (neighbours + 1) & oneOneOne;
+                assert(neighbours >= 0 && neighbours <= 7);
+                cell &= ~(oneOneOne << offset);
+                cell |= neighbours << offset;
             }
         }
     }
 }
 
-void GameField::AddPreset(const Geometry::Matrix3x3 &matrix) {
+void GameField::AddPreset(const Matrix3x3 &matrix) {
     if (IsGameStopped()) return;
+    const std::shared_ptr<std::vector<Vector>> loadedUnits = presets->Load(currentPreset);
+    for (const auto &unit : *loadedUnits) {
+        Vector vec = matrix * unit;
+        ClampVector(vec);
+        if (!CanInsert(vec)) return;
+    }
     peer->AddPreset(matrix, currentPreset);
 }
 
-void GameField::AddPreset(const Geometry::Matrix3x3 &matrix, int id, unsigned char preset) {
+void GameField::AddPreset(const Matrix3x3 &matrix, int id, unsigned char preset) {
     std::shared_ptr<std::vector<Vector>> loadedUnits = presets->Load(preset);
+    assert(loadedUnits != nullptr);
     for (int i = 0; i < loadedUnits->size(); i++) {
         Vector pos = matrix * loadedUnits->at(i);
         ClampVector(pos);
@@ -88,13 +115,26 @@ void GameField::AddPreset(const Geometry::Matrix3x3 &matrix, int id, unsigned ch
 void GameField::AddUnit(Vector unit) {
     if (IsGameStopped()) return;
     const Unit key(player, unit);
-    if (units->find(key) == units->end()) {
+    if (units->find(key) == units->end() && CanInsert(unit)) {
         peer->AddUnit(unit);
     }
 }
 
-bool GameField::AddUnit(Geometry::Vector unit, int id) {
+bool GameField::AddUnit(Vector unit, int id) {
     return units->emplace(id, unit).second;
+}
+
+bool GameField::CanInsert(const Vector &unit) const {
+    const int halfDistance = distanceToEnemy;
+    for (int x = -halfDistance; x <= halfDistance; x++) {
+        for (int y = -halfDistance; y <= halfDistance; y++) {
+            Vector vec = unit + Vector(x, y);
+            ClampVector(vec);
+            const auto search = units->find(Unit(player, vec));
+            if (search != units->end() && search->player != player) return false;
+        }
+    }
+    return true;
 }
 
 void GameField::SavePreset(unsigned char preset, const std::shared_ptr<std::vector<Vector>> cells) {

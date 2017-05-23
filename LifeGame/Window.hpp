@@ -27,6 +27,7 @@ class Window {
     Geometry::Vector mousePosition;
     Geometry::Matrix3x3 loadedUnitsTRS;
     
+    int window;
     bool cellSelected;
     bool cameraScrolled;
     bool rightButtonPressed;
@@ -58,6 +59,7 @@ private:
     static void Display();
     static void MouseFunc(int button, int state, int x, int y);
     static void KeyboardFunc(unsigned char key, int x, int y);
+    static void SpecialFunc(int key, int x, int y);
     static void MotionFunc(int x, int y);
     static void PassiveMotionFunc(int x, int y);
     static void Update(int value);
@@ -75,6 +77,7 @@ private:
     void LeftMouseHandle(Geometry::Vector mousePos, bool pressed);
     void RightMouseHandle(Geometry::Vector mousePos, bool pressed);
     void KeyboardHandle(unsigned char key, Geometry::Vector mousePos);
+    void SpecialHandle(int key, Geometry::Vector mousePos);
     void NumbersHandle(unsigned char key, Geometry::Vector mousePos);
     void CameraScroll(Geometry::Vector pos);
     Geometry::Vector ScreenToCell(int x, int y) const;

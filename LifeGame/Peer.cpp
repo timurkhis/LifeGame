@@ -38,6 +38,10 @@ Peer::Peer(std::shared_ptr<GameField> gameField, int players) :
     address = std::make_shared<SocketAddress>();
     Listen(address);
     SetSeed(Random::NextUInt());
+    if (IsGameStarted()) {
+        assert(players == 1);
+        StartGame();
+    }
 }
 
 void Peer::Init() {
